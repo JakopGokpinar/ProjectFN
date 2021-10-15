@@ -1,0 +1,36 @@
+.navbar__list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+    background-color:rgba(0,0,0,.03);
+}
+
+.navbar__search {
+    display: flex;
+    align-items: center;
+    margin-left: 30px;
+}
+    
+.navbar__buttons {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin-right: 30px;  
+}
+
+.navbar__buttons > * {
+    margin-left: 20px;
+    width: max-content;
+}
+
+.navbar__buttons > button {
+    width: 100px;
+}
+
+.deleteList {
+    color: #dc3545;
+    cursor: pointer;
+    margin-right: 15px;
+}

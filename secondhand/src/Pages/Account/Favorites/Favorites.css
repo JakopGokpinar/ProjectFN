@@ -1,0 +1,29 @@
+.favorites {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.line {
+    margin: 0;
+}
+
+.favorites__lists,.favoriteList__products {
+    display: flex;
+    height: 500px;
+    overflow: auto;
+    width: 100%;
+}
+
+.favorites__lists { 
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    padding: 20px;
+}
+
+.favoriteList__products {
+    flex-direction: column;
+    padding: 20px;
+}
+

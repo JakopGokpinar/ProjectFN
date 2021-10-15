@@ -1,0 +1,164 @@
+.productPage-container, .pp-container {
+position: relative;
+}
+
+#frame{
+display:flex; 
+justify-content: space-between;
+}
+
+#photo-frame, #saler-frame{
+height: 650px;
+margin-bottom: 5%;
+}
+
+#photo-frame{
+position: relative;
+width: 800px;
+}
+
+#saler-frame{
+position:fixed;
+width: 350px;
+right: 0%;
+margin-right: 5%;
+}
+
+#saler-info-div {
+display: flex;
+align-items: center;
+justify-content: center;
+margin-top: 10%;
+}
+
+.big-photo-div{
+position: relative;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 10px;
+}
+
+.small-photo-div{
+position: relative;
+}
+
+.small-photo-div > ul{
+display: flex;
+flex-direction: row;
+list-style: none;
+justify-content: center;
+align-items: center;
+}
+
+.small-photo-div > li{
+border: 2px solid blue;
+margin:10px;
+}
+
+.big-photo-div .prev-button{
+position: absolute;
+}
+
+.big-photo-div .next-button{
+right: 0%;
+position: absolute;
+}
+
+#product-big-image{
+width: 100%;
+max-height: 480px;
+}
+
+#photo-desc{
+text-align: center;
+font-size: 17px;
+margin-bottom:inherit;
+}
+
+#product-small-img{
+width: 72px;
+height: 72px;
+cursor: pointer;
+}
+
+#saler-information{
+text-align: center;
+width: 300px;
+}
+
+#saler-information > h6{
+position: relative;
+top: -15px;
+}
+
+#saler-current-stat{
+display: flex;
+justify-content: space-between;
+margin-bottom: 10px;
+margin-left: 10px;
+margin-right: 10px;
+}
+
+#saler-photo{
+position: relative;
+margin-top: 20px;
+top: -38.5px;
+width: 75px;
+height: 75px;
+}
+
+.card{
+border-top: none;
+border-bottom: none;
+border-left: none;
+}
+
+.card-header{
+display: flex;
+flex-direction: row;
+align-items: center;
+justify-content: space-between;
+cursor: pointer;
+}
+
+.card-header > p{
+display: block;
+padding-top: 15px;
+}
+
+.list-group-item{
+display: flex;
+flex-direction: row;
+align-items: center;
+}
+
+li > p{
+display: block;
+margin-top: 15px;
+margin-left: 15px;
+}
+
+#saler-point-circle{
+display: block;
+width: 35px;
+height: 35px;
+line-height: 35px;
+border-radius: 100%;
+font-size: 15px;
+color: #fff;
+text-align: center;
+background: #000
+}
+
+#process-buttons{
+position: absolute;
+width: 100%;
+}
+
+.product-descripton{
+width: 800px;
+margin-bottom: 15%;
+}
+
+

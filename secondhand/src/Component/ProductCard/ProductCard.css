@@ -1,0 +1,27 @@
+.card-body{
+    text-decoration: none;
+}
+
+#pris{
+    margin: 10px 5px;
+}
+
+.img-responsive{
+   max-height: 350px;
+}
+
+.photo-div{
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.photo-div .prev-button{
+    position: absolute;
+}
+  
+.photo-div .next-button{
+    right: 0%;
+    position: absolute;
+}

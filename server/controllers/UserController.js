@@ -1,5 +1,7 @@
 const passport = require('passport');
 const UserModel = require('../models/UserModel.js');
+const AnnonceModel = require('../models/AnnonceModel');
+const CarSchema = require('../models/AnnonceModels/CarModel.js');
 let mongoose = require('mongoose');
 
 login = async (req, res, next) => {
@@ -55,7 +57,7 @@ logout = async (req, res) => {
 }
 
 getMyAnnonces = (req,res,next) => {
-    if(!isLoggedIn(req)) return res.json({ message: 'Login to see your annonces'});
+    if(!isLoggedIn(req,res)) return res.json({ message: 'Login to see your data'});
     var user = req.user;
     UserModel.findOne({ email: user.email })
         .then(user => {
@@ -67,15 +69,14 @@ getMyAnnonces = (req,res,next) => {
 }
 
 createAnnonce = (req,res, next) => {
+    if(!isLoggedIn(req)) return res.json({ message: 'Login to see your data'})
     var db = mongoose.connection.db;
     var userId = req.user._id;
+    
     var annonce = req.body;
-    var newAnnonce = {
-        annonceId: annonce.annonceId,
-        title: annonce.title
-    }
+    var newAnnonce = new AnnonceModel(annonce);
 
-    db.collection("users").update(
+    db.collection("users").updateOne(
         { _id: userId },
         { $push: { annonces: newAnnonce} }
     )
@@ -83,8 +84,11 @@ createAnnonce = (req,res, next) => {
 }
 
 isLoggedIn = (req) => {
-    if(req.user) return true;
-    else return false;
+    if(!req.user) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 module.exports = {login, register, checklogin, logout, getMyAnnonces, createAnnonce};

@@ -76,9 +76,9 @@ class Navbar extends React.Component{
                                 </Link>
                                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
                                     {this.state.isLoggedIn && <li><a class="dropdown-item" href="/">{this.state.username}</a></li>}
-                                    <li><a class="dropdown-item" href="/">Login</a></li>
-                                    <li><a class="dropdown-item" href="/">Register</a></li>
-                                    <li><a class="dropdown-item" href="/">Favorites</a></li>
+                                    <li><Link to="/login" className="dropdown-item">Login</Link></li>
+                                    <li><Link to="/register" className="dropdown-item">Register</Link></li>
+                                    <li><Link to="/profil" className="dropdown-item">Favorites</Link></li>
                                     <li><Link to="/nyannonse" className="dropdown-item">Ny Annonse</Link></li>
                                 </ul>           
                             </div>

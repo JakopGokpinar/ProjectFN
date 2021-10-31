@@ -46,6 +46,14 @@ checklogin = (req,res,next) => {
     }
 }
 
+isLoggedIn = (req) => {
+    if(!req.user){
+        return false;
+    } else {
+        return true;
+    }
+}
+
 logout = async (req, res) => {
     var user;
     if (req.user) {
@@ -56,7 +64,7 @@ logout = async (req, res) => {
 }
 
 getMyAnnonces = (req,res,next) => {
-    if(!isLoggedIn(req,res)) return res.json({ message: 'Login to see your data'});
+    if(!isLoggedIn(req)) return res.json({ message: 'Login to see your data'});
     var user = req.user;
     UserModel.findOne({ email: user.email })
         .then(user => {

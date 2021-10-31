@@ -12,6 +12,12 @@ export const signOut = () => {
     }
 }
 
+export const saveUser = (user) => {
+    return{
+        type: "user",
+        payload: user
+    }
+}
 
 export const login = (user) => async (dispatch, getState) => {
     const response = await instanceAxs.post('/login', user)        

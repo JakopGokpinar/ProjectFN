@@ -1,6 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+
 import Login from './Pages/LoginAndRegister/Login.js';
 import Register from './Pages/LoginAndRegister/Register.js';
 import reportWebVitals from './reportWebVitals';
@@ -11,8 +16,18 @@ import SearchedResutPage from './Pages/SearchedResultPage/SearchedResultPage.js'
 import Account from './Pages/Account/Account.js';
 import NotFound from './Pages/NotFound.js';
 import CreateAnnonce from './Pages/NewAnnonce/CreateAnnonce.js';
+import Redux from './redux/redux.js';
+
+import { combinedReducer } from './reducers/Reducers.js';
+
+const composedEnhancer = composeWithDevTools(
+  applyMiddleware(thunk)
+);
+
+const store = createStore(combinedReducer, composedEnhancer);
 
 ReactDOM.render(
+  <Provider store={store}>
   <Router>
     <div>
       <Switch>
@@ -28,6 +43,7 @@ ReactDOM.render(
                   <Route path="/profile" component={Account}></Route>
                   <Route path="/nyannonse" component={CreateAnnonce}></Route>
                   <Route exact path={`/product/:id`} component={ProductPage} />
+                  <Route path="/redux" component={Redux}/>
                   <Route path="*" component={NotFound} />
                 </Switch>
               </div>
@@ -37,6 +53,7 @@ ReactDOM.render(
       </Switch>
     </div>
   </Router>
+  </Provider>
   ,document.getElementById('root') 
   
 );

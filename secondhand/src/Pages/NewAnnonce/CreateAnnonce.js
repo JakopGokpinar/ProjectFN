@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Switch, Route, Link, useRouteMatch, Redirect, useHistory } from "react-router-dom";
+import { Switch, Route, useRouteMatch, useHistory } from "react-router-dom";
 import './CreateAnnonce.css';
 
-import { instanceAxs } from "../../api/Api";
 import AnnonceRoute from "./AnnonceRoute";
 import {car} from "./CarAnnonce";
 import {property} from './PropertyAnnonce';
@@ -37,7 +36,7 @@ function CreateAnnonce() {
 
     const checkForm = () => {
         if(category){
-            history.push(path + '/ny/' + `${category ? category.name : ''}`);
+            history.push(path + `/ny/${category ? category.name : ''}`);
         } else {
             setAlert("Please select a category");
         }

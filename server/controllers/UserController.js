@@ -53,7 +53,6 @@ logout = async (req, res) => {
     } 
     req.logOut();
     return res.json({ message: 'user logged out', user: user && user});
-    
 }
 
 getMyAnnonces = (req,res,next) => {
@@ -81,14 +80,6 @@ createAnnonce = (req,res, next) => {
         { $push: { annonces: newAnnonce} }
     )
     .then(res.json({message: "new annonce created"}))
-}
-
-isLoggedIn = (req) => {
-    if(!req.user) {
-        return false;
-    } else {
-        return true;
-    }
 }
 
 module.exports = {login, register, checklogin, logout, getMyAnnonces, createAnnonce};

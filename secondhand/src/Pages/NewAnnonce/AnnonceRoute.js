@@ -4,6 +4,7 @@ import CarAnnonce from "./CarAnnonce";
 import PropertyAnnonce from "./PropertyAnnonce";
 import ContactInformation from "./FormComponents/ContactInformation";
 import PhotoAndDescription from "./FormComponents/PhotoAndDescription";
+
 function AnnonceRoute(props) {
     var {categoryName} = useParams();
     const [annonceComponent, setComponent] = useState(<></>);

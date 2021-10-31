@@ -2,9 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import './Login.css';
+import { instanceAxs } from "../../api/Api";
+import { login, logout } from '../../actions/LoginActions.js';
+import { connect } from 'react-redux';
 
-//const api = require('../../api/Api')
-import {instanceAxs, checkLogin} from '../../api/Api'
+
 axios.defaults.withCredentials = true;
 
 class Login extends React.Component{ 
@@ -21,9 +23,7 @@ class Login extends React.Component{
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    
+    } 
 
     handleChange = (event) => {
         let user = this.state.user
@@ -35,39 +35,25 @@ class Login extends React.Component{
         this.setState({ user });
     }
 
-    handleSubmit(event){
+    handleSubmit = async (event) => {
         event.preventDefault();
-
-        /*axios.post('http://localhost:3080/user/login', this.state.user)
-            .then(response => {
-                console.log(response);
-                console.log(response.data);
-                //console.log(response.data.sessUser)
-                this.setState({ message: response.data.message });
-        });*/
-        instanceAxs.post('/login', this.state.user)
-            .then(response => {
-                console.log(response)
-                this.setState({ message: response.data.message});
-                this.props.history.push('/');
-            })    
+        this.props.login(this.state.user)
     }
 
     checklogin = async () => {
-        checkLogin();
+        const response = await instanceAxs.get('/checklogin');
+        console.log(response)
+        if(response.data.message === "user logged in"){
+            this.setState({ checklog: 'user logged in'});
+            console.log(response.data.message)
+        } else {
+            this.setState({ checklog: 'user not logged in'});
+        }
     }
 
     logout = () => {
-        axios.get('http://localhost:3080/user/logout')
-            .then(response => {
-                console.log(response);
-                this.setState({ 
-                    logout: response.data.message
-                });
-            })
+        this.props.logout();
     }
-
-
     
     render(){
         return(
@@ -96,4 +82,8 @@ class Login extends React.Component{
     }
 }
 
-export default Login;
+const mapDispatchToProps = {
+    login, logout
+}
+
+export default connect(null, mapDispatchToProps)(Login)

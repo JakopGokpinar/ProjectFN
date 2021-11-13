@@ -38,22 +38,22 @@ store.subscribe(() => {
 
 ReactDOM.render(
   <Provider store={store}>
-    <PersistGate loading={<Spinner/>} persistor={persistor}>
       <Router>
         <div>
           <Switch>
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/register" component={Register}></Route>
+            
             <Route>
               <div className="container">
                   <Navbar></Navbar>
                   <div className="top-margin">
                     <Switch>
+                    <Route exact path="/login" component={Login}/>
+                    <Route exact path="/register" component={Register}></Route>
                       <Route exact path="/" component={Menu} />
                       <Route path="/search" component={SearchedResutPage}/>
                       <Route path="/profile" component={Account}></Route>
                       <Route path="/nyannonse" component={CreateAnnonce}></Route>
-                      <Route exact path={`/product/:id`} component={ProductPage} />
+                      <Route exact path={`/product/:annonceId`} component={ProductPage} />
                       <Route path="/redux" component={Redux}/>
                       <Route path="*" component={NotFound} />
                     </Switch>
@@ -64,7 +64,6 @@ ReactDOM.render(
           </Switch>
         </div>
       </Router>
-    </PersistGate>
   </Provider>
   ,document.getElementById('root') 
   

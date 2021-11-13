@@ -4,6 +4,11 @@ import './ProductCard.css';
 
 function ProductCard (props){
 
+  if(props.annonce) {
+    props = props.annonce;
+
+  }
+
   const [images,title,location,price,id] = [props.img, props.name,props.location,props.price,props.id];
 
   const [isHovered, setHovered] = useState(false);

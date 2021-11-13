@@ -23,6 +23,7 @@ function AnnonceDetail(props) {
                     <div>
                         <li>{annonce.title}</li>
                         <li>{annonceId}</li>
+                        <li>{annonceId}</li>
                     </div>
                     : 
                     <Spinner/>

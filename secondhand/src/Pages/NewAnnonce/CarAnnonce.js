@@ -80,8 +80,7 @@ class CarAnnonce extends React.Component {
                     <div className="input-group mb-3">
                         <input type="text" className="form-control" id="modelYear" aria-describedby="modelYear" onChange={this.handlePropertyChange}/>
                     </div>
-                    <button type="submit" className="btn btn-primary w-100">Publiser</button>
-                    
+                    <button type="submit" className="btn btn-primary w-100">Publiser</button>                  
                 </form>
             </div>
         )

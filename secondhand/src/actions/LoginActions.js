@@ -14,27 +14,41 @@ export const signOut = () => {
 
 export const saveUser = (user) => {
     return{
-        type: "user",
+        type: "user/save",
         payload: user
     }
 }
 
-export const login = (user) => async (dispatch, getState) => {
-    const response = await instanceAxs.post('/login', user)        
-    console.log(response);
-
-    if(response.data.message === "user logged in"){
-        dispatch(signIn());
-    } else {
-        alert("coul not login");
+export const removeUser = () => {
+    return{
+        type: "user/remove"
     }
 }
 
-export const logout = () => async (dispatch, getState) => {
-    const response = await instanceAxs.get('/logout');
-    console.log(response);
+export const login = (user) => async (dispatch, getState) => {
+    await instanceAxs.post('/login', user)        
+        .then(respond => {
+            console.log(respond);
 
-    dispatch(signOut());
+            if(respond.data.message === "user logged in"){
+                dispatch(signIn());
+                dispatch(saveUser(user));
+            } else {
+                alert("coul not login");
+            }        
+        })
+        .catch(err => {
+            console.log(err)
+        })
+}
+
+export const logout = () => async (dispatch, getState) => {
+    await instanceAxs.get('/logout')
+        .then(respond => {
+            console.log(respond);
+            dispatch(signOut());
+            dispatch(removeUser());
+        })
 }
 
 

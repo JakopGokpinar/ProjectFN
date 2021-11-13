@@ -3,6 +3,12 @@ const UserModel = require('../models/UserModel.js');
 const AnnonceModel = require('../models/AnnonceModel');
 const CarSchema = require('../models/AnnonceModels/CarModel.js');
 let mongoose = require('mongoose');
+var fs = require('fs');
+const multer = require('multer');
+const upload = require('../middleware/upload.js')
+const GridFSBucket = require("mongodb").GridFSBucket;
+const GridFS = require('multer-gridfs-storage');
+const Grid = require('gridfs-stream');
 
 login = async (req, res, next) => {
     passport.authenticate("local", function(err, user, info) {
@@ -80,8 +86,11 @@ createAnnonce = (req,res, next) => {
     var db = mongoose.connection.db;
     var userId = req.user._id;
     
-    var annonce = req.body;
-    var newAnnonce = new AnnonceModel(annonce);
+    console.log(request.file);
+
+
+    var newAnnonce = new AnnonceModel(req.body);
+
 
     db.collection("users").updateOne(
         { _id: userId },
@@ -90,4 +99,67 @@ createAnnonce = (req,res, next) => {
     .then(res.json({message: "new annonce created"}))
 }
 
-module.exports = {login, register, checklogin, logout, getMyAnnonces, createAnnonce};
+uploadImage = async (req, res) => {
+    try {
+      await upload(req, res);
+      console.log(req.file);
+  
+      if (req.file == undefined) {
+        return res.send({
+          message: "You must select a file.",
+        });
+      }
+  
+      const imgUrl = `http://localhost:3080/user/file/${req.file.filename}`
+      return res.send({
+        message: "File has been uploaded.",
+        url: imgUrl,
+        file: req.file,
+      });
+    } catch (error) {
+      console.log(error);
+  
+      return res.send({
+        message: "Error when trying upload image: ${error}",
+      });
+    }
+  };
+
+  getImages = async (req, res) => {
+    try {  
+        const db = mongoose.connection.db;
+        //let gfs = Grid(db, mongoose.mongo);
+        //gfs.collection("photos");
+       var col = db.collection("photos.files");
+       
+        const file = col.find({_id: "6188a9674c10db6440af245a"})
+            console.log(file.filename)
+
+        const readStream = gfs.createReadStream(file.filename);
+        return readStream.pipe(res)
+  
+    } catch (error) {
+      return res.status(500).send({
+        message: error.message
+      });
+    }
+  };
+
+getUsers = (req,res) => {
+    const userId = req.user._id;
+    const annonceId = req.body.annonceId
+   
+    UserModel.findOne({_id: userId})
+        .then(user => {
+            var annoncesArr = user.annonces;
+            var annonce = annoncesArr.filter((element) =>  {
+                return element._id == annonceId;
+            })[0];
+            return res.json({message: 'annonce found', annonce});
+        })
+        .catch(err => {
+            return res.send(err);
+        })
+}
+
+module.exports = {login, register, checklogin, logout, getMyAnnonces, createAnnonce, getUsers, uploadImage, getImages};

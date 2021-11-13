@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from 'axios';
 import './Login.css';
 import { instanceAxs } from "../../api/Api";
-import { login, logout, saveUser } from '../../actions/LoginActions.js';
+import { login, logout, saveUser, removeUser } from '../../actions/LoginActions.js';
 import { connect } from 'react-redux';
 
 
@@ -38,7 +38,6 @@ class Login extends React.Component{
     handleSubmit = async (event) => {
         event.preventDefault();
         this.props.login(this.state.user);
-        this.props.saveUser(this.state.user);
     }
 
     checklogin = async () => {
@@ -66,8 +65,7 @@ class Login extends React.Component{
                 <div class="mb-3">
                     <label for="inputPassword5" className="form-label">Password</label>
                     <input type="text" className="pass form-control" name="pass" required onChange={this.handleChange}></input>
-                </div>
-                
+                </div>             
                 <button type="submit" class="btn btn-primary d-block">Login</button>
                 <p>{this.state.message}</p>
                 <hr/>              
@@ -84,7 +82,7 @@ class Login extends React.Component{
 }
 
 const mapDispatchToProps = {
-    login, logout, saveUser
+    login, logout
 }
 
 export default connect(null, mapDispatchToProps)(Login)

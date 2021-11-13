@@ -17,8 +17,10 @@ class Menu extends React.Component{
     }
 
     componentDidMount(){
+        console.log(sessionStorage)
         this.callApi();
     }
+    
     render(){
         return(
             <div class="container" id="menu-div">

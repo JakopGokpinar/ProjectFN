@@ -2,8 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../resources/logo.svg';
 import './Navbar.css';
-
+import { LoggedSelector, UserSelector } from '../../reducers/LoginReducer';
 import axios from 'axios';
+import { connect } from 'react-redux';
 
 class Navbar extends React.Component{
 
@@ -18,11 +19,12 @@ class Navbar extends React.Component{
         this.scroll = this.scroll.bind(this);
     }
 
-    componentWillMount(){
-        this.getLogin();
+    componentDidUpdate(){
+       // this.getLogin();
     }
+
     getLogin = () => {
-        axios.get('http://localhost:3080/user/checklogin')
+        /*axios.get('http://localhost:3080/user/checklogin')
             .then(result => {
                 if (result.data.message === 'user logged in'){
                     this.setState({
@@ -38,7 +40,21 @@ class Navbar extends React.Component{
             })
             .catch(error => {
                 console.log(error);
+            })*/
+        const isLoggedIn = this.props.isLoggedIn;
+        this.setState({
+            isLoggedIn: isLoggedIn
+        })
+        if(isLoggedIn){
+            const username = this.props.username;
+            this.setState({ 
+                username
             })
+            console.log(username)
+
+        }
+
+        console.log(isLoggedIn);
     }
 
     scroll(){
@@ -70,12 +86,11 @@ class Navbar extends React.Component{
                             </div>
                             <div className="dropdown" id="profileToggleDiv">
                                 <Link className="nav-link dropdown-toggle" to="/profile" id="profileToggleButton" role="button"  aria-expanded="false">
-                                    <img src={logo} alt="" width="30" height="24" class="d-inline-block align-text-top"/>
-                                    
+                                    <img src={logo} alt="" width="30" height="24" class="d-inline-block align-text-top"/>                                
                                     Profile
                                 </Link>
                                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    {this.state.isLoggedIn && <li><a class="dropdown-item" href="/">{this.state.username}</a></li>}
+                                    {this.props.isLoggedIn && <li><a class="dropdown-item" href="/">{this.props.username}</a></li>}
                                     <li><Link to="/login" className="dropdown-item">Login</Link></li>
                                     <li><Link to="/register" className="dropdown-item">Register</Link></li>
                                     <li><Link to="/profil" className="dropdown-item">Favorites</Link></li>
@@ -193,4 +208,10 @@ class Navbar extends React.Component{
     }
 }
 
-export default Navbar;
+const mapStateToProps = state => {
+    return {
+        isLoggedIn: state.isLogged,
+        username: state.user.email
+    }
+}
+export default connect(mapStateToProps)(Navbar)

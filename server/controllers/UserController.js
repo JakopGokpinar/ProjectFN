@@ -9,6 +9,7 @@ const upload = require('../middleware/upload.js')
 const GridFSBucket = require("mongodb").GridFSBucket;
 const GridFS = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
+const url = require('url')
 
 login = async (req, res, next) => {
     passport.authenticate("local", function(err, user, info) {
@@ -110,7 +111,7 @@ uploadImage = async (req, res) => {
         });
       }
   
-      const imgUrl = `http://localhost:3080/user/file/${req.file.filename}`
+      const imgUrl = `http://localhost:3080/user/file?filename=${req.file.filename}`
       return res.send({
         message: "File has been uploaded.",
         url: imgUrl,
@@ -127,15 +128,18 @@ uploadImage = async (req, res) => {
 
   getImages = async (req, res) => {
     try {  
-        const db = mongoose.connection.db;
-        //let gfs = Grid(db, mongoose.mongo);
-        //gfs.collection("photos");
-       var col = db.collection("photos.files");
-       
-        const file = col.find({_id: "6188a9674c10db6440af245a"})
-            console.log(file.filename)
+        //const queryObject = url.parse(req.url,true).query;
+        var fname = req.query.filename;
 
-        const readStream = gfs.createReadStream(file.filename);
+        const db = mongoose.connection.db;
+        let gfs = Grid(db, mongoose.mongo);
+        gfs.collection("photos");
+
+        /*var col = db.collection("photos.files");       
+        const file = col.find({_id: "6188a9674c10db6440af245a"})
+        console.log(file.filename)*/
+        
+        const readStream = gfs.createReadStream(fname);
         return readStream.pipe(res)
   
     } catch (error) {

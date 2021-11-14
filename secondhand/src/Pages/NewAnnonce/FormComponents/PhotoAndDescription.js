@@ -4,7 +4,8 @@ import { instanceAxs } from "../../../api/Api";
 function PhotoAndDescription() {
     const [doc, setDoc] = useState();
     const [images, setImages] = useState();
-    const [loading, setLoading] = useState();
+    const [loading, setLoading] = useState(true);
+    const [img, setImg] = useState();
 
     const onFileChange = event => {
         console.log(event.target.files[0])
@@ -27,12 +28,18 @@ function PhotoAndDescription() {
     }
 
     const getImages = () => {
-        instanceAxs.get('/getimages')
+        instanceAxs.get('/file?filename=ss1.png')
             .then(result => {
                 console.log(result);
-                let files = result.data;
-                setImages(files);
+                
+                let binary = Buffer.from(result.data); //or Buffer.from(data, 'binary')
+                let imgData = new Blob(binary.buffer, { type: 'application/octet-binary' });
+                let link = URL.createObjectURL(imgData);
+                URL.revokeObjectURL(link);
+                console.log(link)
+                setImg(link)
                 setLoading(false);
+
                 /*let filesAmount = files.length;
                 for (var i = 0; i < filesAmount; i++) {
                     let reader = new FileReader();
@@ -62,6 +69,12 @@ function PhotoAndDescription() {
                     <input className="form-control-file" type="file" id="file" name="file" onChange={onFileChange}></input>
                 </div>
                 <div>
+                    {!loading && 
+                    <img src={img} id="ss" alt="pic1" width="250" height="250"/>
+                    
+                    }
+                </div>
+                {/*<div>
                     { images !== undefined &&
                         
                         images.map((img) => {
@@ -75,7 +88,7 @@ function PhotoAndDescription() {
                         })
                     }
                     </div>
-                {/*<img src={doc} id="fdsa" alt="pic1" width="250" height="250" />
+                <img src={doc} id="fdsa" alt="pic1" width="250" height="250" />
                 <label className="form-label">Video</label>
                 <div className="input-group mb-3">
                     <input type="text" className="form-control" id="video"></input>

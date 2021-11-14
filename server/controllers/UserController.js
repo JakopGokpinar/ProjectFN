@@ -129,25 +129,40 @@ uploadImage = async (req, res) => {
   getImages = async (req, res) => {
     try {  
         //const queryObject = url.parse(req.url,true).query;
-        var fname = req.query.filename;
 
         const db = mongoose.connection.db;
         let gfs = Grid(db, mongoose.mongo);
-        gfs.collection("photos");
 
-        /*var col = db.collection("photos.files");       
-        const file = col.find({_id: "6188a9674c10db6440af245a"})
-        console.log(file.filename)*/
-        
-        const readStream = gfs.createReadStream(fname);
-        return readStream.pipe(res)
-  
+        gfs.collection("photos"); 
+        gfs.files.find().toArray((err, files) => {
+            var filesArr = files.slice(-2)
+            console.log(filesArr)
+            return res.json({files:filesArr})
+        })
+        /* const readStream = gfs.createReadStream(fname);
+        return readStream.pipe(res);*/
+
     } catch (error) {
       return res.status(500).send({
         message: error.message
       });
     }
   };
+
+getImage = async (req,res) => {
+    try {
+        var fname = req.query.filename;
+
+        const db = mongoose.connection.db;
+        let gfs = Grid(db, mongoose.mongo);
+
+        gfs.collection("photos"); 
+        const readStream = gfs.createReadStream(fname);
+        return readStream.pipe(res);
+    } catch (error) {
+        return res.send(error)
+    }
+}
 
 getUsers = (req,res) => {
     const userId = req.user._id;
@@ -166,4 +181,4 @@ getUsers = (req,res) => {
         })
 }
 
-module.exports = {login, register, checklogin, logout, getMyAnnonces, createAnnonce, getUsers, uploadImage, getImages};
+module.exports = {login, register, checklogin, logout, getMyAnnonces, createAnnonce, getUsers, uploadImage,getImage, getImages};

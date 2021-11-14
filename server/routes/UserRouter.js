@@ -11,5 +11,7 @@ router.get("/myannonces", UserController.getMyAnnonces);
 router.post("/newannonce", UserController.createAnnonce);
 router.post("/getproduct", UserController.getUsers);
 router.post("/uploadimage", UserController.uploadImage);
-router.get("/file", UserController.getImages)
+router.get("/files", UserController.getImages)
+router.get("/file", UserController.getImage)
+
 module.exports = router;

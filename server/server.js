@@ -23,7 +23,6 @@ app.use(express.urlencoded({ extended: false}));
 
 app.use(cors({origin:'http://localhost:3000', credentials: true}));
 
-
 app.use(
     session({
         secret: "very secret key",

@@ -28,28 +28,12 @@ function PhotoAndDescription() {
     }
 
     const getImages = () => {
-        instanceAxs.get('/file?filename=ss1.png')
+        instanceAxs.get('/files')
             .then(result => {
                 console.log(result);
-                
-                let binary = Buffer.from(result.data); //or Buffer.from(data, 'binary')
-                let imgData = new Blob(binary.buffer, { type: 'application/octet-binary' });
-                let link = URL.createObjectURL(imgData);
-                URL.revokeObjectURL(link);
-                console.log(link)
-                setImg(link)
+                setImages(result.data.files)
+                console.log(images)
                 setLoading(false);
-
-                /*let filesAmount = files.length;
-                for (var i = 0; i < filesAmount; i++) {
-                    let reader = new FileReader();
-                    reader.onload = (event) => {
-                        return(
-                            <img src={event.target.result} id="fdsa" alt="pic1" width="250" height="250" />
-                        )
-                    }
-                    reader.readAsDataURL(files[i]);
-                }*/
             }) 
             .catch(error => {
                 console.log(error)
@@ -69,26 +53,19 @@ function PhotoAndDescription() {
                     <input className="form-control-file" type="file" id="file" name="file" onChange={onFileChange}></input>
                 </div>
                 <div>
-                    {!loading && 
-                    <img src={img} id="ss" alt="pic1" width="250" height="250"/>
-                    
-                    }
-                </div>
-                {/*<div>
-                    { images !== undefined &&
-                        
-                        images.map((img) => {
-                            let reader = new FileReader();
-                            reader.onload = (event) => {
-                                return(
-                                    <img src={event.target.result} id="fdsa" alt="pic1" width="250" height="250"/>
-                                )
-                            };
-                           // reader.readAsDataURL(img);                            
+                    { (!loading && images !== undefined) &&
+
+                        images.map(file => {
+                            console.log(file.filename)
+                            return(
+                                <img src={`http://localhost:3080/user/file?filename=${file.filename}`} alt="pic" width="250px" height="250px"/>
+
+                            )
                         })
+
                     }
                     </div>
-                <img src={doc} id="fdsa" alt="pic1" width="250" height="250" />
+               {/* <img src={doc} id="fdsa" alt="pic1" width="250" height="250" />
                 <label className="form-label">Video</label>
                 <div className="input-group mb-3">
                     <input type="text" className="form-control" id="video"></input>

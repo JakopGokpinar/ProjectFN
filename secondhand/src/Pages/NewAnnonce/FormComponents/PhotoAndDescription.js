@@ -32,7 +32,6 @@ function PhotoAndDescription() {
             .then(result => {
                 console.log(result);
                 setImages(result.data.files)
-                console.log(images)
                 setLoading(false);
             }) 
             .catch(error => {
@@ -46,11 +45,11 @@ function PhotoAndDescription() {
 
     return(
         <div className="mb-5 mt-5">
-            <form encType="multipart/form-data" action="/user/uploadimage" method="POST" >
+            <form encType="multipart/form-data" action="/file/uploadimage" method="POST" >
                 <h3>Bilder, Videoer og Beskrivelse</h3>
                 <label className="form-label" for="image">Bilder</label> 
                 <div  className="input-group mb-3">
-                    <input className="form-control-file" type="file" id="file" name="file" onChange={onFileChange}></input>
+                    <input className="form-control-file" type="file" id="file" name="files[]" multiple="multiple" onChange={onFileChange}></input>
                 </div>
                 <div>
                     { (!loading && images !== undefined) &&

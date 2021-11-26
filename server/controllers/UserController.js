@@ -9,7 +9,7 @@ const upload = require('../middleware/upload.js')
 const GridFSBucket = require("mongodb").GridFSBucket;
 const GridFS = require('multer-gridfs-storage');
 const Grid = require('gridfs-stream');
-const url = require('url')
+const url = require('url');
 
 login = async (req, res, next) => {
     passport.authenticate("local", function(err, user, info) {
@@ -89,9 +89,7 @@ createAnnonce = (req,res, next) => {
     
     console.log(request.file);
 
-
     var newAnnonce = new AnnonceModel(req.body);
-
 
     db.collection("users").updateOne(
         { _id: userId },
@@ -111,7 +109,7 @@ uploadImage = async (req, res) => {
         });
       }
   
-      const imgUrl = `http://localhost:3080/user/file?filename=${req.file.filename}`
+      const imgUrl = `http://localhost:3080/file?type=img&id=${req.file.id}`
       return res.send({
         message: "File has been uploaded.",
         url: imgUrl,

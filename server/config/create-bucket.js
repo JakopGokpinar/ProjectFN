@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const config = require('./config.js');
+const config = require('../../aws-config.js');
 
 const ID = config.aws.ID;
 const SECRET = config.aws.SECRET;

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const AWS = require('aws-sdk');
-const config = require('../config/config.js');
+const config = require('../../aws-config.js');
 const { Buffer } = require('buffer');
 const ID = config.aws.ID;
 const SECRET = config.aws.SECRET;

@@ -4,7 +4,7 @@ const upload = require('../middleware/upload.js');
 var path = require('path');
 const fs = require('fs');
 const AWS = require('aws-sdk');
-const config = require('../config/config.js');
+const config = require('../config/aws-config.js');
 
 const ID = config.aws.ID;
 const SECRET = config.aws.SECRET;

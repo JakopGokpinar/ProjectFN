@@ -19,6 +19,7 @@ import Account from './Pages/Account/Account.js';
 import NotFound from './Pages/NotFound.js';
 import CreateAnnonce from './Pages/NewAnnonce/CreateAnnonce.js';
 import Redux from './redux/redux.js';
+import uploadImage from './upload-image.js';
 import Spinner from './Component/Spinner/Spinner.js';
 import { persistedReducer, persistedState, saveState} from './config/configureStore.js';
 //import { rootReducer } from './reducers/rootReducer.js';
@@ -55,6 +56,7 @@ ReactDOM.render(
                       <Route path="/nyannonse" component={CreateAnnonce}></Route>
                       <Route exact path={`/product/:annonceId`} component={ProductPage} />
                       <Route path="/redux" component={Redux}/>
+                      <Route path="/uploadimage" component={uploadImage}/>
                       <Route path="*" component={NotFound} />
                     </Switch>
                   </div>

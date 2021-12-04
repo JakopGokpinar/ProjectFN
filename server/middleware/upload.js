@@ -12,7 +12,6 @@ var storage = new GridFsStorage({
     
         if (match.indexOf(file.mimetype) === -1) {
           const filename = file.originalname;
-          //const filename = `${Date.now()}-bezkoder-${file.originalname}`;
           return filename;
         }
     
@@ -23,18 +22,10 @@ var storage = new GridFsStorage({
             {moruq: 'sa', soy: 'kayı'}
           ]
         };
-        /* for (var i = 0; i<req.files.length; i++){
-          var file = req.files[i];
-          var object = {
-            file: file,
-            filename: file.originalname
-          }
-          fileObject.files.push(object);
-        } */
+
         return fileObject;
         /* return {
           bucketName: 'photos',
-          //filename: `${Date.now()}-bezkoder-${file.originalname}`
           filename: file.originalname
         }; */
         /* const fileInfo = {

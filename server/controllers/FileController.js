@@ -5,30 +5,43 @@ var path = require('path');
 const fs = require('fs');
 const AWS = require('aws-sdk');
 const config = require('../../aws-config.js');
-
+const multer = require('multer');
+const multerS3 = require('multer-s3');
 const ID = config.aws.ID;
 const SECRET = config.aws.SECRET;
 const BUCKET_NAME = config.aws.BUCKET_NAME;
 
-const s3 = new AWS.S3({
-    accessKeyId: ID,
-    secretAccessKey: SECRET
+AWS.config.update({
+  region: 'eu-west-1',
+  credentials: new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: ID
+  })
 });
 
+var s3 = new AWS.S3({
+  apiVersion: "2006-03-01",
+  params: { Bucket: BUCKET_NAME }
+});
 
-getMultipleFiles = (req,res) => {
-  var params = {
-    Bucket: BUCKET_NAME,
-    Delimiter: '/',
-    Prefix: 'sss/'
-  };
+/* const s3 = new AWS.S3({
+    apiVersion: '2006-03-01',
+    accessKeyId: ID,
+    secretAccessKey: SECRET
+}); */
 
-  s3.listObjectsV2(params, function(err, data) {
-    if (err) console.log(err, err.stack); // an error occurred
-    else     console.log(data.Contents[0].ETag);           // successful response
-  });
-    
-}
+const uploadMulter = multer({
+  storage: multerS3({
+    s3,
+    bucket: BUCKET_NAME,
+    metadata: (req, file, cb) => {
+      cb(null, { fieldName: file.fieldname})
+    },
+    key: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      cb(null, ext)
+    }
+  })
+})
 
 getFile = (req,res) => {
   
@@ -99,8 +112,9 @@ file = async (req, res) => {
     }
 }
 
-
 uploadImage = async (req,res) => {
+  console.log(req.body)
+  return res.send(req.body.file)
 
     try {
         await upload(req, res);
@@ -125,22 +139,32 @@ uploadImage = async (req,res) => {
       }
 }
 
-getImage = async (req,res) => {
-    try {
-        mongoose.Types.ObjectId(req.query.id)
+addPhoto = (req, res) => {
+  
+  var file = req.body.file;
+  console.log(req.body.file)
+  var fileName = file.name;
 
-        var fname = req.query.id;
 
-        const db = mongoose.connection.db;
-        let gfs = Grid(db, mongoose.mongo);
-        gfs.collection("photos"); 
-
-        const readStream = gfs.createReadStream({_id: fname});
-
-        return await readStream.pipe(res);
-    } catch (error) {
-        return res.send(error)
+  // Use S3 ManagedUpload class as it supports multipart uploads
+  var upload = new AWS.S3.ManagedUpload({
+    params: {
+      Bucket: BUCKET_NAME,
+      Key: fileName,
+      Body: file
     }
+  });
+
+  var promise = upload.promise();
+
+  promise.then(
+    function(data) {
+      alert("Successfully uploaded photo.");
+    },
+    function(err) {
+      return alert("There was an error uploading your photo: ", err.message);
+    }
+  );
 }
 
-module.exports = {file,getImage,uploadImage,getFile, getMultipleFiles, downloadFile}
+module.exports = {file,uploadImage,getFile, downloadFile, uploadMulter, addPhoto}

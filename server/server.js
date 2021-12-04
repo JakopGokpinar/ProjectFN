@@ -8,7 +8,7 @@ const config = require('./config/config');
 const connectDB = require('./config/db.js');
 const UserRouter = require('./routes/UserRouter')
 const CombinedRouter = require('./routes/CombinedRouter.js');
-
+const uploadMulter = require('./controllers/FileController').uploadMulter;
 const app = express();
 
 const PORT = config.PORT;
@@ -17,8 +17,14 @@ const MONGO_URI = config.db.mongoURI;
 // Connecting to database
 connectDB();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false}));
+// app.use(express.json());
+app.use(express.json({limit: '50mb'}));
+// app.use(express.urlencoded({ extended: false}));
+app.use(express.urlencoded({
+    limit: '50mb',
+    parameterLimit: 100000,
+    extended: true 
+  }));
 
 app.use(cors({origin:'http://localhost:3000', credentials: true}));
 
@@ -44,6 +50,10 @@ app.use(passport.session());
 app.get("/", (req, res) => res.send("Server Side Works!"));
 app.use('/file', CombinedRouter.FileRouter);
 app.use("/user", CombinedRouter.UserRouter);
+app.use('/upload', uploadMulter.single('files[]'), (req, res) => {
+    console.log("the file:",req)
+    res.send(req)
+})
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 module.exports = app;

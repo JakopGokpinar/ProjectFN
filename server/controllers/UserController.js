@@ -1,15 +1,7 @@
 const passport = require('passport');
 const UserModel = require('../models/UserModel.js');
 const AnnonceModel = require('../models/AnnonceModel');
-const CarSchema = require('../models/AnnonceModels/CarModel.js');
 let mongoose = require('mongoose');
-var fs = require('fs');
-const multer = require('multer');
-const upload = require('../middleware/upload.js')
-const GridFSBucket = require("mongodb").GridFSBucket;
-const GridFS = require('multer-gridfs-storage');
-const Grid = require('gridfs-stream');
-const url = require('url');
 
 login = async (req, res, next) => {
     passport.authenticate("local", function(err, user, info) {
@@ -98,70 +90,6 @@ createAnnonce = (req,res, next) => {
     .then(res.json({message: "new annonce created"}))
 }
 
-uploadImage = async (req, res) => {
-    try {
-      await upload(req, res);
-      console.log(req.file);
-  
-      if (req.file == undefined) {
-        return res.send({
-          message: "You must select a file.",
-        });
-      }
-  
-      const imgUrl = `http://localhost:3080/file?type=img&id=${req.file.id}`
-      return res.send({
-        message: "File has been uploaded.",
-        url: imgUrl,
-        file: req.file,
-      });
-    } catch (error) {
-      console.log(error);
-  
-      return res.send({
-        message: "Error when trying upload image: ${error}",
-      });
-    }
-  };
-
-  getImages = async (req, res) => {
-    try {  
-        //const queryObject = url.parse(req.url,true).query;
-
-        const db = mongoose.connection.db;
-        let gfs = Grid(db, mongoose.mongo);
-
-        gfs.collection("photos"); 
-        gfs.files.find().toArray((err, files) => {
-            var filesArr = files.slice(-2)
-            console.log(filesArr)
-            return res.json({files:filesArr})
-        })
-        /* const readStream = gfs.createReadStream(fname);
-        return readStream.pipe(res);*/
-
-    } catch (error) {
-      return res.status(500).send({
-        message: error.message
-      });
-    }
-  };
-
-getImage = async (req,res) => {
-    try {
-        var fname = req.query.filename;
-
-        const db = mongoose.connection.db;
-        let gfs = Grid(db, mongoose.mongo);
-
-        gfs.collection("photos"); 
-        const readStream = gfs.createReadStream(fname);
-        return readStream.pipe(res);
-    } catch (error) {
-        return res.send(error)
-    }
-}
-
 getUsers = (req,res) => {
     const userId = req.user._id;
     const annonceId = req.body.annonceId
@@ -171,12 +99,16 @@ getUsers = (req,res) => {
             var annoncesArr = user.annonces;
             var annonce = annoncesArr.filter((element) =>  {
                 return element._id == annonceId;
-            })[0];
-            return res.json({message: 'annonce found', annonce});
+            });
+            if(annonce.length > 0) {
+                return res.json({message: 'annonce found', annonce: annonce[0]});
+            } else {
+                return res.json({message: 'annonce not found'});
+            }
         })
         .catch(err => {
             return res.send(err);
         })
 }
 
-module.exports = {login, register, checklogin, logout, getMyAnnonces, createAnnonce, getUsers, uploadImage,getImage, getImages};
+module.exports = {login, register, checklogin, logout, getMyAnnonces, createAnnonce, getUsers};

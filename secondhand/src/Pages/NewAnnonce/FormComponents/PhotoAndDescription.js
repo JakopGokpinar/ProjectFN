@@ -5,6 +5,7 @@ import { dataURLtoFile } from "../../../utils/dataURltoFile";
 
 function PhotoAndDescription() {
     const [image, setImage] = useState();
+    const [images, setImages] = useState();
 
     const onFileChange = event => {
         if(event.target.files && event.target.files.length > 0){
@@ -14,6 +15,8 @@ function PhotoAndDescription() {
                 console.log(reader.result);
                 setImage(reader.result);
             })
+        } else {
+            console.log("select a file")
         }
     };
 
@@ -47,15 +50,58 @@ function PhotoAndDescription() {
             })
     }
 
+    const multipleFileChange = event => {
+        if(event.target.files && event.target.files.length > 0){
+            var imgArr = [];
+            for (var i = 0; i < event.target.files.length; i++){
+                let reader = new FileReader();
+                reader.readAsDataURL(event.target.files[i]);
+                reader.addEventListener('load', () => {
+                    imgArr.push(reader.result);
+                    console.log(reader.result);
+                })
+            }
+            setImages(imgArr)
+        }
+    };
+
+    const uploadMultipleImage = async () => {
+        var formData = new FormData();
+        let selectedFiles = images;
+
+        if ( selectedFiles ) {
+            for ( let i = 0; i < selectedFiles.length; i++ ) {
+                var img = selectedFiles[i];
+                const canvas = await getCroppedImage(img);
+                const canvasDataUrl = canvas.toDataURL("image/jpeg");
+                const convertedUrltoFile = dataURLtoFile(canvasDataUrl, `${Date.now()}-myimage.jpg`);
+                console.log(convertedUrltoFile);
+                
+                formData.append('galleryImage', convertedUrltoFile)
+            }
+            axios.post( 'http://localhost:3080/file/uploadimages?location=ahmet/annonces/annonce1', formData)
+                .then(response => {
+                    console.log(response)
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        }
+    }
+
     return(
         <div className="mb-5 mt-5">
             <form encType="multipart/form-data" onSubmit={submit}>
                 <h3>Bilder, Videoer og Beskrivelse</h3>
-                <label className="form-label" for="image">Bilder</label> 
+                <label className="form-label" htmlFor="image">Bilder</label> 
                 <div  className="input-group mb-3">
                     <input className="form-control" accept="image/*" type="file" id="file" name="file" onChange={onFileChange}></input>
                 </div>
-                <img src={image} id="fdsa" alt="pic1" width="250" height="250" />
+                <label className="form-label" htmlFor="image">Multiple Bilder</label> 
+                <div  className="input-group mb-3">
+                    <input className="form-control" accept="image/*" type="file" id="file" name="files" multiple onChange={multipleFileChange}></input>
+                </div>
+                <img src={image} id="fdsa" alt="pic1" width="250" multiple="multiple" height="250" />
                 <br/>
                 <label className="form-label">Video</label>
                 <div className="input-group mb-3">
@@ -66,6 +112,7 @@ function PhotoAndDescription() {
                     <textarea className="form-control" id="description" rows="3"/>
                 </div>
                 <button type="submit" className="btn btn-primary">Submit</button>
+                <button type="button" className="btn btn-primary" onClick={uploadMultipleImage}>Upload Multiple</button>
             </form>
         </div>
     )

@@ -1,57 +1,11 @@
 import axios from "axios";
 import { useState } from "react";
+import { getCroppedImage } from './utils/cropImage.js';
+import { dataURLtoFile } from './utils/dataURltoFile.js';
 
 function UploadImage(){
-
-    const createImage = async (url) =>
-        new Promise((resolve, reject) => {
-            var newImage = new Image();
-            newImage.addEventListener("load", () => resolve(newImage));
-            newImage.addEventListener("error", (error) => reject(error));
-            newImage.setAttribute("crossOrigin", "anonymous"); // needed to avoid cross-origin issues on CodeSandbox
-            newImage.src = url;
-        });
-
     const [image, setImage] = useState(null);
-    const [images, setImages] = useState([]);
-
-    const dataURLtoFile = (dataurl, filename) => {
-        const arr = dataurl.split(",");
-        const mime = arr[0].match(/:(.*?);/)[1];
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-    
-        while (n--) u8arr[n] = bstr.charCodeAt(n);
-    
-        return new File([u8arr], filename, { type: mime });
-    };
-
-    const getCroppedImage = async (imageSrc) => {
-        const myImage = await createImage(imageSrc);
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-
-        canvas.width = myImage.width;
-        canvas.height = myImage.height;
-
-        // draw rotated image and store data.
-        ctx.drawImage(
-            myImage,
-            0, 0, myImage.width, myImage.height
-        );
-
-        const data = ctx.getImageData(0, 0, 100,100);
-
-        // paste generated rotate image with correct offsets for x,y crop values.
-        ctx.putImageData(
-            data, 150, 0, 0, 0, 0, 0
-        );
-
-        // As Base64 string
-        // return canvas.toDataURL("image/jpeg");
-        return canvas;
-    }
+    const [images, setImages] = useState([]);   
 
     const upload = async (e) => {
         const canvas = await getCroppedImage(image);
@@ -65,8 +19,6 @@ function UploadImage(){
         axios.post('http://localhost:3080/file/uploadimage', formData, {withCredentials: true})
             .then(response => {
                 console.log(response.data);
-                setImages(response.data.images);
-                console.log(images)
             })
             .catch(err => {
                 console.log(err)
@@ -74,7 +26,7 @@ function UploadImage(){
     }
 
     const getImages = () => {
-        axios.get("http://localhost:3080/file/images")
+        axios.get("http://localhost:3080/file/annonce?id=annonce1")
             .then(response => {
                 console.log(response)
                 setImages(response.data.images)
@@ -108,7 +60,7 @@ function UploadImage(){
                 { images.length > 0 ?
                     images.map(element => {
                         return(
-                            <img src={`http://localhost:3080/file/image/${element.Key}`} width="250" height="250" alt="pic" style={{margin: 5}}/>
+                            <img src={`http://localhost:3080/file/image?id=${element.Key}`} key={element.Key} width="250" height="250" alt="pic" style={{margin: 5}}/>
                         )
                     })
                     : 

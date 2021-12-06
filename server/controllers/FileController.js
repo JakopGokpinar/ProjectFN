@@ -45,14 +45,39 @@ uploadImage = async (req,res) => {
 
     res.status(200).json({data: req.file.location})
   });
-};
+}
+
+const uploadMultipleMulter = (bucketName) => 
+  multer({
+    storage: multerS3({
+      s3: s3,
+      bucket: bucketName,
+      key: function (req, file, cb) {
+        cb(null, `image-${Date.now()}.jpeg`);
+      }
+    }),
+ }).array('galleryImage', 4);
+
+uploadImages = (req,res) => {
+  let location = req.query.location;
+  const uploadMultiple = uploadMultipleMulter(`fn-upload-image/${location}`);
+  
+  uploadMultiple(req, res, async (err) => {
+    if (err)
+      return res.status(400).json({ success: false, message: err.message });
+
+    console.log("uploaded image: ", req.files)
+
+    res.status(200).json({data: req.files})
+  });
+}
 
 getAnnonceImages = (req,res) => {
   var images = [];
   let user = "ahmet/";
   let annonceId = req.query.id
   var key = user + "annonces/" + annonceId;
-
+  
   var params = {
     Bucket: BUCKET_NAME,
     Prefix: key
@@ -81,4 +106,4 @@ getImage = (req,res) => {
 
 downloadFile = (req,res) => {}
 
-module.exports = {uploadImage,getImage,downloadFile,getAnnonceImages}
+module.exports = {uploadImage,getImage,downloadFile,getAnnonceImages,uploadImages}

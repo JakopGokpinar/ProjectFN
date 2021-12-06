@@ -4,15 +4,15 @@ const CarSchema = require('./AnnonceModels/CarModel.js');
 const AnnonceSchema = mongoose.Schema({
     title: String,
     price: Number,
-    photos: { type: String },
     category: { type: String },
     subCategory: { type: String },
     properties: {},
     location: { type: String },
-    img: {
-        data: Buffer,
-        contentType: String
-    }
+    images: [
+        {
+            location: String
+        }
+    ]
 });
 
 const AnnonceModel = mongoose.model('Annonce', AnnonceSchema);

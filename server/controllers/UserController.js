@@ -78,10 +78,12 @@ createAnnonce = (req,res, next) => {
     if(!isLoggedIn(req)) return res.json({ message: 'Login to see your data'})
     var db = mongoose.connection.db;
     var userId = req.user._id;
-    
-    console.log(request.file);
+    console.log("req.fileLocation: " + req.body.fileLocation);
 
-    var newAnnonce = new AnnonceModel(req.body);
+    var newAnnonce = new AnnonceModel();
+    newAnnonce.title = "deneme annonce u";
+    newAnnonce.price = 100;
+    newAnnonce.images = {location: req.body.fileLocation}
 
     db.collection("users").updateOne(
         { _id: userId },

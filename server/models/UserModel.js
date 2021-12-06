@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+// const AnnonceSchema = require('./AnnonceModel.js');
 
 const UserSchema = mongoose.Schema({
     email: {
@@ -7,10 +8,7 @@ const UserSchema = mongoose.Schema({
     password: {
         type: String,
     },
-    annonces: [
-        {title: {type: String}}, 
-        {count: {type: Number}}
-    ]
+    annonces: []
 },
 { strict: false}
 

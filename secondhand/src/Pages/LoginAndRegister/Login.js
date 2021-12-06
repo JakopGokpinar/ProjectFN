@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from 'axios';
 import './Login.css';
 import { instanceAxs } from "../../api/Api";
-import { login, logout, saveUser, removeUser } from '../../actions/LoginActions.js';
+import { login, logout } from '../../actions/LoginActions.js';
 import { connect } from 'react-redux';
 
 

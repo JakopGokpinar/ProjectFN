@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from 'redux-persist';
 
 import Login from './Pages/LoginAndRegister/Login.js';
@@ -20,7 +19,7 @@ import NotFound from './Pages/NotFound.js';
 import CreateAnnonce from './Pages/NewAnnonce/CreateAnnonce.js';
 import Redux from './redux/redux.js';
 import uploadImage from './upload-image.js';
-import Spinner from './Component/Spinner/Spinner.js';
+//import Spinner from './Component/Spinner/Spinner.js';
 import { persistedReducer, persistedState, saveState} from './config/configureStore.js';
 //import { rootReducer } from './reducers/rootReducer.js';
 
@@ -29,9 +28,7 @@ const composedEnhancer = composeWithDevTools(
 );
 
 let store = createStore(persistedReducer, persistedState, composedEnhancer);
-let persistor = persistStore(store);
-
-//const store = createStore(rootReducer, composedEnhancer);
+persistStore(store);
 
 store.subscribe(() => {
   saveState(store.getState());

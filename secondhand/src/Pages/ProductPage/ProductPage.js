@@ -26,21 +26,22 @@ function ProductPage() {
 
     useEffect(() => {
         findAnnonce();
+        //eslint-disable-next-line
     }, [isLoading])
 
     return(
         <div>
             { !isLoading ?
-            <div>
-                <p>product details</p>
-                <h1>{annonce.title}</h1>
-                <p>id: {annonceId}</p>
-                <p>category: {annonce.category}</p>
-                <p>price: {annonce.price}</p>
-                <p>description: {annonce.description}</p>
-            </div>
-            :
-            <p>Loading...</p>
+                <div>
+                    <p>product details</p>
+                    <h1>{annonce.title}</h1>
+                    <p>id: {annonceId}</p>
+                    <p>category: {annonce.category}</p>
+                    <p>price: {annonce.price}</p>
+                    <p>description: {annonce.description}</p>
+                </div>
+                :
+                <p>Loading...</p>
             }
         </div>
     )

@@ -2,8 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../resources/logo.svg';
 import './Navbar.css';
-import { LoggedSelector, UserSelector } from '../../reducers/LoginReducer';
-import axios from 'axios';
+//import axios from 'axios';
 import { connect } from 'react-redux';
 
 class Navbar extends React.Component{
@@ -19,28 +18,7 @@ class Navbar extends React.Component{
         this.scroll = this.scroll.bind(this);
     }
 
-    componentDidUpdate(){
-       // this.getLogin();
-    }
-
     getLogin = () => {
-        /*axios.get('http://localhost:3080/user/checklogin')
-            .then(result => {
-                if (result.data.message === 'user logged in'){
-                    this.setState({
-                        isLoggedIn: true,
-                        username: result.data.user.email
-                    })
-                } else {
-                    this.setState({
-                        isLoggedIn: true,
-                        username: 'user not logged in'
-                    })
-                }
-            })
-            .catch(error => {
-                console.log(error);
-            })*/
         const isLoggedIn = this.props.isLoggedIn;
         this.setState({
             isLoggedIn: isLoggedIn
@@ -50,11 +28,7 @@ class Navbar extends React.Component{
             this.setState({ 
                 username
             })
-            console.log(username)
-
         }
-
-        console.log(isLoggedIn);
     }
 
     scroll(){

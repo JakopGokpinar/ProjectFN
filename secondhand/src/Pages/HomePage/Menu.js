@@ -10,15 +10,9 @@ class Menu extends React.Component{
         }
     }
 
-    callApi(){
-        fetch("http://localhost:9000/testServer")
-        .then(res => res.text())
-        .then(res => this.setState({ apiMsg: res}))
-    }
 
     componentDidMount(){
         console.log(sessionStorage)
-        this.callApi();
     }
     
     render(){

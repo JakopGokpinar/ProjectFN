@@ -1,16 +1,15 @@
 import { useEffect, useState} from 'react';
-import { Switch, Route, Link, useRouteMatch } from 'react-router-dom';
+import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { instanceAxs } from '../../../api/Api';
 import './MyAnnonces.css';
 
 import AnnonceDetail from './AnnonceDetail';
-import Annonce from './Annonce';
 import { LoggedSelector } from '../../../reducers/LoginReducer';
 import ProductCard from '../../../Component/ProductCard/ProductCard.js';
 
 function MyAnnonces(){
 
-    let { path,url } = useRouteMatch();
+    let { path } = useRouteMatch();
     const isLogged = LoggedSelector();
     const [annonces, setAnnonces] = useState();
     const [isLoading, setLoading] = useState(true);
@@ -73,5 +72,5 @@ function MyAnnonces(){
 
 export default MyAnnonces;
 
-{/*<div key={annonce.annonceId}><Link to={`${url + '/' + annonce.annonceId}`}><Annonce annonce={annonce} /></Link>
-</div>*/}
+/*<div key={annonce.annonceId}><Link to={`${url + '/' + annonce.annonceId}`}><Annonce annonce={annonce} /></Link>
+</div>*/

@@ -1,6 +1,4 @@
 import { persistReducer } from 'redux-persist'
-import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-import storageSession from 'redux-persist/lib/storage/session';
 import localStorage from 'redux-persist/es/storage';
 
 import { rootReducer } from '../reducers/rootReducer'

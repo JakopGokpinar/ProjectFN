@@ -1,11 +1,11 @@
 const Grid = require('gridfs-stream');
-const mongoose = require('mongoose');
 const AWS = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-
+const mongoose = require('mongoose');
 const config = require('../../aws-config.js');
 const UserModel = require('../models/UserModel.js');
+const AnnonceModel = require('../models/AnnonceModel.js');
 
 const BUCKET_NAME = config.awsS3User.BUCKET_NAME;
 const ACCESS_KEY = config.awsS3User.ACCESS_KEY;
@@ -18,49 +18,31 @@ const s3 = new AWS.S3({
   region: REGION
 });
 
+isLoggedIn = (req) => {
+  if(!req.user){
+      return false;
+  } else {
+      return true;
+  }
+}
 
-const uploadMulter = (bucketName) =>
+const uploadMulter = (bucketName) => 
   multer({
     storage: multerS3({
-      s3,
+      s3: s3,
       bucket: bucketName,
       metadata: function (req, file, cb) {
         cb(null, { fieldName: file.fieldname });
       },
       key: function (req, file, cb) {
-        cb(null, `image-${Date.now()}.jpeg`);
-      },
-    }),
-  });
-
-uploadImage = async (req,res) => {
-  let location = req.query.location;
-  const uploadSingle = uploadMulter(`fn-upload-image/${location}`).single("myImage");
-  
-  uploadSingle(req, res, async (err) => {
-    if (err)
-      return res.status(400).json({ success: false, message: err.message });
-
-    console.log("uploaded image: ", req.file)
-
-    res.status(200).json({data: req.file.location})
-  });
-}
-
-const uploadMultipleMulter = (bucketName) => 
-  multer({
-    storage: multerS3({
-      s3: s3,
-      bucket: bucketName,
-      key: function (req, file, cb) {
-        cb(null, `image-${Date.now()}.jpeg`);
+        cb(null, `${file.originalname}`);
       }
     }),
  }).array('galleryImage', 4);
 
 uploadImages = (req,res) => {
   let location = req.query.location;
-  const uploadMultiple = uploadMultipleMulter(`fn-upload-image/${location}`);
+  const uploadMultiple = uploadMulter(`fn-upload-image/${location}`);
   
   uploadMultiple(req, res, async (err) => {
     if (err)
@@ -68,7 +50,7 @@ uploadImages = (req,res) => {
 
     console.log("uploaded image: ", req.files)
 
-    res.status(200).json({data: req.files})
+    res.status(200).json({files: req.files})
   });
 }
 
@@ -104,6 +86,29 @@ getImage = (req,res) => {
   });
 };
 
-downloadFile = (req,res) => {}
+createAnnonce = async (req,res, next) => {
+  if(!isLoggedIn(req)) return res.json({ message: 'Login to see your data'})
+  console.log(req.body);
+  var db = mongoose.connection.db;
+  var userId = req.user._id;
 
-module.exports = {uploadImage,getImage,downloadFile,getAnnonceImages,uploadImages}
+  var imgLocations = req.body;
+  var newImages = [];
+
+    var newAnnonce = new AnnonceModel();
+    newAnnonce.title = "deneme annonce u";
+    newAnnonce.price = 100;
+      
+    for(var i = 0; i<imgLocations.length; i++){
+      newImages.push({location: imgLocations[i]});
+    }
+    newAnnonce.images = newImages;
+  
+    db.collection("users").updateOne(
+        { _id: userId },
+        { $push: { annonces: newAnnonce} }
+    )
+    .then(res.json({message: "new annonce created", locations: imgLocations}))
+}
+
+module.exports = {getImage,getAnnonceImages,uploadImages,createAnnonce}

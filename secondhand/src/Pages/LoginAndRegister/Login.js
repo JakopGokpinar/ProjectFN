@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from 'axios';
 import './Login.css';
 import { instanceAxs } from "../../api/Api";
+import { userApi } from "../../config/cfg";
 import { login, logout } from '../../actions/LoginActions.js';
 import { connect } from 'react-redux';
 
@@ -41,7 +42,7 @@ class Login extends React.Component{
     }
 
     checklogin = async () => {
-        const response = await instanceAxs.get('/checklogin');
+        const response = await instanceAxs.get(`${userApi}/checklogin`);
         console.log(response)
         if(response.data.message === "user logged in"){
             this.setState({ checklog: 'user logged in'});

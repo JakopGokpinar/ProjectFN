@@ -1,6 +1,7 @@
 import { useEffect, useState} from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { instanceAxs } from '../../../api/Api';
+import { userApi } from '../../../config/cfg';
 import './MyAnnonces.css';
 
 import AnnonceDetail from './AnnonceDetail';
@@ -17,7 +18,7 @@ function MyAnnonces(){
     const img = [{link: "https://static.toiimg.com/photo/msid-58515713,width-96,height-65.cms"}];
     
     useEffect(() => {
-        instanceAxs.get('/myannonces')
+        instanceAxs.get(`${userApi}/myannonces`)
             .then(result => {
                 if(result.data.message === "user's annonces"){
                     setAnnonces(result.data.annonces);

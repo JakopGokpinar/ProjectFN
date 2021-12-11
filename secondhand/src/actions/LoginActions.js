@@ -1,4 +1,5 @@
 import { instanceAxs } from "../api/Api";
+import { userApi } from "../config/cfg";
 
 export const signIn = () => {
     return{
@@ -26,7 +27,7 @@ export const removeUser = () => {
 }
 
 export const login = (user) => async (dispatch, getState) => {
-    await instanceAxs.post('/login', user)        
+    await instanceAxs.post(`${userApi}/login`, user)        
         .then(respond => {
             console.log(respond);
 
@@ -43,7 +44,7 @@ export const login = (user) => async (dispatch, getState) => {
 }
 
 export const logout = () => async (dispatch, getState) => {
-    await instanceAxs.get('/logout')
+    await instanceAxs.get(`${userApi}/logout`)
         .then(respond => {
             console.log(respond);
             dispatch(signOut());

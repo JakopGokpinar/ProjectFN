@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { instanceAxs } from "../../api/Api";
+import { userApi } from "../../config/cfg";
 
 function ProductPage() {
     let {annonceId} = useParams();
@@ -9,7 +10,7 @@ function ProductPage() {
     const [isLoading, setLoading] = useState(true)
 
     const findAnnonce = async () => {
-        await instanceAxs.post('/getproduct', { annonceId: annonceId})
+        await instanceAxs.post(`${userApi}/getproduct`, { annonceId: annonceId})
             .then(respond => {
                 console.log(respond);
                 if(respond.data.message === "annonce found"){

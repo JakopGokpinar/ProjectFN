@@ -34,10 +34,6 @@ store.subscribe(() => {
   saveState(store.getState());
 });
 
-function sa (){
-  var a = 5;
-}
-
 ReactDOM.render(
   <Provider store={store}>
       <Router>

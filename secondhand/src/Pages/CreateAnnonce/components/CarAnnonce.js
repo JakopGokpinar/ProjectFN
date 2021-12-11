@@ -2,7 +2,6 @@ import React from "react";
 
 // import { instanceAxs } from "../../../api/Api";
 
-
 class CarAnnonce extends React.Component {
     constructor(props){
         super(props);

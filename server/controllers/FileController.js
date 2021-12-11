@@ -87,23 +87,24 @@ getImage = (req,res) => {
 };
 
 createAnnonce = async (req,res, next) => {
-  if(!isLoggedIn(req)) return res.json({ message: 'Login to see your data'})
+  //if(!isLoggedIn(req)) return res.json({ message: 'Login to see your data'})
+  return AnnonceModel.create({title: 'sa'});
+
   console.log(req.body);
   var db = mongoose.connection.db;
   var userId = req.user._id;
 
-  var imgLocations = req.body;
+  var imgLocations = req.body.locations;
   var newImages = [];
 
-    var newAnnonce = new AnnonceModel();
-    newAnnonce.title = "deneme annonce u";
-    newAnnonce.price = 100;
+    var newAnnonce = new AnnonceModel(req.body.properties);
       
     for(var i = 0; i<imgLocations.length; i++){
       newImages.push({location: imgLocations[i]});
     }
     newAnnonce.images = newImages;
-  
+    newAnnonce.seller = req.body.seller;
+    
     db.collection("users").updateOne(
         { _id: userId },
         { $push: { annonces: newAnnonce} }

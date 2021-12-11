@@ -20,7 +20,7 @@ function List(props) {
                         <p className="list__text">15 annonser</p>                    
                     </div>
                     <div className="dropdown">
-                        <span type="button" aria-expanded="false" data-bs-toggle="dropdown" id="dropdown"><i class="fas fa-ellipsis-v fa-lg"></i></span>
+                        <span type="button" aria-expanded="false" data-bs-toggle="dropdown" id="dropdown"><i className="fas fa-ellipsis-v fa-lg"></i></span>
                         <ul className="dropdown-menu" aria-labelledby="dropdown">
                             <li><button type="button" className="dropdown-item">Fjern</button></li>
                             <li><button type="button" className="dropdown-item">Rediger</button></li>

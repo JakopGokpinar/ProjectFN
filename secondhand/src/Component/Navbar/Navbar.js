@@ -45,26 +45,26 @@ class Navbar extends React.Component{
         return(
             <div>
                 {this.state.isRender &&
-                <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
-                    <div class="container">
-                        <a class="navbar-brand" href="/">Finn</a>
-                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
+                <nav className="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+                    <div className="container">
+                        <a className="navbar-brand" href="/">Finn</a>
+                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon"></span>
                         </button>
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <div class="form-group w-75 me-auto mx-auto ">
-                                    <form class="d-flex">
-                                        <input class="form-control me-2" type="search" placeholder="Search any product..." aria-label="Search"/>
-                                        <button class="btn btn-outline-primary" type="submit">Search</button>
+                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                            <div className="form-group w-75 me-auto mx-auto ">
+                                    <form className="d-flex">
+                                        <input className="form-control me-2" type="search" placeholder="Search any product..." aria-label="Search"/>
+                                        <button className="btn btn-outline-primary" type="submit">Search</button>
                                     </form>
                             </div>
                             <div className="dropdown" id="profileToggleDiv">
                                 <Link className="nav-link dropdown-toggle" to="/profile" id="profileToggleButton" role="button"  aria-expanded="false">
-                                    <img src={logo} alt="" width="30" height="24" class="d-inline-block align-text-top"/>                                
+                                    <img src={logo} alt="" width="30" height="24" className="d-inline-block align-text-top"/>                                
                                     Profile
                                 </Link>
                                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    {this.props.isLoggedIn && <li><a class="dropdown-item" href="/">{this.props.username}</a></li>}
+                                    {this.props.isLoggedIn && <li><a className="dropdown-item" href="/">{this.props.username}</a></li>}
                                     <li><Link to="/login" className="dropdown-item">Login</Link></li>
                                     <li><Link to="/register" className="dropdown-item">Register</Link></li>
                                     <li><Link to="/profil" className="dropdown-item">Favorites</Link></li>

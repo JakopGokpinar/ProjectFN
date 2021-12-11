@@ -16,7 +16,7 @@ import Menu from './Pages/HomePage/Menu.js';
 import SearchedResutPage from './Pages/SearchedResultPage/SearchedResultPage.js';
 import Account from './Pages/Account/Account.js';
 import NotFound from './Pages/NotFound.js';
-import CreateAnnonce from './Pages/NewAnnonce/CreateAnnonce.js';
+import CreateAnnonce from './Pages/CreateAnnonce/CreateAnnonce.js';
 import Redux from './redux/redux.js';
 import uploadImage from './upload-image.js';
 //import Spinner from './Component/Spinner/Spinner.js';
@@ -33,6 +33,10 @@ persistStore(store);
 store.subscribe(() => {
   saveState(store.getState());
 });
+
+function sa (){
+  var a = 5;
+}
 
 ReactDOM.render(
   <Provider store={store}>

@@ -5,7 +5,7 @@ function Header(params) {
     return(
         <div id="category-header">
             <span>{title}</span>
-            <i class="fas fa-chevron-down"></i>
+            <i className="fas fa-chevron-down"></i>
         </div>
     )
 }

@@ -13,15 +13,15 @@ function Status(){
             </div>
             {isVisible &&
                 <div id="category-content">
-                    <div class="form-check mb-2" >
-                        <input class="form-check-input" type="checkbox" checked={nyttChecked} onClick={() => setNyttChecked(!nyttChecked)}/>
-                        <label class="form-check-label" style={{cursor: "pointer"}} onClick={() => setNyttChecked(!nyttChecked)}>
+                    <div className="form-check mb-2" >
+                        <input className="form-check-input" type="checkbox" checked={nyttChecked} onClick={() => setNyttChecked(!nyttChecked)}/>
+                        <label className="form-check-label" style={{cursor: "pointer"}} onClick={() => setNyttChecked(!nyttChecked)}>
                             Nytt (15/234)
                         </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" checked={bruktChecked} onClick={() => setBruktChecked(!bruktChecked)}/>
-                        <label class="form-check-label"style={{cursor: "pointer"}} onClick={() => setBruktChecked(!bruktChecked)}>
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" checked={bruktChecked} onClick={() => setBruktChecked(!bruktChecked)}/>
+                        <label className="form-check-label"style={{cursor: "pointer"}} onClick={() => setBruktChecked(!bruktChecked)}>
                             Brukt (34)
                         </label>
                     </div>            

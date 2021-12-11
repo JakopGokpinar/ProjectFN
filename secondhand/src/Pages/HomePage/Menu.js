@@ -17,11 +17,11 @@ class Menu extends React.Component{
     
     render(){
         return(
-            <div class="container" id="menu-div">
-                <div class="row">  
+            <div className="container" id="menu-div">
+                <div className="row">  
                     {data.map(data => {
                         return(
-                            <div class="col-md-4 mb-4" key={data.name}>
+                            <div className="col-md-4 mb-4" key={data.name}>
                                 <ProductCard 
                                     img={data.images} 
                                     price={data.price} 

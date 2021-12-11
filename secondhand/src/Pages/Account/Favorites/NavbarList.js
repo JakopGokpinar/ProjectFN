@@ -10,7 +10,7 @@ function NavbarList() {
                 <i className="fas fa-trash deleteList"></i>
                 <button className="btn btn-dark">Velg list</button>
                 <button className="btn btn-primary">Ny list</button>
-                <select class="form-select" aria-label="Default select example">
+                <select className="form-select" aria-label="Default select example">
                     <option selected>Opprettet</option>
                     <option value="1">Alfabetisk</option>
                 </select>

@@ -21,9 +21,9 @@ function Settings() {
             <Checkbox id="appNotif" title="en sender melding til meg"></Checkbox>
             <h1>Tema</h1>
             <hr/>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="darkModeSwitch" disabled/>
-                <label class="form-check-label" for="darkModeSwitch">Mørk modus</label>
+            <div className="form-check form-switch">
+                <input className="form-check-input" type="checkbox" id="darkModeSwitch" disabled/>
+                <label className="form-check-label" for="darkModeSwitch">Mørk modus</label>
             </div>
             <div className="settings__saveButtons saveButtons__con">
                 <button tyep="button" className="btn btn-danger saveButtons">Avbryt</button>

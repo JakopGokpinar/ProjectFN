@@ -28,15 +28,15 @@ function Register() {
     return(
         <div>
             <form id="login-form" >
-                <div class="mb-3">
-                    <label class="form-label">Email address</label>
-                    <input type="email" class="form-control" required onChange={(event) => setEmail(event.target.value)}></input>
+                <div className="mb-3">
+                    <label className="form-label">Email address</label>
+                    <input type="email" className="form-control" required onChange={(event) => setEmail(event.target.value)}></input>
                 </div>
-                <div class="mb-3">
-                    <label for="inputPassword5" class="form-label">Password</label>
-                    <input type="password" class="form-control" required onChange={(event) => setPassword(event.target.value)}></input>
+                <div className="mb-3">
+                    <label for="inputPassword5" className="form-label">Password</label>
+                    <input type="password" className="form-control" required onChange={(event) => setPassword(event.target.value)}></input>
                 </div>
-                <button type="button" class="btn btn-primary mx-auto d-block" onClick={() => insertUser()}>Register</button>
+                <button type="button" className="btn btn-primary mx-auto d-block" onClick={() => insertUser()}>Register</button>
                 <p>{message}</p>
                 <Link to="/login">Login</Link>
             </form>

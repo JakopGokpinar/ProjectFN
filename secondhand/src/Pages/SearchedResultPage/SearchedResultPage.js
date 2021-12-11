@@ -14,9 +14,9 @@ const SearchedResutPage = ({ match }) => {
         <div className="container main-con">
             <div className="product-categories">
                 <p>Eindom</p>
-                <div class="input-group mb-3">
+                <div className="input-group mb-3">
                     <input type="text" className="form-control" placeholder="Søk i eindom..."></input>
-                    <button class="btn btn-outline-secondary" type="button"><i class="fas fa-search"></i></button>                    
+                    <button className="btn btn-outline-secondary" type="button"><i className="fas fa-search"></i></button>                    
                 </div>
                 <button className="btn btn-info w-100 mb-2">Lagre Søk</button>
                 <button className="btn btn-primary w-100 mb-5">Bruk Endringer</button>
@@ -27,7 +27,7 @@ const SearchedResutPage = ({ match }) => {
             <div className="products-div">
                 <div className="sort-dropdown-menu">
                     <span>34 Treff</span>
-                    <select class="form-select" id="sortby-menu" style={{width: "200px"}}>
+                    <select className="form-select" id="sortby-menu" style={{width: "200px"}}>
                         <option defaultValue value="publishedNew">Nyeste først</option>
                         <option value="publishedOld">Eldste først</option>
                         <option value="priceLowHigh">Pris lav-høy</option>
@@ -39,10 +39,10 @@ const SearchedResutPage = ({ match }) => {
                     <span className="border rounded-pill">Til Salgs</span>
                 </div>
                 <div className="products">
-                    <div class="row">  
+                    <div className="row">  
                         {data.map(data => {
                             return(
-                                <div class="col-md-4 mb-4" key={data.name}>
+                                <div className="col-md-4 mb-4" key={data.name}>
                                     <ProductCard 
                                         img={data.images} 
                                         price={data.price} 

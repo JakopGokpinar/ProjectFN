@@ -29,7 +29,7 @@ function ProductCard() {
                             <p className="seller__name">Fernandezfdsfsfsdfdsfds</p>
                         </div>
                         <div className="dropdown chatProduct__options">
-                            <span type="button" aria-expanded="false" data-bs-toggle="dropdown" id="dropdown"><i class="fas fa-ellipsis-v fa-lg"></i></span>
+                            <span type="button" aria-expanded="false" data-bs-toggle="dropdown" id="dropdown"><i className="fas fa-ellipsis-v fa-lg"></i></span>
                             <ul className="dropdown-menu" aria-labelledby="dropdown">
                                 <li><button type="button" className="dropdown-item">Fjern</button></li>
                                 <li><button type="button" className="dropdown-item">Velg</button></li>

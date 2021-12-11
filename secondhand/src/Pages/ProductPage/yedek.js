@@ -40,9 +40,9 @@ const ProductPage = ({match}) => {
                     <div id="photo-frame" className="border rounded" onMouseEnter={() => onHover("true")} onMouseLeave={() => onHover("false")}>
                         
                         <div className="big-photo-div">
-                            {isHovered && <button className="btn btn-primary prev-button" onClick={() => switchImgButton("prev")}><i class="fas fa-chevron-left"></i></button>}
+                            {isHovered && <button className="btn btn-primary prev-button" onClick={() => switchImgButton("prev")}><i className="fas fa-chevron-left"></i></button>}
                             <img src={images[imgIndex].link} alt="" id="product-big-image"></img>
-                            {isHovered && <button className="btn btn-primary next-button" onClick={() => switchImgButton("next")}><i class="fas fa-chevron-right"></i></button>}
+                            {isHovered && <button className="btn btn-primary next-button" onClick={() => switchImgButton("next")}><i className="fas fa-chevron-right"></i></button>}
                         </div>
                         <p id="photo-desc">{`${images[imgIndex].description} (${imgIndex+1}/${imageCount})`}</p>
 
@@ -77,19 +77,19 @@ const ProductPage = ({match}) => {
                                     <div className="card-header bg-info shadow-lg" onClick={() => setCardVisible(!isCardVisible)}>
                                         <div className="" id="saler-point-circle">8.8</div>
                                         <p className="">Selger Poeng</p>
-                                        <p><i class="fas fa-chevron-down"></i></p>
+                                        <p><i className="fas fa-chevron-down"></i></p>
                                     </div>
                                     {isCardVisible &&                 
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item">
+                                        <ul className="list-group list-group-flush">
+                                            <li className="list-group-item">
                                                     <div id="saler-point-circle">10</div>
                                                     <p>Problemfri Betaling</p>
                                             </li>
-                                            <li class="list-group-item" >
+                                            <li className="list-group-item" >
                                                     <div id="saler-point-circle">10</div>
                                                     <p>Problemfri Betaling</p>
                                             </li>
-                                            <li class="list-group-item" >
+                                            <li className="list-group-item" >
                                                     <div id="saler-point-circle">10</div>
                                                     <p>Problemfri Betaling</p>
                                             </li>

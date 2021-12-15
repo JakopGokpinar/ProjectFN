@@ -87,11 +87,11 @@ getImage = (req,res) => {
 };
 
 createAnnonce = async (req,res, next) => {
-  //if(!isLoggedIn(req)) return res.json({ message: 'Login to see your data'})
-  return AnnonceModel.create({title: 'sa'});
+  if(!isLoggedIn(req)) return res.json({ message: 'Login to see your data'})
 
   console.log(req.body);
-  var db = mongoose.connection.db;
+  var userDb = mongoose.connection.useDb("user");
+  var annoncesDb = mongoose.connection.useDb("announcements");
   var userId = req.user._id;
 
   var imgLocations = req.body.locations;
@@ -105,11 +105,26 @@ createAnnonce = async (req,res, next) => {
     newAnnonce.images = newImages;
     newAnnonce.seller = req.body.seller;
     
-    db.collection("users").updateOne(
+    userDb.collection("users").updateOne(
         { _id: userId },
         { $push: { annonces: newAnnonce} }
     )
     .then(res.json({message: "new annonce created", locations: imgLocations}))
+    .catch(err => res.json({error: err}));
+
+    annoncesDb.collection("annonces").insertOne({
+      _id: newAnnonce.id,
+      annonce: newAnnonce
+    })
 }
 
-module.exports = {getImage,getAnnonceImages,uploadImages,createAnnonce}
+module.exports = {getImage,getAnnonceImages,uploadImages,createAnnonce};
+
+
+/* db.collection("car").insertOne(
+  { "item" : "canvas",
+    "qty" : 100,
+    "tags" : ["cotton"],
+    "size" : { "h" : 28, "w" : 35.5, "uom" : "cm" }
+  }
+) */

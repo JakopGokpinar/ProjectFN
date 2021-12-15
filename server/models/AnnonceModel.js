@@ -4,27 +4,27 @@ const CarSchema = require("./AnnonceModels/CarModel.js");
 const AnnonceSchema = mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    // required: true,
     default: "",
   },
   price: {
     type: Number,
-    required: true,
+   // required: true,
     default: -1,
   },
   category: {
     type: String,
-    required: true,
+    //required: true,
     default: "",
   },
   subCategory: {
     type: String,
-    required: true,
+    //required: true,
     default: "",
   },
   uniqueProps: {
     type: Object,
-    required: true,
+   // required: true,
     default: {},
   },
   date: {
@@ -36,7 +36,7 @@ const AnnonceSchema = mongoose.Schema({
   },
   seller: {
     type: Object,
-    required: true,
+    //required: true,
     default: {},
   },
 });

@@ -14,6 +14,8 @@ const UserSchema = mongoose.Schema({
 
 );
 
-const UserModel = mongoose.model('User', UserSchema);
+const myDB = mongoose.connection.useDb('user');
+const UserModel = myDB.model("User", UserSchema);   
+// const UserModel = mongoose.model('User', UserSchema);
 
 module.exports = UserModel;

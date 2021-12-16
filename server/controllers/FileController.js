@@ -118,6 +118,7 @@ createAnnonce = async (req,res, next) => {
     })
 }
 
+
 module.exports = {getImage,getAnnonceImages,uploadImages,createAnnonce};
 
 

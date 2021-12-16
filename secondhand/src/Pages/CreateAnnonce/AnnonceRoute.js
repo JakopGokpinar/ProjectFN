@@ -11,7 +11,6 @@ import { dataURLtoFile } from "../../utils/dataURltoFile";
 
 function AnnonceRoute(props) {
   var { categoryName } = useParams();
-
   const [annonceComponent, setComponent] = useState(<></>);
   const [isLoading, setLoading] = useState(true);
   const [properties, setProperties] = useState({ uniqueProps: {} });

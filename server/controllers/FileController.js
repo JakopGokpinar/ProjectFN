@@ -112,7 +112,6 @@ createAnnonce = async (req,res, next) => {
     .then(res.json({message: "new annonce created", locations: imgLocations}))
     .catch(err => res.json({error: err}));
 
-
     annoncesDb.collection("annonces").insertOne({
       _id: newAnnonce.id,
       annonce: newAnnonce

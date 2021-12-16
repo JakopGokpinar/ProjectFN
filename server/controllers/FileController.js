@@ -113,7 +113,6 @@ createAnnonce = async (req,res, next) => {
     .catch(err => res.json({error: err}));
 
 
-    
     annoncesDb.collection("annonces").insertOne({
       _id: newAnnonce.id,
       annonce: newAnnonce

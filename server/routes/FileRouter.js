@@ -7,5 +7,6 @@ router.post("/uploadimages", FileController.uploadImages);
 router.get("/image", FileController.getImage);
 router.get("/annonce", FileController.getAnnonceImages);
 router.post("/createannonce", FileController.createAnnonce);
+router.get("/getmenuitems", FileController.getMenuItems);
 
 module.exports = router;

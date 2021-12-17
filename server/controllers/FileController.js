@@ -1,4 +1,3 @@
-const Grid = require('gridfs-stream');
 const AWS = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
@@ -118,8 +117,20 @@ createAnnonce = async (req,res, next) => {
     })
 }
 
+getMenuItems = (req,res) => {
+  var annoncesDb = mongoose.connection.useDb("announcements");
+  annoncesDb.collection("annonces").find({}, {})
+    .toArray()
+    .then(items => {
+      console.log(`Successfully found ${items.length} documents.`)
+      items.forEach(console.log)
+      var itemArr = items.slice(-2)
+      return res.json({items: itemArr});
+    })
+}
 
-module.exports = {getImage,getAnnonceImages,uploadImages,createAnnonce};
+
+module.exports = {getImage,getAnnonceImages,uploadImages,createAnnonce, getMenuItems};
 
 
 /* db.collection("car").insertOne(

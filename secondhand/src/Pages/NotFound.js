@@ -5,9 +5,9 @@ const NotFound = () => {
     let location = useLocation();
 
     return(
-        <h1 style={{marginTop: 100}}>
-            Sorry, { location.pathname } not found!
-        </h1>
+        <h3 className='ms-5'>
+            Sorry! { location.pathname } not found!
+        </h3>
     )  
 }
 export default NotFound;

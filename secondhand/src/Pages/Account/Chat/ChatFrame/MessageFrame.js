@@ -1,6 +1,4 @@
 import './MessageFrame.css';
-import '../../../../Css/Main.css';
-
 
 function MessageFrame() {
     return(

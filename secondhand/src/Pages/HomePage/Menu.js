@@ -1,9 +1,7 @@
 import React from 'react';
 import ProductCard from '../../Component/ProductCard/ProductCard.js';
-import data from '../../data/products.json';
-
 import { instanceAxs } from '../../api/Api.js';
-import { fileApi } from '../../config/cfg.js';
+import { fileApi } from '../../config/index.js';
 
 class Menu extends React.Component{
     constructor(props){
@@ -45,8 +43,7 @@ class Menu extends React.Component{
                                     price={annonce.price} 
                                     name={annonce.title} 
                                     location="bergen"
-                                    id={annonce._id}
-                                    data={data}/>
+                                    id={annonce._id}/>                           
                             </div>
                         ) 
                     }))

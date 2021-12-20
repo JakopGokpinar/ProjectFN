@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import data from '../../data/products.json';
+// import data from '../../data/products.json';
 import { Redirect } from 'react-router-dom';
 import './ProductPage.css';
 
-
 const ProductPage = ({match}) => {
-
+    var data = a;
     const product = data.find(product => {
         return match.params.annonceId === product.id;      
         //return match.params.id === product.id;

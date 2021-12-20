@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { instanceAxs } from "../../api/Api";
-import { userApi } from "../../config/cfg";
+import { userApi } from "../../config";
 
 function ProductPage() {
     let {annonceId} = useParams();

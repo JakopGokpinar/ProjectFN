@@ -1,5 +1,5 @@
 import { instanceAxs } from "../api/Api";
-import { userApi } from "../config/cfg";
+import { userApi } from "../config";
 
 export const signIn = () => {
     return{

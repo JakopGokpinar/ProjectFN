@@ -1,80 +1,170 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import logo from '../../resources/logo.svg';
-import './Navbar.css';
-//import axios from 'axios';
-import { connect } from 'react-redux';
+import React from "react";
+import { Link , Redirect, withRouter} from "react-router-dom";
+import logo from "../../resources/logo.svg";
+import "./Navbar.css";
+import { connect } from "react-redux";
+import { instanceAxs } from "../../api/Api";
 
-class Navbar extends React.Component{
+class Navbar extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentY: 0,
+      isRender: true,
+      isLoggedIn: false,
+      username: "",
+      searchInput: "",
+    };
+    this.scroll = this.scroll.bind(this);
+  }
 
-    constructor(props){
-        super(props);
-        this.state = {
-            currentY: 0,
-            isRender: true,
-            isLoggedIn: false,
-            username: ''
-        }
-        this.scroll = this.scroll.bind(this);
-    }
+  handleSearchInputChange = (event) => {
+    this.setState({
+      searchInput: event.target.value,
+    });
+  };
 
-    getLogin = () => {
-        const isLoggedIn = this.props.isLoggedIn;
-        this.setState({
-            isLoggedIn: isLoggedIn
+  checkCharacters = async () => {
+      let input = this.state.searchInput.trim();
+      let searchInput = input.replace(/\s/g, "+");
+      this.setState({
+          searchInput
+      })
+  }
+
+  makePush(){
+
+  }
+
+  makeSearch = async () => {
+      await this.checkCharacters();
+      let query = `/search?q=${this.state.searchInput}`;
+      instanceAxs.get(query)
+        .then(response => {
+            console.log(response);
+            this.props.history.push({ pathname: query, state: response.data.items[0].annonce})
         })
-        if(isLoggedIn){
-            const username = this.props.username;
-            this.setState({ 
-                username
-            })
-        }
-    }
+        .catch(err => {
+            console.log(err)
+        })
+  }
 
-    scroll(){
-        if(window.scrollY > this.state.currentY){
-            this.setState({ isRender: false});
-        } else{
-            this.setState({ isRender: true});
-        }
-        this.setState({ currentY: window.scrollY});
+  getLogin = () => {
+    const isLoggedIn = this.props.isLoggedIn;
+    this.setState({
+      isLoggedIn: isLoggedIn,
+    });
+    if (isLoggedIn) {
+      const username = this.props.username;
+      this.setState({
+        username,
+      });
     }
+  };
 
-    render(){
-        window.addEventListener("scroll",this.scroll);
-        return(
-            <div>
-                {this.state.isRender &&
-                <nav className="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
-                    <div className="container">
-                        <a className="navbar-brand" href="/">Finn</a>
-                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
-                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                            <div className="form-group w-75 me-auto mx-auto ">
-                                    <form className="d-flex">
-                                        <input className="form-control me-2" type="search" placeholder="Search any product..." aria-label="Search"/>
-                                        <button className="btn btn-outline-primary" type="submit">Search</button>
-                                    </form>
-                            </div>
-                            <div className="dropdown" id="profileToggleDiv">
-                                <Link className="nav-link dropdown-toggle" to="/profile" id="profileToggleButton" role="button"  aria-expanded="false">
-                                    <img src={logo} alt="" width="30" height="24" className="d-inline-block align-text-top"/>                                
-                                    Profile
-                                </Link>
-                                <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    {this.props.isLoggedIn && <li><a className="dropdown-item" href="/">{this.props.username}</a></li>}
-                                    <li><Link to="/login" className="dropdown-item">Login</Link></li>
-                                    <li><Link to="/register" className="dropdown-item">Register</Link></li>
-                                    <li><Link to="/profil" className="dropdown-item">Favorites</Link></li>
-                                    <li><Link to="/nyannonse" className="dropdown-item">Ny Annonse</Link></li>
-                                </ul>           
-                            </div>
-                        </div>
-                    </div>
-                </nav>}
-                {/*{this.state.isRender &&
+  scroll() {
+    if (window.scrollY > this.state.currentY) {
+      this.setState({ isRender: false });
+    } else {
+      this.setState({ isRender: true });
+    }
+    this.setState({ currentY: window.scrollY });
+  }
+
+  render() {
+    window.addEventListener("scroll", this.scroll);
+    return (
+      <div>
+        {this.state.isRender && (
+          <nav className="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+            <div className="container">
+              <a className="navbar-brand" href="/">
+                Finn
+              </a>
+              <button
+                className="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span className="navbar-toggler-icon"></span>
+              </button>
+              <div
+                className="collapse navbar-collapse"
+                id="navbarSupportedContent"
+              >
+                <div className="form-group w-75 me-auto mx-auto ">
+                  <form className="d-flex">
+                    <input
+                      className="form-control me-2"
+                      type="search"
+                      placeholder="Search any product..."
+                      aria-label="Search"
+                      onChange={this.handleSearchInputChange}
+                    />
+                    <button className="btn btn-outline-primary" type="button" onClick={this.makeSearch}>
+                      Search
+                    </button>
+                  </form>
+                </div>
+                <div className="dropdown" id="profileToggleDiv">
+                  <Link
+                    className="nav-link dropdown-toggle"
+                    to="/profile"
+                    id="profileToggleButton"
+                    role="button"
+                    aria-expanded="false"
+                  >
+                    <img
+                      src={logo}
+                      alt=""
+                      width="30"
+                      height="24"
+                      className="d-inline-block align-text-top"
+                    />
+                    Profile
+                  </Link>
+                  <ul
+                    className="dropdown-menu"
+                    aria-labelledby="navbarDropdown"
+                  >
+                    {this.props.isLoggedIn && (
+                      <li>
+                        <a className="dropdown-item" href="/">
+                          {this.props.username}
+                        </a>
+                      </li>
+                    )}
+                    <li>
+                      <Link to="/login" className="dropdown-item">
+                        Login
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/register" className="dropdown-item">
+                        Register
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/profil" className="dropdown-item">
+                        Favorites
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/nyannonse" className="dropdown-item">
+                        Ny Annonse
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </nav>
+        )}
+        {/*{this.state.isRender &&
                 <nav class="navbar navbar-expand-lg navbar-light second-nav fixed-top">
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav me-auto mb-lg-0 w-100 d-flex justify-content-evenly">
@@ -177,15 +267,15 @@ class Navbar extends React.Component{
                             </ul>            
                         </div>
                 </nav>}*/}
-            </div>
-        );
-    }
+      </div>
+    );
+  }
 }
 
-const mapStateToProps = state => {
-    return {
-        isLoggedIn: state.isLogged,
-        username: state.user.email
-    }
-}
-export default connect(mapStateToProps)(Navbar)
+const mapStateToProps = (state) => {
+  return {
+    isLoggedIn: state.isLogged,
+    username: state.user.email,
+  };
+};
+export default withRouter(connect(mapStateToProps)(Navbar));

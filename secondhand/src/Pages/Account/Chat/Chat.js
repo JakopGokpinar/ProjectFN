@@ -1,5 +1,4 @@
 import './Chat.css';
-import '../../../Css/Main.css';
 
 import ProductCard from './ProductCard';
 import ChatFrame from './ChatFrame/ChatFrame';

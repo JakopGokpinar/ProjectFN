@@ -1,5 +1,4 @@
 import "./Settings.css";
-import "../../../Css/Main.css";
 
 import Checkbox from "./Checkbox";
 

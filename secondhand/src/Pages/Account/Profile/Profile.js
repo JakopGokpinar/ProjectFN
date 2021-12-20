@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 
 import './Profile.css';
-import "../../../Css/Main.css"
 
 function Profile() {
     return(

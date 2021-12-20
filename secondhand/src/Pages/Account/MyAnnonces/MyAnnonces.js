@@ -1,7 +1,7 @@
 import { useEffect, useState} from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { instanceAxs } from '../../../api/Api';
-import { userApi } from '../../../config/cfg';
+import { userApi } from '../../../config';
 import './MyAnnonces.css';
 
 import AnnonceDetail from './AnnonceDetail';

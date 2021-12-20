@@ -1,5 +1,4 @@
 import './ChatFrame.css';
-import '../../../../Css/Main.css';
 
 import Navbar from './Navbar';
 import MessageFrame from './MessageFrame';

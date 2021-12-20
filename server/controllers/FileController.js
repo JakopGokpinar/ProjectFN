@@ -122,21 +122,13 @@ getMenuItems = (req,res) => {
   annoncesDb.collection("annonces").find({}, {})
     .toArray()
     .then(items => {
-      console.log(`Successfully found ${items.length} documents.`)
-      items.forEach(console.log)
-      var itemArr = items.slice(-2)
-      return res.json({items: itemArr});
+      return res.json({items: items});
+    })
+    .catch(err => {
+      console.log(err);
+      return res.json({error: err});
     })
 }
 
 
 module.exports = {getImage,getAnnonceImages,uploadImages,createAnnonce, getMenuItems};
-
-
-/* db.collection("car").insertOne(
-  { "item" : "canvas",
-    "qty" : 100,
-    "tags" : ["cotton"],
-    "size" : { "h" : 28, "w" : 35.5, "uom" : "cm" }
-  }
-) */

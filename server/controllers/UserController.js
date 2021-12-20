@@ -93,20 +93,14 @@ createAnnonce = (req,res, next) => {
 }
 
 getUsers = (req,res) => {
-    const userId = req.user._id;
+    const annoncesDb = mongoose.connection.useDb("announcements");
     const annonceId = req.body.annonceId
    
-    UserModel.findOne({_id: userId})
-        .then(user => {
-            var annoncesArr = user.annonces;
-            var annonce = annoncesArr.filter((element) =>  {
-                return element._id == annonceId;
-            });
-            if(annonce.length > 0) {
-                return res.json({message: 'annonce found', annonce: annonce[0]});
-            } else {
-                return res.json({message: 'annonce not found'});
-            }
+    annoncesDb.collection("annonces").findOne({_id: annonceId})
+        .then(annonce => {
+            if(annonce === null || annonce === undefined) return res.json({message: "No annonce found with this id"});
+            var annonceArr = annonce.annonce;
+            return res.json({message: 'annonce found', annonce: annonceArr});            
         })
         .catch(err => {
             return res.send(err);

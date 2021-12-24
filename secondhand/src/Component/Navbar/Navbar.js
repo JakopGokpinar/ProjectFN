@@ -1,5 +1,5 @@
 import React from "react";
-import { Link , Redirect, withRouter} from "react-router-dom";
+import { Link , withRouter} from "react-router-dom";
 import logo from "../../resources/logo.svg";
 import "./Navbar.css";
 import { connect } from "react-redux";
@@ -32,17 +32,15 @@ class Navbar extends React.Component {
       })
   }
 
-  makePush(){
-
-  }
-
   makeSearch = async () => {
       await this.checkCharacters();
       let query = `/search?q=${this.state.searchInput}`;
       instanceAxs.get(query)
         .then(response => {
-            console.log(response);
-            this.props.history.push({ pathname: query, state: response.data.items[0].annonce})
+          
+            console.log("Search response", response);
+            var state = response.data.items
+            this.props.history.push( query,state);            
         })
         .catch(err => {
             console.log(err)
@@ -278,4 +276,4 @@ const mapStateToProps = (state) => {
     username: state.user.email,
   };
 };
-export default withRouter(connect(mapStateToProps)(Navbar));
+export default connect(mapStateToProps)(withRouter(Navbar));

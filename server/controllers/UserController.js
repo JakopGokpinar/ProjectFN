@@ -92,7 +92,7 @@ createAnnonce = (req,res, next) => {
     .then(res.json({message: "new annonce created"}))
 }
 
-getUsers = (req,res) => {
+findProduct = (req,res) => {
     const annoncesDb = mongoose.connection.useDb("announcements");
     const annonceId = req.body.annonceId
    
@@ -107,4 +107,4 @@ getUsers = (req,res) => {
         })
 }
 
-module.exports = {login, register, checklogin, logout, getMyAnnonces, createAnnonce, getUsers};
+module.exports = {login, register, checklogin, logout, getMyAnnonces, createAnnonce, findProduct};

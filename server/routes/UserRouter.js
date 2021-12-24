@@ -9,6 +9,6 @@ router.get("/checklogin", UserController.checklogin);
 router.get("/logout", UserController.logout);
 router.get("/myannonces", UserController.getMyAnnonces);
 router.post("/newannonce", UserController.createAnnonce);
-router.post("/getproduct", UserController.getUsers);
+router.post("/getproduct", UserController.findProduct);
 
 module.exports = router;

@@ -15,14 +15,13 @@ class Menu extends React.Component{
      async getItems () {
         await instanceAxs.get(`${fileApi}/getmenuitems`)
         .then(response => {
-            console.log(response);
+            console.log("Retrived items: ", response);
             this.setState({
                 items: response.data.items,
                 isLoading: false
             })
 
         })
-        console.log("items", this.state.items)
     }
     componentDidMount(){
         this.getItems();
@@ -42,7 +41,6 @@ class Menu extends React.Component{
                                     img={annonce.images} 
                                     price={annonce.price} 
                                     name={annonce.title} 
-                                    location="bergen"
                                     id={annonce._id}/>                           
                             </div>
                         ) 

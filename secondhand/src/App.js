@@ -27,7 +27,7 @@ class App extends Component {
               <Route exact path='/' component={Menu}/>
               <Route path='/profil' component={Account}/>
               <Route path='/nyannonse' component={CreateAnnonce}/>
-              <Route path='/search' component={SearchResult}/>
+              <Route  path='/search' component={SearchResult}/>
               <Route path='/profil' component={Account}/>
               <Route path={'/produkt/:annonceId'} component={ProductPage}/>
               <Route path="*" component={NotFound}/>

@@ -122,6 +122,7 @@ getMenuItems = (req,res) => {
   annoncesDb.collection("annonces").find({}, {})
     .toArray()
     .then(items => {
+      // var items = items.slice(0,2)
       return res.json({items: items});
     })
     .catch(err => {

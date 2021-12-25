@@ -20,9 +20,9 @@ class Menu extends React.Component{
                 items: response.data.items,
                 isLoading: false
             })
-
         })
     }
+    
     componentDidMount(){
         this.getItems();
     }

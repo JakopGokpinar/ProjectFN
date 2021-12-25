@@ -24,7 +24,7 @@ function Status() {
               className="form-check-input"
               type="checkbox"
               checked={statusNew}
-              onClick={() => setStatusNew(!statusNew)}
+              onChange={() => setStatusNew(!statusNew)}
             />
             <label
               className="form-check-label"
@@ -39,7 +39,7 @@ function Status() {
               className="form-check-input"
               type="checkbox"
               checked={statusUsed}
-              onClick={() => setStatusUsed(!statusUsed)}
+              onChange={() => setStatusUsed(!statusUsed)}
             />
             <label
               className="form-check-label"

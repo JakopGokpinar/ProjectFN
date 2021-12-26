@@ -34,7 +34,7 @@ class Navbar extends React.Component {
 
   makeSearch = async () => {
       await this.checkCharacters();
-      let query = `/search?q=${this.state.searchInput}`;
+      let query = `/search?q=${this.state.searchInput}&price_min=9000`;
       instanceAxs.get(query)
         .then(response => {
           

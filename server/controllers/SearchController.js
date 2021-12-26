@@ -2,13 +2,17 @@ const mongoose = require('mongoose');
 
 productSearch = (req,res) => {
     let input = req.query.q;
+    let minPrice = req.query.price_min
+    console.log(minPrice)
     var annoncesDb = mongoose.connection.useDb("announcements");
     console.log(input)
     annoncesDb.collection("annonces").find({}, {})
       .toArray()
       .then(items => {
-          const result = items.filter(item => item.annonce.title.includes(input));
-          let itemArr = result.slice(0,2)
+          const result = items.filter(item => 
+            item.annonce.title.includes(input)  && item.annonce.price > minPrice
+          );
+          console.log(result)
           return res.json({items: result});
       })
       .catch(err => {

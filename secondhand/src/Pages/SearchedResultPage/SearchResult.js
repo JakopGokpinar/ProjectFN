@@ -12,32 +12,24 @@ function SearchResult(props) {
   // const queryParams= new URLSearchParams(props.location.search);  // get query parameter from url. queryParams.get('');
   const results = props.location.state;
 
- const [sortOn, setSortOn] = useState('published');
+const [sortOn, setSortOn] = useState('published');
 const [sortedItems, setSortedItems] = useState(results);
+const [resultCount, setResultCount] = useState(results.length);
 
  function setSortingCategory(e) {
   var sorting = e.target.value;
   setSortOn(sorting);
  }
 
+ function applyFilter () {
+   console.log("filtered...")
+ }
+
  React.useEffect(() => {
   switch(sortOn){
     case "published":
-      console.log("sa");
-      console.log(results);
-      var date1 = results[0].annonce.date;
-      var date2 = results[0].annonce.date;
-      if(date1>date2) {
-        console.log("date1 greater")
-      }
-      else {
-        console.log("date2 greater")
-        console.log(date1);
-        console.log(date2)
-      }
-      let publishData = [].concat(results)
-     .sort((a, b) => a.annonce.date < b.annonce.date ? 1 : -1)
-      setSortedItems(publishData)
+      setSortedItems(results);
+      break;
    case "lowToHigh":
      let lowData = [].concat(results)
      .sort((a, b) => a.annonce.price > b.annonce.price ? 1 : -1)
@@ -49,32 +41,15 @@ const [sortedItems, setSortedItems] = useState(results);
      setSortedItems(highData)
      break;
    default: 
+      setSortedItems(results)
      return console.log("default");
   }
  }, [sortOn])
 
- function sortItems () {
-   
- }
-
- function renderItems () {
-   sortedItems.map(item => {
-     return(
-      <ProductCard
-      key={item.annonce._id}
-      img={item.annonce.images}
-      price={item.annonce.price}
-      name={item.annonce.title}
-      id={item.annonce._id}
-    /> 
-     )
-   })
- }
-
   return (
     <div className="container searchResultPageContainer">
       <div className="searchFilterComponents">
-        <button className="btn btn-primary w-100">Bruk Endringer</button>
+        <button className="btn btn-primary w-100" onClick={applyFilter}>Bruk Endringer</button>
         <button className="btn btn-primary w-100">Lagre Søk</button>
         <Price />
         <Status></Status>
@@ -82,7 +57,7 @@ const [sortedItems, setSortedItems] = useState(results);
       <div className="searchResults">
         <div className="searchResults_Info">
           <div className="searchResults_Order">
-            <p style={{ margin: 0 }}>109 treff</p>
+            <p style={{ margin: 0 }}>{resultCount} treff</p>
             <div>
             <label htmlFor="cars">Sort</label>
             <select className="form-control" style={{width: 200}}  name="cars" id="cars" onChange={setSortingCategory}>
@@ -101,19 +76,25 @@ const [sortedItems, setSortedItems] = useState(results);
         <div className="searchResults_Items">
         
 
+         
           <div className="row">
             {
-              sortedItems.map(item => {
-                return(
-                  <ProductCard
-                  key={item.annonce._id}
-                  img={item.annonce.images}
-                  price={item.annonce.price}
-                  name={item.annonce.title}
-                  id={item.annonce._id}
-                />
-                )
-              })
+              sortedItems.map((item, index) => {
+                  return(
+                    <>
+                    <div className="col">
+                      <ProductCard
+                      key={item.annonce._id}
+                      img={item.annonce.images}
+                      price={item.annonce.price}
+                      name={item.annonce.title}
+                      id={item.annonce._id}
+                    />
+                    </div>
+                    {index %2 !== 0 && <div className="w-100"></div>}
+                    </>
+                  )
+                })
             }
           </div>
         </div>
@@ -123,11 +104,3 @@ const [sortedItems, setSortedItems] = useState(results);
 }
 
 export default SearchResult;
-
-{/* <ProductCard
-                  key={item.annonce._id}
-                  img={item.annonce.images}
-                  price={item.annonce.price}
-                  name={item.annonce.title}
-                  id={item.annonce._id}
-                /> */}

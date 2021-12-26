@@ -19,7 +19,7 @@ function ProductCard(props) {
   const [imgIndex, setImgIndex] = useState(0);
 
   return (
-    <div className={"card  border rounded " + (isHovered && " shadow")}>
+    <div className={"card-container card  border rounded " + (isHovered && " shadow")}>
       <Link to={`/produkt/${id}`}>
         <div
           className="card-img"

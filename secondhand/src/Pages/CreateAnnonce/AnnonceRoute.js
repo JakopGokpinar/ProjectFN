@@ -94,7 +94,7 @@ function AnnonceRoute(props) {
     // first make request for image uploading
     axios
       .post(
-        "http://localhost:3080/file/uploadimages?location=ahmet/annonces/annonce1",
+        `http://localhost:3080/file/uploadimages?location=ahmet/annonces/${properties.title}`,
         formData
       )
       .then((response) => {

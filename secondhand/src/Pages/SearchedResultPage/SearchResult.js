@@ -1,20 +1,26 @@
 import React from "react";
-import { useState } from "react";
+import { useState , useLayoutEffect } from "react";
 import "./SearchResult.css";
 
-import ProductCard from "../../Component/ProductCard/ProductCard.js";
 
+import ProductCard from "../../Component/ProductCard/ProductCard.js";
+import { instanceAxs } from "../../api/Api";
 // import Date from "./FilterComponents/Date";
 import Price from "./FilterComponents/Price";
 import Status from "./FilterComponents/Status";
 
 function SearchResult(props) {
   // const queryParams= new URLSearchParams(props.location.search);  // get query parameter from url. queryParams.get('');
-  const results = props.location.state;
+  // const results = props.location.state;
 
 const [sortOn, setSortOn] = useState('published');
-const [sortedItems, setSortedItems] = useState(results);
-const [resultCount, setResultCount] = useState(results.length);
+const [items, setItems] = useState([]);
+const [sortedItems, setSortedItems] = useState(items);
+//eslint-disable-next-line
+const [resultCount, setResultCount] = useState(items.length);
+const urlParams = new URLSearchParams(props.location.search); 
+//eslint-disable-next-line
+const [queryParams, setQueryParams] = useState({"q": urlParams.get('q'), "price_min": -2});
 
  function setSortingCategory(e) {
   var sorting = e.target.value;
@@ -25,33 +31,66 @@ const [resultCount, setResultCount] = useState(results.length);
    console.log("filtered...")
  }
 
+ function changePrice(priceArr) {
+   var minPrice = priceArr[0];
+   var maxPrice = priceArr[1];
+
+   let params = {...queryParams, "price_min":minPrice, "price_max":maxPrice};
+   setQueryParams(params);
+   console.log("price value changed");
+   console.log(params)
+ }
+
+ function makeSearch() {
+  var queryString = '';
+  Object.entries(queryParams).forEach(([key, value]) => queryString += `${key}=${value}&`);
+  if(queryString[queryString.length -1] === '&') queryString = queryString.slice(0,queryString.length-1);
+  
+  console.log(queryString)
+  let query = `/search?${queryString}`;
+  instanceAxs.get(query)
+    .then(response => { 
+      console.log("Search response", response);
+      var returnedItems = response.data.items
+      setItems(returnedItems);
+      props.history.push( `/search?${queryString}`);            
+    })
+    .catch(err => {
+        console.log(err)
+    })
+ }
+
+ useLayoutEffect(() => {
+  makeSearch();
+}, []);
+
  React.useEffect(() => {
   switch(sortOn){
     case "published":
-      setSortedItems(results);
+      setSortedItems(items);
       break;
    case "lowToHigh":
-     let lowData = [].concat(results)
+     let lowData = [].concat(items)
      .sort((a, b) => a.annonce.price > b.annonce.price ? 1 : -1)
       setSortedItems(lowData)
       break;
    case "hightToLow":
-    let highData = [].concat(results)
+    let highData = [].concat(items)
     .sort((a, b) => a.annonce.price < b.annonce.price ? 1 : -1)
      setSortedItems(highData)
      break;
    default: 
-      setSortedItems(results)
+      setSortedItems(items)
      return console.log("default");
   }
- }, [sortOn])
+ }, [sortOn, items])
 
   return (
     <div className="container searchResultPageContainer">
       <div className="searchFilterComponents">
         <button className="btn btn-primary w-100" onClick={applyFilter}>Bruk Endringer</button>
         <button className="btn btn-primary w-100">Lagre Søk</button>
-        <Price />
+        <Price function={changePrice}/>
         <Status></Status>
       </div>
       <div className="searchResults">

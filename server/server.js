@@ -44,7 +44,7 @@ app.use(passport.session());
 app.get("/", (req, res) => res.send("Server Side Works!"));
 app.use('/file', CombinedRouter.FileRouter);
 app.use("/user", CombinedRouter.UserRouter);
-app.use('/search', CombinedRouter.SearchRouter)
+app.use('/search', CombinedRouter.SearchRouter);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 module.exports = app;

@@ -3,7 +3,6 @@ import { Link , withRouter} from "react-router-dom";
 import logo from "../../resources/logo.svg";
 import "./Navbar.css";
 import { connect } from "react-redux";
-import { instanceAxs } from "../../api/Api";
 
 class Navbar extends React.Component {
   constructor(props) {
@@ -34,8 +33,9 @@ class Navbar extends React.Component {
 
   makeSearch = async () => {
       await this.checkCharacters();
-      let query = `/search?q=${this.state.searchInput}&price_min=9000`;
-      instanceAxs.get(query)
+      let query = `/search?q=${this.state.searchInput}`;
+      this.props.history.push( query);            
+      /* instanceAxs.get(query)
         .then(response => {
           
             console.log("Search response", response);
@@ -44,7 +44,7 @@ class Navbar extends React.Component {
         })
         .catch(err => {
             console.log(err)
-        })
+        }) */
   }
 
   getLogin = () => {

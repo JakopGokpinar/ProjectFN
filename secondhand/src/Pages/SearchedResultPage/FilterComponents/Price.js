@@ -1,12 +1,17 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import Header from "./Header";
 import Slider from "@material-ui/core/Slider";
 import "./Price.css";
 import './FilterComponents.css';
+import { setMinPriceAction, setMaxPriceAction } from "../../../actions/SearchActions";
 
 function Price(params) {
+  const dispatch = useDispatch();
   const [isVisible, setVisible] = useState(true);
   const [priceValue, setPriceValue] = useState([0, 100]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice,setMaxPrice] = useState(100);
 
   const handlePriceSliderChange = (event, newValue) => {
     setPriceValue(newValue);
@@ -20,10 +25,39 @@ function Price(params) {
     }
   };
 
+  function decreasePrice(e) {
+    let min_value = e.target.value;
+    console.log(min_value, maxPrice)
+    if(min_value >= maxPrice){
+      console.log("if")
+      setMinPrice(maxPrice-1);
+    setPriceValue([minPrice,maxPrice]);
+
+    } else {
+      console.log("else")
+      setMinPrice(min_value);
+    setPriceValue([minPrice,maxPrice]);
+
+    }
+    dispatch(setMinPriceAction(min_value))
+  }
+
+  function increasePrice(e) {
+    let max_value = e.target.value
+    setMaxPrice(max_value);
+    setPriceValue([minPrice, max_value]);
+    dispatch(setMaxPriceAction(max_value));
+  }
+
   function toggleVisibality() {
     var visible = isVisible;
     setVisible(!visible);
   }
+
+  React.useEffect(() => {
+    setMinPrice(priceValue[0]);
+    setMaxPrice(priceValue[1]);
+  }, [priceValue])
 
   return (
     <div className="category border rounded priceFilterContainer filterContainer">
@@ -53,8 +87,8 @@ function Price(params) {
               className="form-control"
               id="min-price-input"
               placeholder="min. pris"
-              value={priceValue[0]}
-              onChange={(e) => handlePriceInputChange(e, "min")}
+              value={minPrice}
+              onChange={decreasePrice}
               style={{marginRight: 15}}
             ></input>
             <input
@@ -62,8 +96,8 @@ function Price(params) {
               className="form-control"
               id="max-price-input"
               placeholder="max. pris"
-              value={priceValue[1]}
-              onChange={(e) => handlePriceInputChange(e, "max")}
+              value={maxPrice}
+              onChange={increasePrice}
             ></input>
           </div>
           <button className="btn btn-primary w-100 mt-3">Søk</button>

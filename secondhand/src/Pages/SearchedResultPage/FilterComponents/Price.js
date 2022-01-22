@@ -6,47 +6,33 @@ import "./Price.css";
 import './FilterComponents.css';
 import { setMinPriceAction, setMaxPriceAction } from "../../../actions/SearchActions";
 
-function Price(params) {
+function Price(props) {
   const dispatch = useDispatch();
   const [isVisible, setVisible] = useState(true);
   const [priceValue, setPriceValue] = useState([0, 100]);
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice,setMaxPrice] = useState(100);
 
   const handlePriceSliderChange = (event, newValue) => {
     setPriceValue(newValue);
+    props.setfilter("price_min",priceValue[0])
+    props.setfilter("price_max",priceValue[1])
   };
 
-  const handlePriceInputChange = (event, target) => {
-    if (target === "min") {
-      setPriceValue([event.target.value, priceValue[1]]);
-    } else {
-      setPriceValue([priceValue[0], event.target.value]);
-    }
-  };
+  function applyPrice(){
+    dispatch(setMinPriceAction(priceValue[0]))
+    dispatch(setMaxPriceAction(priceValue[1]))
+  }
 
   function decreasePrice(e) {
-    let min_value = e.target.value;
-    console.log(min_value, maxPrice)
-    if(min_value >= maxPrice){
-      console.log("if")
-      setMinPrice(maxPrice-1);
-    setPriceValue([minPrice,maxPrice]);
+    let min_value = parseInt(e.target.value);
+    setPriceValue([min_value, priceValue[1]]);
+    props.setfilter("price_min",min_value)
 
-    } else {
-      console.log("else")
-      setMinPrice(min_value);
-    setPriceValue([minPrice,maxPrice]);
-
-    }
-    dispatch(setMinPriceAction(min_value))
   }
 
   function increasePrice(e) {
-    let max_value = e.target.value
-    setMaxPrice(max_value);
-    setPriceValue([minPrice, max_value]);
-    dispatch(setMaxPriceAction(max_value));
+    let max_value = parseInt(e.target.value);
+    setPriceValue([priceValue[0], max_value]);
+    props.setfilter("price_max",max_value)
   }
 
   function toggleVisibality() {
@@ -54,10 +40,6 @@ function Price(params) {
     setVisible(!visible);
   }
 
-  React.useEffect(() => {
-    setMinPrice(priceValue[0]);
-    setMaxPrice(priceValue[1]);
-  }, [priceValue])
 
   return (
     <div className="category border rounded priceFilterContainer filterContainer">
@@ -87,7 +69,7 @@ function Price(params) {
               className="form-control"
               id="min-price-input"
               placeholder="min. pris"
-              value={minPrice}
+              value={priceValue[0]}
               onChange={decreasePrice}
               style={{marginRight: 15}}
             ></input>
@@ -96,11 +78,11 @@ function Price(params) {
               className="form-control"
               id="max-price-input"
               placeholder="max. pris"
-              value={maxPrice}
+              value={priceValue[1]}
               onChange={increasePrice}
             ></input>
           </div>
-          <button className="btn btn-primary w-100 mt-3">Søk</button>
+          <button className="btn btn-primary w-100 mt-3" onClick={applyPrice}>Søk</button>
         </div>
       )}
     </div>

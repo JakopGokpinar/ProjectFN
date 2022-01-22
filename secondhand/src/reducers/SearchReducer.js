@@ -1,13 +1,14 @@
 const SearchReducer =  (state = {}, action) => {
     switch (action.type) {
+        case "CLEAR":
+            console.log("clearing filters");
+            return {};
         case "PRICE_MIN":
-            console.log(state)
             return {
                 ...state,
                 price_min: action.payload
             };        
         case "PRICE_MAX":
-            console.log(state)
             return {
                 ...state,
                 price_max: action.payload

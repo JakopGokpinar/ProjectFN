@@ -34,17 +34,8 @@ class Navbar extends React.Component {
   makeSearch = async () => {
       await this.checkCharacters();
       let query = `/search?q=${this.state.searchInput}`;
-      this.props.history.push( query);            
-      /* instanceAxs.get(query)
-        .then(response => {
-          
-            console.log("Search response", response);
-            var state = response.data.items
-            this.props.history.push( query,state);            
-        })
-        .catch(err => {
-            console.log(err)
-        }) */
+      this.props.history.push( query);    
+      window.location.reload(false)        
   }
 
   getLogin = () => {

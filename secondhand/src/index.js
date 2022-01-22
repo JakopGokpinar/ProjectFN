@@ -17,7 +17,9 @@ let store = createStore(persistedReducer, persistedState, composedEnhancer);
 persistStore(store);
 
 store.subscribe(() => {
-  saveState(store.getState());
+  saveState(
+    store.getState()
+  );
 });
 
 ReactDOM.render(

@@ -1,32 +1,41 @@
 import { persistReducer } from 'redux-persist'
-import localStorage from 'redux-persist/es/storage';
-
-import { rootReducer } from '../reducers/rootReducer'
+ import localStorage from 'redux-persist/es/storage';
+import { combineReducers } from 'redux';
+import LoginReducer from '../reducers/LoginReducer';
+import userReducer from '../reducers/userReducer';
+import SearchReducer from '../reducers/SearchReducer';
 
 const persistConfig = {
-  //timeout: 2000,
   key: 'root',
-  storage: localStorage
+  storage: localStorage,
 }
 
-const loadState = () => {
-    try {
-      const serializedState = window.localStorage.getItem('state');
-      
-      if(serializedState === null) {
-        return undefined;
-      }
-      return JSON.parse(serializedState);
-    } catch (err) {
-      console.log(err);
+const rootReducer = combineReducers({ 
+  isLogged: LoginReducer,
+  user: userReducer,
+  //  filters: persistReducer(sessionConfig, SearchReducer)
+  filters: SearchReducer
+}); 
+
+export const loadState = () => {
+  try {
+    const localState = localStorage.getItem('state');
+    
+    if (localState=== null) {
+      console.log("local state is undefined")
       return undefined;
-    }
-};
+    } 
+    return JSON.parse(JSON.stringify(localState));
+  } catch(err) {
+    console.log(err); 
+    return undefined;
+  }
+}
   
 export const saveState = (state) => {
     try {
-      const serializedState = JSON.stringify(state);
-      window.localStorage.setItem('state', serializedState);
+      var stateData = JSON.stringify(state);
+      localStorage.setItem("state",stateData)
     } catch (err) {
       console.log(err);
     }

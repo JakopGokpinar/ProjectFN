@@ -1,96 +1,114 @@
 import React from "react";
-import { useState , useLayoutEffect } from "react";
+import { useState } from "react";
 import "./SearchResult.css";
-
-
 import ProductCard from "../../Component/ProductCard/ProductCard.js";
 import { instanceAxs } from "../../api/Api";
 // import Date from "./FilterComponents/Date";
 import Price from "./FilterComponents/Price";
 import Status from "./FilterComponents/Status";
+import { useEffect } from "react";
 
 function SearchResult(props) {
-  // const queryParams= new URLSearchParams(props.location.search);  // get query parameter from url. queryParams.get('');
-  // const results = props.location.state;
+  const [items, setItems] = useState([]);
+  const [resultCount, setResultCount] = useState(items.length);
+  const [filters, setFilters] = useState({});
+  const urlParams = new URLSearchParams(props.location.search);
 
-const [sortOn, setSortOn] = useState('published');
-const [items, setItems] = useState([]);
-const [sortedItems, setSortedItems] = useState(items);
-//eslint-disable-next-line
-const [resultCount, setResultCount] = useState(items.length);
-const urlParams = new URLSearchParams(props.location.search); 
-//eslint-disable-next-line
-const [queryParams, setQueryParams] = useState({"q": urlParams.get('q'), "price_min": -2});
-
- function setSortingCategory(e) {
-  var sorting = e.target.value;
-  setSortOn(sorting);
- }
-
- function applyFilter () {
-   console.log("filtered...")
- }
-
- function changePrice(priceArr) {
-   var minPrice = priceArr[0];
-   var maxPrice = priceArr[1];
-
-   let params = {...queryParams, "price_min":minPrice, "price_max":maxPrice};
-   setQueryParams(params);
-   console.log("price value changed");
-   console.log(params)
- }
-
- function makeSearch() {
-  var queryString = '';
-  Object.entries(queryParams).forEach(([key, value]) => queryString += `${key}=${value}&`);
-  if(queryString[queryString.length -1] === '&') queryString = queryString.slice(0,queryString.length-1);
-  
-  console.log(queryString)
-  let query = `/search?${queryString}`;
-  instanceAxs.get(query)
-    .then(response => { 
-      console.log("Search response", response);
-      var returnedItems = response.data.items
-      setItems(returnedItems);
-      props.history.push( `/search?${queryString}`);            
-    })
-    .catch(err => {
-        console.log(err)
-    })
- }
-
- useLayoutEffect(() => {
-  makeSearch();
-}, []);
-
- React.useEffect(() => {
-  switch(sortOn){
-    case "published":
-      setSortedItems(items);
-      break;
-   case "lowToHigh":
-     let lowData = [].concat(items)
-     .sort((a, b) => a.annonce.price > b.annonce.price ? 1 : -1)
-      setSortedItems(lowData)
-      break;
-   case "hightToLow":
-    let highData = [].concat(items)
-    .sort((a, b) => a.annonce.price < b.annonce.price ? 1 : -1)
-     setSortedItems(highData)
-     break;
-   default: 
-      setSortedItems(items)
-     return console.log("default");
+  function setSortingCategory(e) {
+    var sorting = e.target.value;
+    setFilter("order", sorting);
   }
- }, [sortOn, items])
+
+  function getFiltersOnMount() {
+    let params = {};
+    for (const [key, value] of urlParams) {
+      params[key] = value;
+      console.log({ key, value });
+    }
+    console.log(params);
+    setFilters(params);
+    return params;
+  }
+
+  function makeSearch() {
+    var queryString = "";
+    Object.entries(filters).forEach(
+      ([key, value]) => (queryString += `${key}=${value}&`)
+    );
+    if (queryString[queryString.length - 1] === "&")
+      queryString = queryString.slice(0, queryString.length - 1);
+
+    console.log(queryString);
+    let query = `/search?${queryString}`;
+    instanceAxs
+      .get(query)
+      .then((response) => {
+        console.log("Search response", response);
+        if (response.data.status) {
+          var returnedItems = response.data.items;
+          setItems(returnedItems);
+          setResultCount(returnedItems.length);
+          window.history.pushState("page2", "seach made", query);
+        } else {
+          return console.log(response.data.message);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  const setFilter = (filter, prop) => {
+    let params = filters;
+    params[filter] = prop;
+    console.log(params);
+    setFilters(params);
+  };
+
+  useEffect(() => {
+    let params = getFiltersOnMount();
+    console.log(filters);
+    var queryString = "";
+    Object.entries(params).forEach(
+      ([key, value]) => (queryString += `${key}=${value}&`)
+    );
+    if (queryString[queryString.length - 1] === "&")
+      queryString = queryString.slice(0, queryString.length - 1);
+
+    console.log(queryString);
+    let query = `/search?${queryString}`;
+    instanceAxs
+      .get(query)
+      .then((response) => {
+        console.log("Search response", response);
+        if (response.data.status) {
+          var returnedItems = response.data.items;
+          setItems(returnedItems);
+          setResultCount(returnedItems.length);
+
+          props.history.push(`/search?${queryString}`);
+        } else {
+          return console.log(response.data.message);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   return (
     <div className="container searchResultPageContainer">
       <div className="searchFilterComponents">
-        <button className="btn btn-primary w-100" onClick={applyFilter}>Bruk Endringer</button>
-        <button className="btn btn-primary w-100">Lagre Søk</button>
-        <Price function={changePrice}/>
+        <button className="btn btn-primary w-100" onClick={makeSearch}>
+          Bruk Endringer
+        </button>
+        <button
+          className="btn btn-primary w-100"
+          onClick={() => console.log(filters)}
+        >
+          Lagre Søk
+        </button>
+        <Price setfilter={setFilter} />
         <Status></Status>
       </div>
       <div className="searchResults">
@@ -98,12 +116,18 @@ const [queryParams, setQueryParams] = useState({"q": urlParams.get('q'), "price_
           <div className="searchResults_Order">
             <p style={{ margin: 0 }}>{resultCount} treff</p>
             <div>
-            <label htmlFor="cars">Sort</label>
-            <select className="form-control" style={{width: 200}}  name="cars" id="cars" onChange={setSortingCategory}>
-              <option value="published">Publisert</option>
-              <option value="lowToHigh">Pris lav til høy</option>
-              <option value="hightToLow">Pris høy til lav</option>
-            </select>
+              <label htmlFor="cars">Sort</label>
+              <select
+                className="form-control"
+                style={{ width: 200 }}
+                name="cars"
+                id="cars"
+                onChange={setSortingCategory}
+              >
+                <option value="published">Publisert</option>
+                <option value="price_desc">Pris lav til høy</option>
+                <option value="price_asc">Pris høy til lav</option>
+              </select>
             </div>
           </div>
 
@@ -113,28 +137,23 @@ const [queryParams, setQueryParams] = useState({"q": urlParams.get('q'), "price_
           </div>
         </div>
         <div className="searchResults_Items">
-        
-
-         
           <div className="row">
-            {
-              sortedItems.map((item, index) => {
-                  return(
-                    <>
-                    <div className="col">
-                      <ProductCard
+            {items.map((item, index) => {
+              return (
+                <>
+                  <div className="col">
+                    <ProductCard
                       key={item.annonce._id}
                       img={item.annonce.images}
                       price={item.annonce.price}
                       name={item.annonce.title}
                       id={item.annonce._id}
                     />
-                    </div>
-                    {index %2 !== 0 && <div className="w-100"></div>}
-                    </>
-                  )
-                })
-            }
+                  </div>
+                  {index % 2 !== 0 && <div className="w-100"></div>}
+                </>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { instanceAxs } from "../../api/Api";
 // import Date from "./FilterComponents/Date";
 import Price from "./FilterComponents/Price";
 import Status from "./FilterComponents/Status";
+import Tags from "./FilterComponents/Tags.js";
 import { useEffect } from "react";
 
 function SearchResult(props) {
@@ -13,6 +14,7 @@ function SearchResult(props) {
   const [resultCount, setResultCount] = useState(items.length);
   const [filters, setFilters] = useState({});
   const urlParams = new URLSearchParams(props.location.search);
+  const [tagArray, setTagArray] = useState([{key: "Bebek"}])
 
   function setSortingCategory(e) {
     var sorting = e.target.value;
@@ -59,12 +61,58 @@ function SearchResult(props) {
   }
 
   const setFilter = (filter, prop) => {
-    let params = filters;
-    params[filter] = prop;
-    console.log(params);
-    setFilters(params);
+    if(filter === "status"){
+      let parameters = filters;
+      let val = parameters["status"];
+      if(val === undefined || val === null) val = "";
+      if (!val.includes(prop)) val += " " + prop;
+      val = val.trim();
+      parameters["status"] = val;
+      setFilters(parameters);
+    } else {
+      let paramss = filters;
+      paramss[filter] = prop;
+      setFilters(paramss);
+    }
+      addFilterTag(filter)
   };
 
+  function addFilterTag(filter){
+    let tagArr = tagArray;
+    tagArr.push({key: filter})
+    setTagArray(tagArr);
+  }
+
+  const resetFilter = (filter,filterOrProp,property) => {    // remove a filter completely or erase a prop of it
+    var prop = property || undefined;
+    console.log("prop",prop)
+    if (filterOrProp === "prop"){
+      let params = filters;
+      if (params[filter] !== undefined  && params[filter] !== null && prop !== undefined) {
+        let parameter = params[filter];
+        let newparameter = parameter.replace(prop,"");
+        newparameter = newparameter.trim();
+        console.log(newparameter);
+        params[filter] = newparameter;
+        if (params[filter] === '') delete filters[filter];
+        console.log(filters);
+      }
+    }
+     else {      
+      let params = filters;
+      if (params[filter] !== undefined && params[filter] !== null){
+        delete filters[filter]
+        console.log(filters);
+    }
+  }
+}
+
+function removeTag(filter){
+  delete filters[filter];
+  tagArray.shift()
+  
+  console.log("tag removed")
+}
   useEffect(() => {
     let params = getFiltersOnMount();
     console.log(filters);
@@ -97,26 +145,26 @@ function SearchResult(props) {
   }, []);
 
   return (
-    <div className="container searchResultPageContainer">
+    <div className="container-fluid searchResultPageContainer">
       <div className="searchFilterComponents">
-        <button className="btn btn-primary w-100" onClick={makeSearch}>
+        <button className="btn btn-primary" onClick={makeSearch}>
           Bruk Endringer
         </button>
         <button
-          className="btn btn-primary w-100"
+          className="btn btn-primary "
           onClick={() => console.log(filters)}
         >
           Lagre Søk
         </button>
         <Price setfilter={setFilter} />
-        <Status></Status>
+        <Status setfilter={setFilter} resetFilter={resetFilter}></Status>
       </div>
       <div className="searchResults">
         <div className="searchResults_Info">
-          <div className="searchResults_Order">
+          <div className="searchResults_Order ">
             <p style={{ margin: 0 }}>{resultCount} treff</p>
+
             <div>
-              <label htmlFor="cars">Sort</label>
               <select
                 className="form-control"
                 style={{ width: 200 }}
@@ -131,17 +179,20 @@ function SearchResult(props) {
             </div>
           </div>
 
-          <div className="searchResults_Tags">
-            <span id="filterTag">Brukt</span>
-            <span id="filterTag">Til salgs</span>
-          </div>
+        <div className="filterTagsContainer">
+        {
+            tagArray.map(tag => {
+              return <Tags tag={tag} removeTag={removeTag}/>
+            })
+          }
         </div>
+          
+                  </div>
         <div className="searchResults_Items">
-          <div className="row">
             {items.map((item, index) => {
               return (
                 <>
-                  <div className="col">
+                  <div className="itemCol">
                     <ProductCard
                       key={item.annonce._id}
                       img={item.annonce.images}
@@ -150,13 +201,12 @@ function SearchResult(props) {
                       id={item.annonce._id}
                     />
                   </div>
-                  {index % 2 !== 0 && <div className="w-100"></div>}
                 </>
               );
             })}
-          </div>
         </div>
       </div>
+
     </div>
   );
 }

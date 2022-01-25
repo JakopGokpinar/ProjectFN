@@ -25,8 +25,11 @@ function getFilterParams(query,itemArr) {
   var finalItemArray = [];
 
   var textInput = queryParams.get('q');
-finalItemArray = itemArr.filter((item) =>
-  item.annonce.title.includes(textInput)
+finalItemArray = itemArr.filter((item) =>{
+  let input = textInput.toUpperCase();
+  let title = item.annonce.title.toUpperCase();
+  return title.includes(input)
+}
 );
 
   if(queryParams.has('price_min')) {
@@ -42,28 +45,38 @@ finalItemArray = itemArr.filter((item) =>
     maxPrice > item.annonce.price  
     );
   }
-  
-  if(queryParams.has('order')) {
-    let type = queryParams.get('order');
-    switch(type){
-      case "published":
-        return finalItemArray;
-     case "price_desc":
-       let priceDescArray = [].concat(finalItemArray)
-       .sort((a, b) => a.annonce.price > b.annonce.price ? 1 : -1)
-        finalItemArray = priceDescArray;
-        break;
-     case "price_asc":
-      let priceAscArray = [].concat(finalItemArray)
-      .sort((a, b) => a.annonce.price < b.annonce.price ? 1 : -1)
-      finalItemArray = priceAscArray;
-       break;
-     default: 
-       return finalItemArray;
+  if(queryParams.has('status')){
+    let status = queryParams.get('status');
+    console.log(status)
+    finalItemArray = finalItemArray.filter(item => {
+      return status.includes(item.annonce.status)
+    })
   }
-  return finalItemArray;
-}
+
+  finalItemArray = orderItems(queryParams, finalItemArray);
+
 return finalItemArray;  
+}
+
+function orderItems(queryParams, finalItemArray) {
+  let type = queryParams.get('order');
+  switch(type){
+    case "published":
+      return finalItemArray;
+   case "price_desc":
+     let priceDescArray = [].concat(finalItemArray)
+     .sort((a, b) => a.annonce.price > b.annonce.price ? 1 : -1)
+      finalItemArray = priceDescArray;
+      break;
+   case "price_asc":
+    let priceAscArray = [].concat(finalItemArray)
+    .sort((a, b) => a.annonce.price < b.annonce.price ? 1 : -1)
+    finalItemArray = priceAscArray;
+     break;
+   default: 
+     return finalItemArray;
+}
+return finalItemArray;
 }
 
 module.exports = { productSearch };

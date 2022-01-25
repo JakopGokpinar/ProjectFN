@@ -2,6 +2,7 @@ import React from 'react';
 import ProductCard from '../../Component/ProductCard/ProductCard.js';
 import { instanceAxs } from '../../api/Api.js';
 import { fileApi } from '../../config/index.js';
+import "./Menu.css";
 
 class Menu extends React.Component{
     constructor(props){
@@ -29,20 +30,20 @@ class Menu extends React.Component{
     
     render(){
         return(
-            <div className="container" id="menu-div">
-                <div className="row">  
+            <div className="container HomePageContainer">
+                <div className="homePageItems">  
                     { (this.state.items.length > 0 && this.state.isLoading === false) ? 
                     
                     (this.state.items.map(item => {
                         var annonce = item.annonce;
                         return(
-                            <div className="col-md-4 mb-4" key={annonce.title}>
-                                <ProductCard 
+                                <div key={annonce._id}>
+                                    <ProductCard 
                                     img={annonce.images} 
                                     price={annonce.price} 
                                     name={annonce.title} 
-                                    id={annonce._id}/>                           
-                            </div>
+                                    id={annonce._id}/> 
+                                    </div>                          
                         ) 
                     }))
                     : 

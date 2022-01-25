@@ -1,0 +1,17 @@
+.filterTagsContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#tag {
+  margin-right: 10px;
+  padding: 0px 5px;
+  border: 2px solid black;
+  border-radius: 20%;
+cursor: pointer;
+}
+
+#tag:hover{
+    text-decoration: line-through;
+}

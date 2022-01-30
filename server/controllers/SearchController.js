@@ -9,8 +9,18 @@ productSearch = (req, res) => {
     .toArray()
     .then((items) => {
        const result = getFilterParams(req.query,items);
+      var {minPrice, maxPrice } = getMaxAndMinPrice(result);
+      var additionMap = new Map();
+      additionMap.set('minPrice',minPrice)
+      additionMap.set('maxPrice', maxPrice)
+      
       //console.log(result);
-      return res.json({ message: "items found successfully",status:true, items: result });
+      return res.json({ 
+        message: "items found successfully",
+        status:true, 
+        items: result,
+        additional: {minPrice: minPrice, "maxPrice":maxPrice}
+      });
     })
     .catch((err) => {
       console.log(err);
@@ -23,7 +33,7 @@ function getFilterParams(query,itemArr) {
   console.log(queryParams)
   var itemArr = itemArr;
   var finalItemArray = [];
-
+  Math.min()
   var textInput = queryParams.get('q');
 finalItemArray = itemArr.filter((item) =>{
   let input = textInput.toUpperCase();
@@ -79,5 +89,16 @@ function orderItems(queryParams, finalItemArray) {
 return finalItemArray;
 }
 
+getMaxAndMinPrice = (items) => {
+  var priceArr = []
+  for(var e of items){
+    priceArr.push(e.annonce.price)
+  }
+  console.log(priceArr)
+  var minPrice = Math.min(...priceArr)
+  var maxPrice = Math.max(...priceArr);
+
+  return {minPrice,maxPrice}
+}
 module.exports = { productSearch };
 

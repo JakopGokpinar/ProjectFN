@@ -1,15 +1,11 @@
-import './Tags.css';
-import { useState } from 'react';
+import "./Tags.css";
 
 function Tags(props) {
-
-    return(
-        <div className="filterTagsContainer">
-            <span id="tag" onClick={() => props.removeTag(props.tag.key)}>
-                {props.tag.key}
-            </span>
-          </div>
-    )
+  return (
+    <span id="tag" onClick={() => props.removeTag(props.tag.key,props.tag.queryKey)}>
+      {props.tag.value}
+    </span>
+  );
 }
 
 export default Tags;

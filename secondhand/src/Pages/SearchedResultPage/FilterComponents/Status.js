@@ -5,8 +5,9 @@ import "./FilterComponents.css";
 
 function Status(props) {
   const [isVisible, setVisible] = useState(true);
-  const [statusNew, setStatusNew] = useState(false);
-  const [statusUsed, setStatusUsed] = useState(false);
+  const [statusNew, setStatusNew] = useState({current: false, default:false});
+  const [statusUsed, setStatusUsed] = useState({current: false, default:false});
+  const [checkedValues, setCheckedValues] = useState(props.checkedState)
 
   function toggleVisibality() {
     var visible = isVisible;
@@ -14,31 +15,53 @@ function Status(props) {
   }
 
   function changeStatus(e,filter) {
-    if(filter === "status_new") setStatusNew(!statusNew)     
-    else if(filter === "status_used") setStatusUsed(!statusUsed);
+    if(filter === "status_new") setStatusNew({current: !statusNew.current, default: false})     
+    else if(filter === "status_used") setStatusUsed({current: !statusUsed.current, default: false});
   }
 
   React.useEffect(() => {
-    if(statusNew) props.setfilter("status","new");
-    else props.resetFilter("status","prop","new");
-  }, [statusNew])
+    if(statusNew.current) props.setfilter("status","new","statusNew","Nytt");
+    else {
+      props.removeFilter("status","new");
+      setStatusNew({current:statusNew.default, default: false})
+    };
+  }, [statusNew.current])
 
   React.useEffect(() => {
-      if(statusUsed) props.setfilter("status","used")
-      else props.resetFilter("status","prop","used");
-  }, [statusUsed])
+      if(statusUsed.current) props.setfilter("status","used","statusUsed","Brukt")
+      else {
+        props.removeFilter("status","used");
+        setStatusUsed({current: statusUsed.default, default: false})
+      }
+  }, [statusUsed.current])
+
+  React.useEffect(() => {
+    var checkedState = String(props.checkedState)
+    if(checkedState.includes('new')){
+      setStatusNew({current:true,default:false})
+    } else {
+      setStatusNew({current: statusNew.default, default: false})
+    }
+
+    if(checkedState.includes('used')){
+      setStatusUsed({current: true, default: false});
+    } else {
+      setStatusUsed({current: statusUsed.default, default: false})
+    }
+
+}, [props.checkedState])
 
   return (
     <div className="category border rounded priceStatusContainer filterContainer">
       <Header title="Status" toggleVisible={toggleVisibality} />
-
+      <p>{props.checkedState}</p>
       {isVisible && (
         <div className="priceFilterComponents filterBody">
           <div className="form-check mb-2">
             <input
               className="form-check-input"
               type="checkbox"
-              checked={statusNew}
+              checked={statusNew.current}
               
               onChange={(e) => changeStatus(e,"status_new")}
             />
@@ -54,7 +77,7 @@ function Status(props) {
             <input
               className="form-check-input"
               type="checkbox"
-              checked={statusUsed}
+              checked={statusUsed.current }
               onChange={(e) => changeStatus(e,"status_used")}
             />
             <label

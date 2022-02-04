@@ -22,7 +22,6 @@ class Navbar extends React.Component {
       searchInput: event.target.value,
     });
   };
-
   checkCharacters = async () => {
       let input = this.state.searchInput.trim();
       let searchInput = input.replace(/\s/g, "+");

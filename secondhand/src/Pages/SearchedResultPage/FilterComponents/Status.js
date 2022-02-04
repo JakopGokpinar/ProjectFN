@@ -8,21 +8,36 @@ function Status(props) {
   const [statusNew, setStatusNew] = useState({current: false, default:false});
   const [statusUsed, setStatusUsed] = useState({current: false, default:false});
   const [checkedValues, setCheckedValues] = useState(props.checkedState)
-
+  const [statNew, setStatNew] = useState(false)
+  const [statUsed, setStatUsed] = useState(false)
   function toggleVisibality() {
     var visible = isVisible;
     setVisible(!visible);
   }
 
   function changeStatus(e,filter) {
-    if(filter === "status_new") setStatusNew({current: !statusNew.current, default: false})     
-    else if(filter === "status_used") setStatusUsed({current: !statusUsed.current, default: false});
+    var target = e.target.id;
+    if(target === "newCheckbox" || target === "newCheckboxLabel"){
+      var snew = !statNew;
+      if (snew === true) props.setfilter("status","new","statusNew", "Nytt");
+      else props.setfilter("status",'',"statusNew",'');
+    }
+    /* if(filter === "status_new") setStatusNew({current: !statusNew.current, default: false})     
+    else if(filter === "status_used") setStatusUsed({current: !statusUsed.current, default: false}); */
   }
 
   React.useEffect(() => {
+    if(props.state === undefined){
+      setStatNew(false)
+    } else {
+      setStatNew(true)
+    }
+  }, [props.state])
+
+/*   React.useEffect(() => {
     if(statusNew.current) props.setfilter("status","new","statusNew","Nytt");
     else {
-      props.removeFilter("status","new");
+      props.setfilter("status",'',"statusNew",'');
       setStatusNew({current:statusNew.default, default: false})
     };
   }, [statusNew.current])
@@ -49,7 +64,7 @@ function Status(props) {
       setStatusUsed({current: statusUsed.default, default: false})
     }
 
-}, [props.checkedState])
+}, [props.checkedState]) */
 
   return (
     <div className="category border rounded priceStatusContainer filterContainer">
@@ -61,12 +76,13 @@ function Status(props) {
             <input
               className="form-check-input"
               type="checkbox"
-              checked={statusNew.current}
-              
+              id="newCheckbox"
+              checked={statNew}
               onChange={(e) => changeStatus(e,"status_new")}
             />
             <label
               className="form-check-label"
+              id="newCheckboxLabel"
               style={{ cursor: "pointer" }}
               onClick={(e) => changeStatus(e,"status_new")}
             >
@@ -76,12 +92,14 @@ function Status(props) {
           <div className="form-check">
             <input
               className="form-check-input"
+              id="usedCheckbox"
               type="checkbox"
               checked={statusUsed.current }
               onChange={(e) => changeStatus(e,"status_used")}
             />
             <label
               className="form-check-label"
+              id="usedCheckboxLabel"
               style={{ cursor: "pointer" }}
               onClick={(e) => changeStatus(e,"status_used")}
             >

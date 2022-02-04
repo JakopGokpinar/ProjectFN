@@ -95,7 +95,7 @@ getMaxAndMinPrice = (items) => {
     priceArr.push(e.annonce.price)
   }
   console.log(priceArr)
-  var minPrice = Math.min(...priceArr)
+  var minPrice = 0;
   var maxPrice = Math.max(...priceArr);
 
   return {minPrice,maxPrice}

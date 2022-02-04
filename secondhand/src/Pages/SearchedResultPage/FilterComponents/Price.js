@@ -7,79 +7,78 @@ import "./FilterComponents.css";
 
 function Price(props) {
   const [isVisible, setVisible] = useState(true);
+  const [priceMinimum, setPriceMinimum] = useState('')
+  const [priceMaximum, setPriceMaximum] = useState('')
   const [priceMinDefault, setPriceMinDefault] = useState(props.priceObject.minPrice);
   const [priceMaxDefault, setPriceMaxDefault] = useState(props.priceObject.maxPrice)
   const [sliderValue, setSliderValue] = useState([props.priceObject.minPrice,props.priceObject.maxPrice])
-  const [priceValue, setPriceValue] = useState([
-    {current: props.priceObject.minPrice, default: priceMinDefault},
-    {current: props.priceObject.maxPrice, default: priceMaxDefault}
-  ]);
 
   function valuetext(value) {
     return `${value} kr`;
   }
 
+  function applyPrice() {
+  
+      props.setfilter("price_min", priceMinimum, "minPrice", `fra ${priceMinimum}`);
+
+      props.setfilter("price_max", priceMaximum, "maxPrice", `fra ${priceMaximum}`);
+    
+  }
+
   function decreasePrice(e) {
     let min_value = parseInt(e.target.value);
-    if(min_value >= props.priceObject.minPrice) {
-      setSliderValue([min_value, sliderValue[1]])
+    if(min_value >= 0) {
+      setPriceMinimum(min_value)
     } else if(String(min_value) === "NaN"){
-      setSliderValue(['', sliderValue[1]])
-    } else if(min_value > 0&& min_value < props.priceObject.minPrice){
-      setSliderValue([min_value, sliderValue[1]])
-    }
+      setPriceMinimum('')
+    } 
   }
 
   function increasePrice(e) {
-    let max_value = parseInt(e.target.value);
-    if(max_value <= props.priceObject.maxPrice) {
-      setSliderValue([sliderValue[0], max_value])
-    } else if(String(max_value) === "NaN"){
-      setSliderValue([sliderValue[0], ''])
-    }
+    let value = parseInt(e.target.value);
+    if(value >= 0) {
+      setPriceMaximum(value)
+    } else if(String(value) === "NaN"){
+      setPriceMaximum('')
+    } 
   }
 
   function toggleVisibality() {
-    console.log(props.priceObject.minPrice);
     var visible = isVisible;
     setVisible(!visible);
   }
 
   const handleChange = (event, newValue) => { 
-    setSliderValue(newValue);
-    var minPrice = priceValue[0].current;
-    var maxPrice = priceValue[1].current;
-    if (newValue[0] !== minPrice) {
-       props.setfilter("price_min", newValue[0], "minPrice",`fra ${newValue[0]}`);
-    } else if (newValue[1] !== maxPrice) {
-      props.setfilter("price_max", newValue[1], "maxPrice", `til ${newValue[1]}`);
+    var minVal = sliderValue[0];
+    var maxVal = sliderValue[1];
+
+  if(newValue[1] === priceMaxDefault){
+      props.setfilter("price_max",'',"maxPrice",'')
+  } else if(maxVal !== newValue[1]) {
+    props.setfilter("price_max", newValue[1],"maxPrice", `til ${newValue[1]}`)
+  }
+
+  if(newValue[0] === priceMinDefault){
+    props.setfilter("price_min",'',"minPrice",'')
+  } else if(minVal !== newValue[0]){
+      props.setfilter("price_min", newValue[0],"minPrice", `fra ${newValue[0]}`)
     }
+
+    setSliderValue(newValue);
   };
 
-  React.useEffect(() => {
-    console.log("slider value",sliderValue)
-    setPriceValue([
-      {current: sliderValue[0], default: priceMinDefault},
-      {current: sliderValue[1], default: priceMaxDefault}
-    ])
-  }, [sliderValue])
-
-  React.useEffect(() => {
-    var priceState = props.priceState;
-    var priceMax = props.priceState.priceMax;
+/*   React.useEffect(() => {
     var priceMin = props.priceState.priceMin;
-    console.log("before", priceMax + " " + priceMin)
-    if(priceState.priceMax === undefined){
-      priceMax = priceMaxDefault;
-    } 
-    if(priceState.priceMin === undefined){
-      priceMin = priceMinDefault
-    } 
-    console.log("after", priceMax + " " + priceMin)
+    var priceMax = props.priceState.priceMax;
 
-    setSliderValue([priceMin, priceMax])
-    
-  }, [props.priceState])
+    if(priceMin !== undefined && priceMax !== undefined) {
+      setSliderValue([priceMin,priceMax])
+    } else if(priceMin !== undefined) {
+      setSliderValue([priceMin, sliderValue[1]])
+    } else if(priceMax !== undefined) {
+      setSliderValue([sliderValue[0],priceMax])
+    }
+  }, [props.priceState]) */
 
   return (
     <div className="category border rounded priceFilterContainer filterContainer">
@@ -89,10 +88,10 @@ function Price(props) {
           <div className="priceSliderDiv">
             <div className="showNumbersUponSlider w-100">
               <label className="text-muted">
-                <small>{priceValue[0].current} kr</small>
+                <small>{sliderValue[0]} kr</small>
               </label>
               <label className="text-muted">
-                <small>{priceValue[1].current} kr</small>
+                <small>{sliderValue[1]} kr</small>
               </label>
             </div>
             <Slider
@@ -112,7 +111,6 @@ function Price(props) {
               className="form-control"
               id="min-price-input"
               placeholder="min. pris"
-              value={priceValue[0].current}
               onChange={decreasePrice}
               style={{ marginRight: 15 }}
             ></input>
@@ -121,11 +119,10 @@ function Price(props) {
               className="form-control"
               id="max-price-input"
               placeholder="max. pris"
-              value={priceValue[1].current}
               onChange={increasePrice}
             ></input>
           </div>
-          <button className="btn btn-primary w-100 mt-3" onClick="">
+          <button className="btn btn-primary w-100 mt-3" onClick={applyPrice}>
             Søk
           </button>
         </div>

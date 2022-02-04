@@ -39,16 +39,24 @@ removeTag(tagKey,filterKey, filterValue){
 }
 */
 class SearchResult extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      items: [],   
-      filtersWithMultipleQueries: ["status","location"],
+      items: [],
+      filtersWithMultipleQueries: ["status", "location"],
       resultCount: 0,
       tagArray: [],
       urlParams: new URLSearchParams(props.location.search),
-      filters: {q: new URLSearchParams(props.location.search).get('q')},
+      filters: [
+        {
+          queryKey: "q",
+          queryValue: new URLSearchParams(props.location.search).get("q"),
+        },
+        {
+          key: "def",
+          value: "asd",
+        },
+      ],
       minAndMaxPrice: undefined,
     };
   }
@@ -60,32 +68,95 @@ class SearchResult extends React.Component {
 
   getFiltersOnMount = () => {
     let urlParams = this.state.urlParams;
-    
-    var params = {};
+
+    var params = [];
     for (const [key, value] of urlParams) {
-      params[key] = value;
-      console.log({ key, value });
+      var filter = {};
+
+      switch(key){
+        case 'q':
+          filter = {
+            queryKey: key,
+            queryValue: value,
+            tagKey: undefined,
+            tagValue: undefined,
+          };
+          params.push(filter)
+          break;
+        case 'price_max':
+          filter = {
+            queryKey: key,
+            queryValue: value,
+            tagKey: "maxPrice",
+            tagValue: `til ${value}`,
+          };
+          params.push(filter);
+          break;
+        case 'price_min':
+          filter = {
+            queryKey: key,
+            queryValue: value,
+            tagKey: "minPrice",
+            tagValue: `fra ${value}`,
+          };
+          params.push(filter);
+          break;
+        case 'status':
+          filter = {
+            queryKey: key,
+            queryValue: value,
+            tagKey: "status",
+            tagValue: value,
+          };
+          params.push(filter);
+          break;
+      }
+      
     }
     this.setState({
-      filters:params
+      filters: params,
     });
+    this.getTags(params)
     return params;
+  };
+
+  getTags = (queryFilters) => {
+    var filters = queryFilters === undefined ? this.state.filters : queryFilters;
+    var tags = [];
+
+    for (const filter of filters) {
+      if (filter.tagKey !== undefined) {
+        var tag = {
+          key: filter.tagKey,
+          value: filter.tagValue,
+          queryKey: filter.queryKey,
+          queryValue: filter.queryValue,
+        };
+        tags.push(tag);
+      }
+    }
+    this.setState({
+      tagArray: tags,
+    });
+    return tags;
   };
 
   makeSearch = () => {
     let filters = this.state.filters;
     var queryString = "";
-    Object.entries(filters).forEach(
+    for (const filter of filters) {
+      queryString += `${filter.queryKey}=${filter.queryValue}&`;
+    }
+    /* Object.entries(filters).forEach(
       ([key, value]) => (queryString += `${key}=${value}&`)
-    );
+    ); */
     if (queryString[queryString.length - 1] === "&")
       queryString = queryString.slice(0, queryString.length - 1);
-
     let query = `/search?${queryString}`;
     instanceAxs
       .get(query)
       .then((response) => {
-        console.log("Search response", response);
+        // console.log("Search response", response);
         if (response.data.status) {
           var returnedItems = response.data.items;
           this.setState({
@@ -93,6 +164,9 @@ class SearchResult extends React.Component {
             resultCount: returnedItems.length,
           });
           window.history.pushState("page2", "seach made", query);
+          console.log(this.state.filters)
+          // this.getFiltersOnMount();
+          // window.location.href =  query
         } else {
           return console.log(response.data.message);
         }
@@ -102,53 +176,59 @@ class SearchResult extends React.Component {
       });
   };
 
-  addFilterTag = (key, value, queryKey, queryValue) => {
-    let tagArr = this.state.tagArray;
-    var object = tagArr.find((obj) => obj.key === key);
-    var objIndex = tagArr.indexOf(object);
-    if (objIndex !== -1) {
-      tagArr[objIndex] = {
-        key,
-        value: value,
-        queryKey,
-        queryValue: queryValue,
-      };
-    } else {
-      tagArr.push({
-        key: key,
-        value: value,
+  setFilter = (queryKey, queryValue, tagKey, tagValue) => {
+    var queryFilters = this.state.filters;
+    var multipleQueryFilters = this.state.filtersWithMultipleQueries;
+    var filter = queryFilters.find((element) => element.tagKey === tagKey);
+    var index = queryFilters.indexOf(filter);
+
+    if (queryValue === '') {
+      if(index !== -1){
+        queryFilters.splice(index,1)
+        this.setState({
+          filters: queryFilters
+        });
+        this.removeTag(tagKey, queryKey)
+      }
+      return;
+    }
+
+    if (index === -1) {
+      var newFilter = {
         queryKey: queryKey,
         queryValue: queryValue,
+        tagKey: tagKey,
+        tagValue: tagValue,
+      };
+
+      queryFilters.push(newFilter);
+
+      this.setState({
+        filters: queryFilters,
       });
+      this.addFilterTag(tagKey,tagValue,queryKey, queryValue);
+      return;
     }
-    this.setState({
-      tagArr: tagArr,
-    });
-    console.log("tagarr",tagArr)
-  };
 
-  setFilter = (filter, queryValue, tagKey, tagValue) => {
-    var queryFilters = this.state.filters;
+    if (multipleQueryFilters.includes(queryKey, 0)) {
+      var qValue = filter.queryValue;
+      if (qValue === undefined || qValue === null) qValue = "";
 
-    var multipleQueryFilters = this.state.filtersWithMultipleQueries;
-
-    if(multipleQueryFilters.includes(filter,0)){
-      var qValue = queryFilters[filter];
-      if(qValue === undefined || qValue === null) qValue = '';
-
-      if(!qValue.includes(queryValue)) qValue += " " + queryValue;
+      if (!qValue.includes(queryValue)) qValue += " " + queryValue;
       qValue = qValue.trim();
 
-      queryFilters[filter] = qValue;
+      filter.queryValue = qValue;
+      queryFilters[index] = filter;
+      this.addFilterTag(tagKey, tagValue, filter, qValue)
     } else {
-      queryFilters[filter] = queryValue;
+      filter.queryValue = queryValue;
+      filter.tagValue = tagValue;
+      queryFilters[index] = filter;
+      this.addFilterTag(tagKey, tagValue, filter, queryValue)
     }
-
     this.setState({
-      filters: queryFilters
-    })
-
-    this.addFilterTag(tagKey,tagValue,filter,queryValue);
+      filters: queryFilters,
+    });
 
     /* if (filter === "status") {
       let val = parameters["status"];
@@ -169,9 +249,37 @@ class SearchResult extends React.Component {
     } */
   };
 
+    addFilterTag = (key, value, queryKey, queryValue) => {
+    let tagArr = this.state.tagArray;
+    var tagObj = {};
+    var object = tagArr.find((obj) => obj.key === key);
+    var objIndex = tagArr.indexOf(object);
+    if (objIndex !== -1) {
+      console.log("hey")
+      tagObj = {
+        key,
+        value: value,
+        queryKey,
+        queryValue: queryValue,
+      };
+      tagArr[objIndex] = tagObj;
+    } else {
+      tagArr.push({
+        key: key,
+        value: value,
+        queryKey: queryKey,
+        queryValue: queryValue,
+      });
+    }
+    this.setState({
+      tagArr: tagArr,
+    });
+    console.log("tagarr",tagArr)
+  };
+
   removeFilter = (filter, queryValue) => {
     // remove a filter completely or erase a prop of it
-   var queryFilters = this.state.filters;
+    /* var queryFilters = this.state.filters;
     var multipleQueryFilters = this.state.filtersWithMultipleQueries;
     var qValue = queryValue || undefined;
 
@@ -202,7 +310,7 @@ class SearchResult extends React.Component {
           let index = tagArray.indexOf(obj);
           tagArray.splice(index, 1);
           this.setState({ tagArray });
-        }
+        } */
     // this.removeTag("",filter)
     /* var prop = property || undefined;
     var params = this.state.filters;
@@ -231,23 +339,17 @@ class SearchResult extends React.Component {
 
   removeTag = (key, queryKey) => {
     var tagArray = this.state.tagArray;
-    console.log("tagarray", tagArray)
     var qKey = queryKey || undefined;
     let obj = tagArray.find((x) => x.key === key);
-    console.log("object",obj)
     if(obj !== undefined){
       let index = tagArray.indexOf(obj);
       tagArray.splice(index, 1);
       this.setState({ tagArray });
-      this.removeFilter(obj.queryKey, obj.queryValue);
     } 
-    // if(qKey !== undefined) this.removeFilter(qKey);
-    
-    //  this.makeSearch();
   };
 
   removeAllFilters = () => {
-    var filterObj = this.state.filters;
+    /*     var filterObj = this.state.filters;
     filterObj = Object.fromEntries(
       Object.entries(filterObj).filter(([key]) => key === "q")
     ); // filter all  params except for "q" and convert the returned array back to object
@@ -255,19 +357,21 @@ class SearchResult extends React.Component {
       tagArray: [],
       filters: filterObj,
     });
-    console.log(this.state.filters);
+    console.log(this.state.filters); */
   };
 
-  componentDidUpdate() {
-    
+  componentDidUpdate(prevProps) {
+    if (this.props.location.search !== prevProps.location.search) {
+  }
   }
 
   componentDidMount() {
     let params = this.getFiltersOnMount();
+    this.getTags(params);
     var queryString = "";
-    Object.entries(params).forEach(
-      ([key, value]) => (queryString += `${key}=${value}&`)
-    );
+    for (const filter of params) {
+      queryString += `${filter.queryKey}=${filter.queryValue}&`;
+    }
     if (queryString[queryString.length - 1] === "&")
       queryString = queryString.slice(0, queryString.length - 1);
 
@@ -275,7 +379,7 @@ class SearchResult extends React.Component {
     instanceAxs
       .get(query)
       .then((response) => {
-        console.log("Search response", response);
+        // console.log("Search response", response);
         var minPrice = response.data.additional.minPrice;
         var maxPrice = response.data.additional.maxPrice;
         if (response.data.status) {
@@ -283,7 +387,7 @@ class SearchResult extends React.Component {
           this.setState({
             items: returnedItems,
             resultCount: returnedItems.length,
-            minAndMaxPrice: { minPrice: minPrice, maxPrice: maxPrice }
+            minAndMaxPrice: { minPrice: minPrice, maxPrice: maxPrice },
           });
 
           this.props.history.push(`/search?${queryString}`);
@@ -297,6 +401,7 @@ class SearchResult extends React.Component {
   }
 
   render() {
+
     return (
       <div className="container-fluid searchResultPageContainer">
         <div className="searchFilterComponents">
@@ -316,13 +421,17 @@ class SearchResult extends React.Component {
             <Price
               setfilter={this.setFilter}
               priceObject={this.state.minAndMaxPrice}
-              priceState={{priceMin: this.state.filters["price_min"], priceMax: this.state.filters["price_max"]}}
+              priceState={{
+                priceMin: this.state.filters.find(element => element.queryKey === "price_min"),
+                priceMax: this.state.filters.find(element => element.queryKey === "price_max"),
+              }}
             />
           )}
           <Status
             setfilter={this.setFilter}
             removeFilter={this.removeFilter}
-            checkedState={(this.state.filters["status"])}
+            checkedState={this.state.filters["status"]}
+            state={this.state.filters.find(e => e.tagKey === "statusNew")}
           ></Status>
         </div>
         <div className="searchResults">
@@ -347,7 +456,7 @@ class SearchResult extends React.Component {
 
             <div className="filterTagsContainer">
               {this.state.tagArray.map((tag) => {
-                return <Tags tag={tag} removeTag={this.removeTag} />;
+                return <Tags tag={tag} setfilter={this.setFilter} />;
               })}
             </div>
           </div>
@@ -355,9 +464,8 @@ class SearchResult extends React.Component {
             {this.state.items.map((item, index) => {
               return (
                 <>
-                  <div className="itemCol">
-                    <ProductCard
-                      key={item.annonce._id}
+                  <div className="itemCol" key={item.annonce._id}>
+                    <ProductCard                
                       img={item.annonce.images}
                       price={item.annonce.price}
                       name={item.annonce.title}

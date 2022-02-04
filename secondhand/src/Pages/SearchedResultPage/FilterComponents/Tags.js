@@ -1,8 +1,9 @@
 import "./Tags.css";
 
 function Tags(props) {
+
   return (
-    <span id="tag" onClick={() => props.removeTag(props.tag.key,props.tag.queryKey)}>
+    <span id="tag" onClick={() => props.setfilter(props.tag.queryKey, '',props.tag.key,'')}>
       {props.tag.value}
     </span>
   );

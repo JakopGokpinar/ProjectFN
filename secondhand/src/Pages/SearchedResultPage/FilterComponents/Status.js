@@ -5,71 +5,49 @@ import "./FilterComponents.css";
 
 function Status(props) {
   const [isVisible, setVisible] = useState(true);
-  const [statusNew, setStatusNew] = useState({current: false, default:false});
-  const [statusUsed, setStatusUsed] = useState({current: false, default:false});
-  const [checkedValues, setCheckedValues] = useState(props.checkedState)
-  const [statNew, setStatNew] = useState(false)
-  const [statUsed, setStatUsed] = useState(false)
+  const [statNew, setStatNew] = useState(false);
+  const [statUsed, setStatUsed] = useState(false);
+
   function toggleVisibality() {
     var visible = isVisible;
     setVisible(!visible);
   }
 
-  function changeStatus(e,filter) {
+  function changeStatus(e) {
     var target = e.target.id;
-    if(target === "newCheckbox" || target === "newCheckboxLabel"){
+    if (target === "newCheckbox" || target === "newCheckboxLabel") {
       var snew = !statNew;
-      if (snew === true) props.setfilter("status","new","statusNew", "Nytt");
-      else props.setfilter("status",'',"statusNew",'');
+      if (snew === true) props.setfilter("status", "new", "statusNew", "Nytt");
+      else props.setfilter("status", "", "statusNew", "");
     }
-    /* if(filter === "status_new") setStatusNew({current: !statusNew.current, default: false})     
-    else if(filter === "status_used") setStatusUsed({current: !statusUsed.current, default: false}); */
+
+    if (target === "usedCheckbox" || target === "usedCheckboxLabel") {
+      var sused = !statUsed;
+      if (sused === true)
+        props.setfilter("status", "used", "statusUsed", "Brukt");
+      else props.setfilter("status", "", "statusUsed", "");
+    }
   }
 
   React.useEffect(() => {
-    if(props.state === undefined){
-      setStatNew(false)
+    if (props.statusNewState === undefined) {
+      setStatNew(false);
     } else {
-      setStatNew(true)
+      setStatNew(true);
     }
-  }, [props.state])
-
-/*   React.useEffect(() => {
-    if(statusNew.current) props.setfilter("status","new","statusNew","Nytt");
-    else {
-      props.setfilter("status",'',"statusNew",'');
-      setStatusNew({current:statusNew.default, default: false})
-    };
-  }, [statusNew.current])
+  }, [props.statusNewState]);
 
   React.useEffect(() => {
-      if(statusUsed.current) props.setfilter("status","used","statusUsed","Brukt")
-      else {
-        props.removeFilter("status","used");
-        setStatusUsed({current: statusUsed.default, default: false})
-      }
-  }, [statusUsed.current])
-
-  React.useEffect(() => {
-    var checkedState = String(props.checkedState)
-    if(checkedState.includes('new')){
-      setStatusNew({current:true,default:false})
+    if (props.statusUsedState === undefined) {
+      setStatUsed(false);
     } else {
-      setStatusNew({current: statusNew.default, default: false})
+      setStatUsed(true);
     }
-
-    if(checkedState.includes('used')){
-      setStatusUsed({current: true, default: false});
-    } else {
-      setStatusUsed({current: statusUsed.default, default: false})
-    }
-
-}, [props.checkedState]) */
+  }, [props.statusUsedState]);
 
   return (
     <div className="category border rounded priceStatusContainer filterContainer">
       <Header title="Status" toggleVisible={toggleVisibality} />
-      <p>{props.checkedState}</p>
       {isVisible && (
         <div className="priceFilterComponents filterBody">
           <div className="form-check mb-2">
@@ -78,13 +56,13 @@ function Status(props) {
               type="checkbox"
               id="newCheckbox"
               checked={statNew}
-              onChange={(e) => changeStatus(e,"status_new")}
+              onChange={(e) => changeStatus(e)}
             />
             <label
               className="form-check-label"
               id="newCheckboxLabel"
               style={{ cursor: "pointer" }}
-              onClick={(e) => changeStatus(e,"status_new")}
+              onClick={(e) => changeStatus(e)}
             >
               Nytt (15/234)
             </label>
@@ -94,14 +72,14 @@ function Status(props) {
               className="form-check-input"
               id="usedCheckbox"
               type="checkbox"
-              checked={statusUsed.current }
-              onChange={(e) => changeStatus(e,"status_used")}
+              checked={statUsed}
+              onChange={(e) => changeStatus(e)}
             />
             <label
               className="form-check-label"
               id="usedCheckboxLabel"
               style={{ cursor: "pointer" }}
-              onClick={(e) => changeStatus(e,"status_used")}
+              onClick={(e) => changeStatus(e)}
             >
               Brukt (34)
             </label>

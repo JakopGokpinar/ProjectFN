@@ -8,17 +8,11 @@ productSearch = (req, res) => {
     .find({}, {})
     .toArray()
     .then((items) => {
-       const result = getFilterParams(req.query,items);
-      var {minPrice, maxPrice } = getMaxAndMinPrice(result);
-      var additionMap = new Map();
-      additionMap.set('minPrice',minPrice)
-      additionMap.set('maxPrice', maxPrice)
-      
-      //console.log(result);
+       const {finalItemArray, minPrice, maxPrice} = getFilterParams(req.query,items);
       return res.json({ 
         message: "items found successfully",
         status:true, 
-        items: result,
+        items: finalItemArray,
         additional: {minPrice: minPrice, "maxPrice":maxPrice}
       });
     })
@@ -30,17 +24,18 @@ productSearch = (req, res) => {
 
 function getFilterParams(query,itemArr) {
   const queryParams = new URLSearchParams(query);
-  console.log(queryParams)
   var itemArr = itemArr;
   var finalItemArray = [];
-  Math.min()
+
   var textInput = queryParams.get('q');
-finalItemArray = itemArr.filter((item) =>{
+  finalItemArray = itemArr.filter((item) =>{
   let input = textInput.toUpperCase();
   let title = item.annonce.title.toUpperCase();
   return title.includes(input)
-}
-);
+  }
+  );
+
+  var {minPrice, maxPrice } = getMaxAndMinPrice(finalItemArray);
 
   if(queryParams.has('price_min')) {
     let minPrice = parseInt(queryParams.get('price_min'));
@@ -57,7 +52,6 @@ finalItemArray = itemArr.filter((item) =>{
   }
   if(queryParams.has('status')){
     let status = queryParams.get('status');
-    console.log(status)
     finalItemArray = finalItemArray.filter(item => {
       return status.includes(item.annonce.status)
     })
@@ -65,7 +59,7 @@ finalItemArray = itemArr.filter((item) =>{
 
   finalItemArray = orderItems(queryParams, finalItemArray);
 
-return finalItemArray;  
+return {finalItemArray, minPrice, maxPrice};  
 }
 
 function orderItems(queryParams, finalItemArray) {
@@ -94,7 +88,6 @@ getMaxAndMinPrice = (items) => {
   for(var e of items){
     priceArr.push(e.annonce.price)
   }
-  console.log(priceArr)
   var minPrice = 0;
   var maxPrice = Math.max(...priceArr);
 

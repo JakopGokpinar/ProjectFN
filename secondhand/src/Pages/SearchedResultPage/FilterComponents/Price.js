@@ -21,7 +21,7 @@ function Price(props) {
   
       props.setfilter("price_min", priceMinimum, "minPrice", `fra ${priceMinimum}`);
 
-      props.setfilter("price_max", priceMaximum, "maxPrice", `fra ${priceMaximum}`);
+      props.setfilter("price_max", priceMaximum, "maxPrice", `til ${priceMaximum}`);
     
   }
 
@@ -54,31 +54,46 @@ function Price(props) {
 
   if(newValue[1] === priceMaxDefault){
       props.setfilter("price_max",'',"maxPrice",'')
+      setPriceMaximum('')
   } else if(maxVal !== newValue[1]) {
     props.setfilter("price_max", newValue[1],"maxPrice", `til ${newValue[1]}`)
+    setPriceMaximum(newValue[1])
   }
 
   if(newValue[0] === priceMinDefault){
     props.setfilter("price_min",'',"minPrice",'')
+    setPriceMinimum('')
   } else if(minVal !== newValue[0]){
       props.setfilter("price_min", newValue[0],"minPrice", `fra ${newValue[0]}`)
+      setPriceMinimum(newValue[0])
     }
 
     setSliderValue(newValue);
   };
 
-/*   React.useEffect(() => {
-    var priceMin = props.priceState.priceMin;
-    var priceMax = props.priceState.priceMax;
+  React.useEffect(() => {
+    var value = props.minPriceState;
+    var max = props.maxPriceState;
 
-    if(priceMin !== undefined && priceMax !== undefined) {
-      setSliderValue([priceMin,priceMax])
-    } else if(priceMin !== undefined) {
-      setSliderValue([priceMin, sliderValue[1]])
-    } else if(priceMax !== undefined) {
-      setSliderValue([sliderValue[0],priceMax])
+    if(value === undefined && max=== undefined) {
+      setSliderValue([priceMinDefault, priceMaxDefault])
+    } else if(value !== undefined && max === undefined ){
+      setSliderValue([value["queryValue"], priceMaxDefault])
+    }   else if (value === undefined && max !== undefined) {
+      setSliderValue([priceMinDefault, max["queryValue"]])
+    } else {
+      setSliderValue([value["queryValue"], max["queryValue"]])
     }
-  }, [props.priceState]) */
+  }, [props.minPriceState, props.maxPriceState]);
+/* 
+  React.useEffect(() => {
+    var value = props.maxPriceState;
+    if(value === undefined) {
+      setSliderValue([sliderValue[0], priceMaxDefault])
+    } else {
+      setSliderValue([sliderValue[0], value["queryValue"]])
+    }
+  }, [props.maxPriceState]); */
 
   return (
     <div className="category border rounded priceFilterContainer filterContainer">

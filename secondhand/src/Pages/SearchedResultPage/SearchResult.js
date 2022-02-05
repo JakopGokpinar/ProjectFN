@@ -6,38 +6,7 @@ import { instanceAxs } from "../../api/Api";
 import Price from "./FilterComponents/Price";
 import Status from "./FilterComponents/Status";
 import Tags from "./FilterComponents/Tags.js";
-/* 
-filtersWithMultipleParams = ["status","location"];
-filter = {key: 'price_max', value:89000 default:90000}, 'status': 'used new'}
-tag = [
-{key: "statusUsed",value: "Used", filterKey: 'status', filterValue:'used'}, 
-{key: "statusNew", value: "New", filterKey: 'status', filterValue: 'new'},
-{key: "maxPrice", value: "til 1800", filterKey: 'price_max', filterValue: 1800}
-]
 
-addFilter(filterKey, filterValue, tagKey, tagValue){
-  filter = {filterKey, filterValue}
-  addTag(filterKey, filterValue, tagKey, tagValue)
-}
-removeFilter(filterKey, filterValue){
-  var filterObject = filter.find(filterKey);
-  if(filtersWithMultipleparams[filterObject] !== -1){
-    remove(filterObject.value.filterValue)
-    if(filterObject.value === ''){
-      remove(filterObject)
-    }
-  } else {
-    remove(filterObject)
-  }
-}
-addTag(filterKey, filterValue, tagKey, tagValue){
-  tag = {key: tagKey, value: tagValue, filterKey, filterValue}
-}
-removeTag(tagKey,filterKey, filterValue){
-  tag.remove(tagKey)
-  this.removeFilter(filterKey, filterValue)
-}
-*/
 class SearchResult extends React.Component {
   constructor(props) {
     super(props);
@@ -51,11 +20,7 @@ class SearchResult extends React.Component {
         {
           queryKey: "q",
           queryValue: new URLSearchParams(props.location.search).get("q"),
-        },
-        {
-          key: "def",
-          value: "asd",
-        },
+        }
       ],
       minAndMaxPrice: undefined,
     };
@@ -67,7 +32,7 @@ class SearchResult extends React.Component {
   };
 
   getFiltersOnMount = () => {
-    let urlParams = this.state.urlParams;
+    let urlParams = new URLSearchParams(window.location.search)
 
     var params = [];
     for (const [key, value] of urlParams) {
@@ -102,26 +67,35 @@ class SearchResult extends React.Component {
           params.push(filter);
           break;
         case 'status':
-          filter = {
-            queryKey: key,
-            queryValue: value,
-            tagKey: "status",
-            tagValue: value,
-          };
+          if(value === "new") {
+            filter = {
+              queryKey: key,
+              queryValue: value,
+              tagKey: "statusNew",
+              tagValue: "Nytt",
+            };
+          } else if(value === "used") {
+            filter = {
+              queryKey: key,
+              queryValue: value,
+              tagKey: "statusUsed",
+              tagValue: "Brukt",
+            };
+          }
+          
           params.push(filter);
           break;
       }
-      
     }
     this.setState({
-      filters: params,
+      filters: params
     });
-    this.getTags(params)
     return params;
   };
 
   getTags = (queryFilters) => {
     var filters = queryFilters === undefined ? this.state.filters : queryFilters;
+    console.log(filters)
     var tags = [];
 
     for (const filter of filters) {
@@ -138,6 +112,7 @@ class SearchResult extends React.Component {
     this.setState({
       tagArray: tags,
     });
+    console.log(this.state.tagArray)
     return tags;
   };
 
@@ -164,7 +139,6 @@ class SearchResult extends React.Component {
             resultCount: returnedItems.length,
           });
           window.history.pushState("page2", "seach made", query);
-          console.log(this.state.filters)
           // this.getFiltersOnMount();
           // window.location.href =  query
         } else {
@@ -229,33 +203,15 @@ class SearchResult extends React.Component {
     this.setState({
       filters: queryFilters,
     });
-
-    /* if (filter === "status") {
-      let val = parameters["status"];
-      if (val === undefined || val === null) val = "";
-      if (!val.includes(queryValue)) val += " " + queryValue;
-      val = val.trim();
-      parameters["status"] = val;
-      this.addFilterTag(tagKey, tagValue, filter, queryValue);
-      this.setState({
-        filters: parameters,
-      });
-    } else {
-      parameters[filter] = queryValue;
-      this.addFilterTag(tagKey, tagValue, filter, queryValue);
-      this.setState({
-        filters: parameters,
-      });
-    } */
   };
 
-    addFilterTag = (key, value, queryKey, queryValue) => {
+  addFilterTag = (key, value, queryKey, queryValue) => {
     let tagArr = this.state.tagArray;
     var tagObj = {};
     var object = tagArr.find((obj) => obj.key === key);
     var objIndex = tagArr.indexOf(object);
+
     if (objIndex !== -1) {
-      console.log("hey")
       tagObj = {
         key,
         value: value,
@@ -274,7 +230,6 @@ class SearchResult extends React.Component {
     this.setState({
       tagArr: tagArr,
     });
-    console.log("tagarr",tagArr)
   };
 
   removeFilter = (filter, queryValue) => {
@@ -339,7 +294,6 @@ class SearchResult extends React.Component {
 
   removeTag = (key, queryKey) => {
     var tagArray = this.state.tagArray;
-    var qKey = queryKey || undefined;
     let obj = tagArray.find((x) => x.key === key);
     if(obj !== undefined){
       let index = tagArray.indexOf(obj);
@@ -349,21 +303,19 @@ class SearchResult extends React.Component {
   };
 
   removeAllFilters = () => {
-    /*     var filterObj = this.state.filters;
-    filterObj = Object.fromEntries(
-      Object.entries(filterObj).filter(([key]) => key === "q")
-    ); // filter all  params except for "q" and convert the returned array back to object
+    var filterObj = this.state.filters;
+    var filterArr = [];
+
+    for(const filter of filterObj) {    // remove all filters except for 'q'
+      if(filter.queryKey !== 'q') break;
+      filterArr.push(filter)
+    }
+
     this.setState({
       tagArray: [],
-      filters: filterObj,
+      filters: filterArr,
     });
-    console.log(this.state.filters); */
   };
-
-  componentDidUpdate(prevProps) {
-    if (this.props.location.search !== prevProps.location.search) {
-  }
-  }
 
   componentDidMount() {
     let params = this.getFiltersOnMount();
@@ -401,7 +353,6 @@ class SearchResult extends React.Component {
   }
 
   render() {
-
     return (
       <div className="container-fluid searchResultPageContainer">
         <div className="searchFilterComponents">
@@ -421,17 +372,14 @@ class SearchResult extends React.Component {
             <Price
               setfilter={this.setFilter}
               priceObject={this.state.minAndMaxPrice}
-              priceState={{
-                priceMin: this.state.filters.find(element => element.queryKey === "price_min"),
-                priceMax: this.state.filters.find(element => element.queryKey === "price_max"),
-              }}
+              minPriceState={this.state.tagArray.find(e => e.key === "minPrice")}
+              maxPriceState={this.state.tagArray.find(e => e.key === "maxPrice")}
             />
           )}
           <Status
             setfilter={this.setFilter}
-            removeFilter={this.removeFilter}
-            checkedState={this.state.filters["status"]}
-            state={this.state.filters.find(e => e.tagKey === "statusNew")}
+            statusNewState={this.state.filters.find(e => e.tagKey === "statusNew")}
+            statusUsedState={this.state.filters.find(e => e.tagKey === "statusUsed")}
           ></Status>
         </div>
         <div className="searchResults">

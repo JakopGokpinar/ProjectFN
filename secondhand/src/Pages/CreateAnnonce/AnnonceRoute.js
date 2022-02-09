@@ -43,7 +43,6 @@ function AnnonceRoute(props) {
 
     prop[target] = value;
     setProperties(prop);
-    console.log(properties);
   };
 
   const handleUniquePropChange = (e) => {
@@ -53,7 +52,6 @@ function AnnonceRoute(props) {
 
     prop.uniqueProps[target] = value;
     setProperties(prop);
-    console.log(properties);
   };
 
   const handleSellerPropChange = (e) => {
@@ -63,14 +61,11 @@ function AnnonceRoute(props) {
 
     prop[target] = value;
     setSeller(prop);
-    console.log(seller);
   };
 
   const handleImageChange = (imgArray) => {
     setImages(imgArray);
-    setTimeout(() => {
       console.log(imgArray);
-    }, 2000);
   };
 
   const submitAnnonce = async () => {

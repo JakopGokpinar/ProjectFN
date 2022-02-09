@@ -57,6 +57,25 @@ function getFilterParams(query,itemArr) {
     })
   }
 
+  if(queryParams.has('published')) {
+    let published = queryParams.get('published');
+    var time = 0;
+    if (published === "today") {
+      time = 1
+    } else if(published === "week") {
+      time = 7;
+    } else if (published === "month") {
+      time = 30
+    }
+
+    finalItemArray = finalItemArray.filter(item => {
+      var date = new Date(item.annonce.date);
+      var d = new Date();
+      d.setTime(d.getTime() - (time*24*3600000))
+      return date > d
+    })
+  }
+
   finalItemArray = orderItems(queryParams, finalItemArray);
 
 return {finalItemArray, minPrice, maxPrice};  

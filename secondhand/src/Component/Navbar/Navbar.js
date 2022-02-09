@@ -101,7 +101,7 @@ class Navbar extends React.Component {
                 <div className="dropdown" id="profileToggleDiv">
                   <Link
                     className="nav-link dropdown-toggle"
-                    to="/profile"
+                    to="/profil"
                     id="profileToggleButton"
                     role="button"
                     aria-expanded="false"

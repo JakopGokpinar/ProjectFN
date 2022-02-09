@@ -22,6 +22,10 @@ const AnnonceSchema = mongoose.Schema({
     //required: true,
     default: "",
   },
+  status: {
+    type: String,
+    default: "used"
+  },
   uniqueProps: {
     type: Object,
    // required: true,

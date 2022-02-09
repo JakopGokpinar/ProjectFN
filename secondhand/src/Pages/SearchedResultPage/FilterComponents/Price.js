@@ -66,7 +66,7 @@ function Price(props) {
   } else if(minVal !== newValue[0]){
       props.setfilter("price_min", newValue[0],"minPrice", `fra ${newValue[0]}`)
       setPriceMinimum(newValue[0])
-    }
+  }
 
     setSliderValue(newValue);
   };
@@ -85,18 +85,9 @@ function Price(props) {
       setSliderValue([value["queryValue"], max["queryValue"]])
     }
   }, [props.minPriceState, props.maxPriceState]);
-/* 
-  React.useEffect(() => {
-    var value = props.maxPriceState;
-    if(value === undefined) {
-      setSliderValue([sliderValue[0], priceMaxDefault])
-    } else {
-      setSliderValue([sliderValue[0], value["queryValue"]])
-    }
-  }, [props.maxPriceState]); */
 
   return (
-    <div className="category border rounded priceFilterContainer filterContainer">
+    <div className="category border rounded filterContainer">
       <Header title="Pris" toggleVisible={toggleVisibality} />
       {isVisible && (
         <div className="priceFilterComponents filterBody">

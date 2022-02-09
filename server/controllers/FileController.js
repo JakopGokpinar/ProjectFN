@@ -113,8 +113,7 @@ createAnnonce = async (req,res, next) => {
       console.log("newannonce", newAnnonce);
     annoncesDb.collection("annonces").insertOne({
       _id: newAnnonce.id,
-      title: newAnnonce.title,
-      price: newAnnonce.price
+      annonce: newAnnonce
     })
 }
 

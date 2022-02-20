@@ -39,6 +39,7 @@ function AnnonceRoute(props) {
   const handlePropertiesChange = (e) => {
     var target = e.target.id;
     const value = e.target.value;
+    console.log("target and val", target + " " + value)
     const prop = properties;
 
     prop[target] = value;
@@ -141,7 +142,31 @@ function AnnonceRoute(props) {
               type="text"
               className="form-control"
               id="price"
-              aria-describedby="title"
+              aria-describedby="price"
+              onChange={handlePropertiesChange}
+            />
+          </div>
+          <label className="form-label" htmlFor="category">
+            category
+          </label>
+          <div className="input-group mb-3">
+            <input
+              type="text"
+              className="form-control"
+              id="category"
+              aria-describedby="category"
+              onChange={handlePropertiesChange}
+            />
+          </div>
+          <label className="form-label" htmlFor="subCategory">
+            Sub category
+          </label>
+          <div className="input-group mb-3">
+            <input
+              type="text"
+              className="form-control"
+              id="subCategory"
+              aria-describedby="subCategory"
               onChange={handlePropertiesChange}
             />
           </div>

@@ -79,6 +79,7 @@ createAnnonce = (req,res, next) => {
     var db = mongoose.connection.db;
     var userId = req.user._id;
     console.log("req.fileLocation: " + req.body.fileLocation);
+    console.log("req boyd", req.body)
 
     var newAnnonce = new AnnonceModel();
     newAnnonce.title = "deneme annonce u";

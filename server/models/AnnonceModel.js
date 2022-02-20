@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 const CarSchema = require("./AnnonceModels/CarModel.js");
+var subCategory = '';
 
 const AnnonceSchema = mongoose.Schema({
   title: {
     type: String,
     // required: true,
-    default: "",
+    default: '',
   },
   price: {
     type: Number,
@@ -45,8 +46,15 @@ const AnnonceSchema = mongoose.Schema({
   },
 });
 
-const myDB = mongoose.connection.useDb('announcements');
-const AnnonceModel = myDB.model("Annonce", AnnonceSchema);
-// const AnnonceModel = mongoose.model("Annonce", AnnonceSchema);
+/* const myDB = mongoose.connection.useDb('Cars');
+const AnnonceModel = myDB.model("Annonce", AnnonceSchema); */
+const AnnonceModel = mongoose.model("Annonce", AnnonceSchema);
 
-module.exports = AnnonceModel;
+/* function setSubCategory (subCat) {
+  subCategory = subCat;
+}
+
+function getSubCategory () {
+  return subCategory;
+} */
+module.exports = {AnnonceModel};

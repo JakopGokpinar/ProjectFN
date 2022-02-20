@@ -17,8 +17,15 @@ class Menu extends React.Component{
         await instanceAxs.get(`${fileApi}/getmenuitems`)
         .then(response => {
             console.log("Retrived items: ", response);
+            var returnedItems = response.data.items;
+            var itemArray = [];
+            returnedItems.map(items => {
+                items.value.map(item => {
+                    itemArray.push(item)
+                })
+            })
             this.setState({
-                items: response.data.items,
+                items: itemArray,
                 isLoading: false
             })
         })
@@ -35,7 +42,7 @@ class Menu extends React.Component{
                     { (this.state.items.length > 0 && this.state.isLoading === false) ? 
                     
                     (this.state.items.map(item => {
-                        var annonce = item.annonce;
+                        var annonce = item.newAnnonce;
                         return(
                                 <div key={annonce._id}>
                                     <ProductCard 

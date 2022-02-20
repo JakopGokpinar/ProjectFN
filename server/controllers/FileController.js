@@ -4,7 +4,8 @@ const multerS3 = require('multer-s3');
 const mongoose = require('mongoose');
 const config = require('../../aws-config.js');
 const UserModel = require('../models/UserModel.js');
-const AnnonceModel = require('../models/AnnonceModel.js');
+const {AnnonceModel} = require('../models/AnnonceModel.js');
+const { collection } = require('../models/UserModel.js');
 
 const BUCKET_NAME = config.awsS3User.BUCKET_NAME;
 const ACCESS_KEY = config.awsS3User.ACCESS_KEY;
@@ -88,21 +89,53 @@ getImage = (req,res) => {
 createAnnonce = async (req,res, next) => {
   if(!isLoggedIn(req)) return res.json({ message: 'Login to see your data'})
 
-  console.log(req.body);
   var userDb = mongoose.connection.useDb("user");
+ 
   var annoncesDb = mongoose.connection.useDb("announcements");
-  var userId = req.user._id;
+  var carAnnoncesDb = mongoose.connection.useDb("cars");
 
+  var userId = req.user._id;
+  var category = req.body.properties.category;
+  var subCategory = req.body.properties.subCategory;
+  console.log("cate", category)
+  console.log("sub cate", subCategory)
   var imgLocations = req.body.locations;
   var newImages = [];
+  var newAnnonce = {};
 
-    var newAnnonce = new AnnonceModel(req.body.properties);
-      
-    for(var i = 0; i<imgLocations.length; i++){
-      newImages.push({location: imgLocations[i]});
+  for(var i = 0; i<imgLocations.length; i++){
+    newImages.push({location: imgLocations[i]});
+  }
+  newAnnonce.images = newImages;
+  newAnnonce.seller = req.body.seller
+
+  if(category === "Biler"){
+    var carAnnoncesDb = mongoose.connection.useDb("cars");
+    newAnnonce = new AnnonceModel(req.body.properties);
+    if(subCategory === "Biler") {
+      carAnnoncesDb.collection('biler').insertOne({
+        newAnnonce
+      })
+    } else if(subCategory.toUpperCase() === "BOBILER"){
+      carAnnoncesDb.collection('bobiler').insert({
+        newAnnonce
+      })
     }
-    newAnnonce.images = newImages;
-    newAnnonce.seller = req.body.seller;
+  }
+
+  if(category === "Eindom"){
+    var propertyAnnoncesDb = mongoose.connection.useDb("property");
+    newAnnonce = new AnnonceModel(req.body.properties);
+    if(subCategory === "Bolig til salgs") {
+      propertyAnnoncesDb.collection('bolig-til-salgs').insertOne({
+        newAnnonce
+      })
+    } else if(subCategory.toUpperCase() === "BOLIG TIL LEIE"){
+      propertyAnnoncesDb.collection('bolig til leie').insert({
+        newAnnonce
+      })
+    }
+  }
     
     userDb.collection("users").updateOne(
         { _id: userId },
@@ -110,26 +143,106 @@ createAnnonce = async (req,res, next) => {
     )
     .then(res.json({message: "new annonce created", locations: imgLocations}))
     .catch(err => res.json({error: err}));
-      console.log("newannonce", newAnnonce);
-    annoncesDb.collection("annonces").insertOne({
-      _id: newAnnonce.id,
-      annonce: newAnnonce
-    })
 }
 
 getMenuItems = (req,res) => {
+  
   var annoncesDb = mongoose.connection.useDb("announcements");
-  annoncesDb.collection("annonces").find({}, {})
-    .toArray()
-    .then(items => {
-      // var items = items.slice(0,2)
-      return res.json({items: items});
+  const productDBs = ["cars","property"]
+  var client = mongoose.connection.getClient();
+  
+  const getDatabases = new Promise((resolve,reject) => {
+    var databaseArr = []
+    client.db().admin().listDatabases()
+    .then(databases => {
+      databases.databases.map(db => {
+        if(productDBs.includes(db.name) === false) return;
+        databaseArr.push(db.name)
+      }) 
     })
-    .catch(err => {
-      console.log(err);
-      return res.json({error: err});
+    .then(() => {
+      resolve(databaseArr)
     })
+  })
+
+  const findCollections = async (databaseArr) => {
+        const promise = databaseArr.map(async db => {
+          return new Promise((resolve,reject) => {
+          mongoose.connection.useDb(db).db.collections()
+          .then(collections => {
+            collections.find(col => {
+              let collection = {
+                name: col.namespace.split('.')[1],
+                value: col
+              }
+              resolve(collection)
+            })  
+          })
+        } ) 
+      })
+      return await Promise.all(promise)
+  }
+
+  const collectionItems = collections  => {
+    console.log(collections)
+    const promise = collections.map(async collection => {
+      return new Promise((resolve,reject) => {
+          collection.value.find({}).toArray()
+          .then(items => {
+            let item = {
+              collectionName: collection.name,
+              value: items
+            }
+            resolve(item)
+          })
+      })
+    })
+    return Promise.all(promise)
+  }
+
+  const sendServer = items => {
+    console.log(items)
+    res.json({items: items})
+  }
+
+  getDatabases.then(findCollections).then(collectionItems).then(sendServer)
 }
 
 
 module.exports = {getImage,getAnnonceImages,uploadImages,createAnnonce, getMenuItems};
+
+/* client.db().admin().listDatabases()
+  .then(dbs => {
+    console.log("step1")
+    dbs.databases.map(item => { 
+      if(productDBs.includes(item.name) === false) return;
+      databases.push(item.name);
+    })
+    console.log("Mongo databases", databases);
+  })
+
+  var datab = databases[1];
+  var colArr = [];
+  var colItemArr = []
+
+  mongoose.connection.useDb(datab).db.collections()
+    .then(collection => {
+      console.log("step2")
+      collection.find(col => {
+        colArr.push(col)
+      })
+    })
+    .then(() => {
+      console.log("step 3")
+      colArr.map(colItem => {
+
+        colItem.find({}).toArray()
+        .then(item => {
+          items.push(item)
+          console.log(item)
+
+        })
+        
+      })
+      return res.json({items})
+    }) */

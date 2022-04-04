@@ -3,9 +3,7 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const mongoose = require('mongoose');
 const config = require('../../aws-config.js');
-const UserModel = require('../models/UserModel.js');
 const {AnnonceModel} = require('../models/AnnonceModel.js');
-const { collection } = require('../models/UserModel.js');
 
 const BUCKET_NAME = config.awsS3User.BUCKET_NAME;
 const ACCESS_KEY = config.awsS3User.ACCESS_KEY;
@@ -86,105 +84,137 @@ getImage = (req,res) => {
   });
 };
 
-createAnnonce = async (req,res, next) => {
+createAnnonce = async (req,res) => {
   if(!isLoggedIn(req)) return res.json({ message: 'Login to see your data'})
-
-  var userDb = mongoose.connection.useDb("user");
- 
-  var annoncesDb = mongoose.connection.useDb("announcements");
-  var carAnnoncesDb = mongoose.connection.useDb("cars");
 
   var userId = req.user._id;
   var category = req.body.properties.category;
-  var subCategory = req.body.properties.subCategory;
-  console.log("cate", category)
-  console.log("sub cate", subCategory)
-  var imgLocations = req.body.locations;
-  var newImages = [];
+  var locations = req.body.locations;
+
+  var imageArray = [];
   var newAnnonce = {};
 
-  for(var i = 0; i<imgLocations.length; i++){
-    newImages.push({location: imgLocations[i]});
+  for(var i = 0; i<locations.length; i++){
+    imageArray.push({location: locations[i]});
   }
-  newAnnonce.images = newImages;
-  newAnnonce.seller = req.body.seller
+
+  newAnnonce = new AnnonceModel(req.body.properties);
+  newAnnonce.images = imageArray;
+  newAnnonce.seller = req.body.seller;
 
   if(category === "Biler"){
-    var carAnnoncesDb = mongoose.connection.useDb("cars");
-    newAnnonce = new AnnonceModel(req.body.properties);
-    if(subCategory === "Biler") {
-      carAnnoncesDb.collection('biler').insertOne({
-        newAnnonce
-      })
-    } else if(subCategory.toUpperCase() === "BOBILER"){
-      carAnnoncesDb.collection('bobiler').insert({
-        newAnnonce
-      })
-    }
+    mongoose.connection.useDb("cars").collection(newAnnonce.subCategory).insertOne({
+      _id: newAnnonce._id,
+      title: newAnnonce.title,
+      price: newAnnonce.price,
+      category: newAnnonce.category,
+      location: newAnnonce.location,
+      status: newAnnonce.status,
+      date: newAnnonce.date,
+      description: newAnnonce.description,
+      uniqueProps: newAnnonce.uniqueProps
+    })
+    .catch(err => {
+      return res.json({
+        message: "Error occured while creating a car annonce.",
+        error: err})
+    })
   }
 
   if(category === "Eindom"){
-    var propertyAnnoncesDb = mongoose.connection.useDb("property");
-    newAnnonce = new AnnonceModel(req.body.properties);
-    if(subCategory === "Bolig til salgs") {
-      propertyAnnoncesDb.collection('bolig-til-salgs').insertOne({
-        newAnnonce
-      })
-    } else if(subCategory.toUpperCase() === "BOLIG TIL LEIE"){
-      propertyAnnoncesDb.collection('bolig til leie').insert({
-        newAnnonce
-      })
-    }
+    mongoose.connection.useDb("property").collection('bolig-til-salgs').insertOne({
+      newAnnonce
+    })
+    .catch(err => {
+      return res.json({
+        message: "Error occured while creating a property annonce.",
+        error: err})
+    })
   }
     
-    userDb.collection("users").updateOne(
+    mongoose.connection.useDb("user").collection("users").updateOne(
         { _id: userId },
         { $push: { annonces: newAnnonce} }
     )
-    .then(res.json({message: "new annonce created", locations: imgLocations}))
-    .catch(err => res.json({error: err}));
+    .then(res.json({message: "new annonce created", locations: locations}))
+    .catch(err => res.json({
+      message: "Error occured while pushing annonce to user's annonces.",
+      error: err
+    }));
 }
+
 
 getMenuItems = (req,res) => {
   
-  var annoncesDb = mongoose.connection.useDb("announcements");
-  const productDBs = ["cars","property"]
-  var client = mongoose.connection.getClient();
+  const productDBs = ["cars","property"];
   
-  const getDatabases = new Promise((resolve,reject) => {
-    var databaseArr = []
-    client.db().admin().listDatabases()
-    .then(databases => {
-      databases.databases.map(db => {
-        if(productDBs.includes(db.name) === false) return;
-        databaseArr.push(db.name)
-      }) 
-    })
-    .then(() => {
-      resolve(databaseArr)
-    })
-  })
 
-  const findCollections = async (databaseArr) => {
-        const promise = databaseArr.map(async db => {
-          return new Promise((resolve,reject) => {
-          mongoose.connection.useDb(db).db.collections()
-          .then(collections => {
-            collections.find(col => {
-              let collection = {
-                name: col.namespace.split('.')[1],
-                value: col
-              }
-              resolve(collection)
-            })  
-          })
-        } ) 
-      })
-      return await Promise.all(promise)
+  const findCollections = async (collections) => {
+    // console.log("collections", collections);
+    return new Promise((resolve, reject) => {
+      collections.forEach((collection) => {
+        let collectionObj = {
+          name: collection.namespace.split(".")[1],
+          value: collection,
+        };
+      resolve(collectionObj);
+      });
+    });
+  };
+
+  async function test(collections) {
+    return new Promise((resolve,reject) => {
+      for(const col of collections){
+        /* col.find({}).toArray()
+        .then(item => {
+          // console.log("item",item)
+          resolve(item)
+        }) */
+        resolve(col)
+      } 
+    })
+  }
+
+  async function takeCols(col) {
+    console.log("col name",col.namespace)
+    return new Promise((resolve,reject) => {
+      col.find({}).toArray()
+        .then(item => {
+          // console.log("item",item)
+          resolve(item)
+        })
+    })
+  }
+
+  async function pushToItems(itemArr){
+    itemArr.push(itemArr);
+  }
+
+   async function resolveCollections () {  
+    // return new Promise((resolve,reject) => {
+     var promises = productDBs.map(async db =>   new Promise((resolve,reject) => {
+      mongoose.connection.useDb(db).db.collections()
+      .then(async collections => {
+        let getCol = await test(collections);
+        let getItemArray = await takeCols(getCol)
+       resolve(getItemArray)
+      })     
+    }));
+
+    Promise.all(promises).then(itemArr => {
+    console.log("itemArr",itemArr)
+
+      sendServer(itemArr)
+  })
+  .catch(error => {
+    console.log(error)
+  })
+       
+// })
   }
 
   const collectionItems = collections  => {
-    console.log(collections)
+    console.log("given collections",collections)
     const promise = collections.map(async collection => {
       return new Promise((resolve,reject) => {
           collection.value.find({}).toArray()
@@ -201,11 +231,11 @@ getMenuItems = (req,res) => {
   }
 
   const sendServer = items => {
-    console.log(items)
     res.json({items: items})
   }
-
-  getDatabases.then(findCollections).then(collectionItems).then(sendServer)
+  resolveCollections()
+  // console.log("gorev tamamlandi")
+  // resolveCollections.then(collectionItems).then(sendServer)
 }
 
 

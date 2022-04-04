@@ -1,17 +1,10 @@
 const mongoose = require("mongoose");
-const CarSchema = require("./AnnonceModels/CarModel.js");
-var subCategory = '';
 
 const AnnonceSchema = mongoose.Schema({
   title: {
     type: String,
     // required: true,
     default: '',
-  },
-  price: {
-    type: Number,
-   // required: true,
-    default: -1,
   },
   category: {
     type: String,
@@ -23,38 +16,46 @@ const AnnonceSchema = mongoose.Schema({
     //required: true,
     default: "",
   },
+  price: {
+    type: Number,
+   // required: true,
+    default: -1,
+  },
+  location: {
+    type: String,
+    default: 'Kristiansand'
+  },
   status: {
     type: String,
-    default: "used"
+    default: ""
   },
-  uniqueProps: {
-    type: Object,
-   // required: true,
-    default: {},
+  images: {
+    type: Array,
   },
   date: {
     type: Date,
     default: Date.now,
   },
-  images: {
-    type: Array,
+  description: {type: String, default: ''},
+  uniqueProps: {
+    type: Object,
+   // required: true,
+    default: {},
   },
+  
   seller: {
     type: Object,
     //required: true,
-    default: {},
+    default: {
+      Name: "Tobias",
+      Lastname: "Land",
+      Address: "32 Fjordvegen 4560 Kristiansand",
+      Point: 3.0,
+      Verified: false
+    },
   },
 });
 
-/* const myDB = mongoose.connection.useDb('Cars');
-const AnnonceModel = myDB.model("Annonce", AnnonceSchema); */
 const AnnonceModel = mongoose.model("Annonce", AnnonceSchema);
 
-/* function setSubCategory (subCat) {
-  subCategory = subCat;
-}
-
-function getSubCategory () {
-  return subCategory;
-} */
 module.exports = {AnnonceModel};

@@ -7,6 +7,7 @@ import Price from "./FilterComponents/Price";
 import Status from "./FilterComponents/Status";
 import Tags from "./FilterComponents/Tags.js";
 import PrimarySelect from "./ComponentSelect/PrimarySelect";
+import CategorySelector from "./FilterComponents/CategorySelecter";
 
 class SearchResult extends React.Component {
   constructor(props) {
@@ -293,18 +294,21 @@ class SearchResult extends React.Component {
       queryString = queryString.slice(0, queryString.length - 1);
 
     let query = `/search?${queryString}`;
+    // let query = '/file/getmenuitems'
     instanceAxs
       .get(query)
       .then((response) => {
-        // console.log("Search response", response);
-        var minPrice = response.data.additional.minPrice;
-        var maxPrice = response.data.additional.maxPrice;
-        if (response.data.status) {
+        console.log("Search response", response);
+        var minPrice = 0 //response.data.additional.minPrice;
+        var maxPrice = 10000 //response.data.additional.maxPrice;
+        if (response.status === 200) {
           var returnedItems = response.data.items;
+          var categoryArray = response.data.categories;
           this.setState({
             items: returnedItems,
-            resultCount: returnedItems.length,
+            resultCount: 10, //returnedItems.length,
             minAndMaxPrice: { minPrice: minPrice, maxPrice: maxPrice },
+            categoryArray
           });
 
           this.props.history.push(`/search?${queryString}`);
@@ -317,7 +321,7 @@ class SearchResult extends React.Component {
       });
   }
 
-  render() {
+   render() {
     return (
       <div className="container-fluid searchResultPageContainer">
         <div className="searchFilterComponents">
@@ -333,6 +337,11 @@ class SearchResult extends React.Component {
           <button className="btn btn-danger" onClick={this.removeAllFilters}>
             Fjerne Filtre
           </button>
+          <CategorySelector
+            setfilter={this.setFilter}
+            
+            categoryState={this.state.categoryArray !== null &&this.state.categoryArray}
+          ></CategorySelector>
           {this.state.minAndMaxPrice !== undefined && (
             <Price
               setfilter={this.setFilter}
@@ -371,6 +380,7 @@ class SearchResult extends React.Component {
           </div>
           <div className="searchResults_Items">
             {this.state.items.map((item, index) => {
+              item.annonce = item.newAnnonce
               return (
                 <>
                   <div className="itemCol" key={item.annonce._id}>

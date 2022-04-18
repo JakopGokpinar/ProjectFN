@@ -293,8 +293,8 @@ class SearchResult extends React.Component {
     if (queryString[queryString.length - 1] === "&")
       queryString = queryString.slice(0, queryString.length - 1);
 
-    let query = `/search?${queryString}`;
-    // let query = '/file/getmenuitems'
+    // let query = `/search?${queryString}`;
+    let query = '/file/getmenuitems'
     instanceAxs
       .get(query)
       .then((response) => {
@@ -380,7 +380,7 @@ class SearchResult extends React.Component {
           </div>
           <div className="searchResults_Items">
             {this.state.items.map((item, index) => {
-              item.annonce = item.newAnnonce
+              item.annonce = item
               return (
                 <>
                   <div className="itemCol" key={item.annonce._id}>

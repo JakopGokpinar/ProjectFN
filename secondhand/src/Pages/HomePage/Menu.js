@@ -19,11 +19,18 @@ class Menu extends React.Component{
             console.log("Retrived items: ", response.data.items);
             var returnedItems = response.data.items;
             var itemArray = [];
-            returnedItems.map(items => {
-                items.value.map(item => {
-                    itemArray.push(item)
-                })
-            })
+            for(let i = 0; i<returnedItems.length; i++){
+                returnedItems[i].shift();
+                var dbArray = returnedItems[i]
+                for(let k = 0; k<dbArray.length; k++){
+                    dbArray[k].pop();
+                    var collectionArray = dbArray[k];
+                console.log("col ar",collectionArray)
+                    collectionArray.map(arr => itemArray.push(arr))
+                }
+            }
+            console.log(itemArray)
+            
             this.setState({
                 items: itemArray,
                 isLoading: false
@@ -42,14 +49,15 @@ class Menu extends React.Component{
                     { (this.state.items.length > 0 && this.state.isLoading === false) ? 
                     
                     (this.state.items.map(item => {
-                        var annonce = item.newAnnonce;
+                        var annonce = item;
                         return(
                                 <div key={annonce._id}>
                                     <ProductCard 
                                     img={annonce.images} 
                                     price={annonce.price} 
                                     name={annonce.title} 
-                                    id={annonce._id}/> 
+                                    id={annonce._id}
+                                    location={annonce.location}/> 
                                     </div>                          
                         ) 
                     }))

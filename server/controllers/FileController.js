@@ -159,7 +159,7 @@ getMenuItems = (req, res) => {
     console.log("col name", collection.namespace);
     return new Promise((resolve, reject) => {
       collection
-        .find({})
+        .find({"seller":{"name":"Tolga"}})
         .toArray()
         .then((item) => {
           let collectionItems = item;

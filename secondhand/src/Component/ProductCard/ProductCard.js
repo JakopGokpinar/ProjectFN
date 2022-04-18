@@ -5,14 +5,14 @@ import "./NewProductCard.css"
 import CardProperties from "./CardProperties";
 
 function ProductCard(props) {
-  if (props.annonce) {
+/*   if (props.annonce) {
     props = props.annonce;
-  }
+  } */
 
   const [images, title, location, price, id] = [
     props.img,
     props.name || "no name",
-    props.location || "Kristiansand",
+    props.location || "no place",
     props.price || "0",
     props.id || null,
   ];
@@ -38,7 +38,7 @@ function ProductCard(props) {
             </button>
           )}
         <img src={
-              (images.length > 0) && (images !== undefined) && (images !== null)
+           ( (images !== undefined) && (images !== null) && (images.length !== 0))
                 ? images[imgIndex].location
                 : "https://static.toiimg.com/photo/msid-58515713,width-96,height-65.cms"
             } alt="Denim Jeans" style={{width: '100%'}} />
@@ -54,8 +54,7 @@ function ProductCard(props) {
             </button>
           )}
           </div>
-        </div>
-        
+        </div>  
     </Link>
         <CardProperties properties={[title,price,location]}></CardProperties>
 </div>

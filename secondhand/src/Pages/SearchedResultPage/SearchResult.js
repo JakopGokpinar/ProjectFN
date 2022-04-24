@@ -151,6 +151,7 @@ class SearchResult extends React.Component {
     /* Object.entries(filters).forEach(
       ([key, value]) => (queryString += `${key}=${value}&`)
     ); */
+    
     if (queryString[queryString.length - 1] === "&")
       queryString = queryString.slice(0, queryString.length - 1);
     let query = `/search?${queryString}`;
@@ -294,11 +295,11 @@ class SearchResult extends React.Component {
       queryString = queryString.slice(0, queryString.length - 1);
 
     // let query = `/search?${queryString}`;
-    let query = '/file/getmenuitems'
+    let query = `/file/getmenuitems?${queryString}&category=cars`
     instanceAxs
-      .get(query)
+      .get(`${query}`)
       .then((response) => {
-        console.log("Search response", response);
+        console.log("Search response", response.data.items);
         var minPrice = 0 //response.data.additional.minPrice;
         var maxPrice = 10000 //response.data.additional.maxPrice;
         if (response.status === 200) {

@@ -152,20 +152,45 @@ createAnnonce = async (req, res) => {
 };
 
 getMenuItems = (req, res) => {
-  const productDBs = ["cars", "property"];
+  let queryParams = new URLSearchParams(req.query);
+  let productDBs = ["cars","property"];
 
-    // get items within a collection
+  var categoryFilter = queryParams.get('category');
+  let searchWord = queryParams.get('q')
+  if(categoryFilter !== null && categoryFilter !== "all") {
+    // productDBs = [categoryFilter]
+  }
+
+
+  const query = getQuery();
+
+  //{price: {$lt: 100000, $gte: 30}, title: {$regex: `${searchWord}`, $options: 'i'}}
+
+  function getQuery() {
+    let query = {};
+    let searchWord = queryParams.get('q');
+    if(searchWord) {
+      const title = {title: {$regex: `${searchWord}`, $options: 'i'}}
+      query = Object.assign(title);
+    } 
+
+    return query
+  }
+
+
+    // get items within a collection  
   async function getCollectionItems(collection) {
-    console.log("col name", collection.namespace);
+    console.log(collection.namespace)
     return new Promise((resolve, reject) => {
       collection
-        .find({"seller":{"name":"Tolga"}})
-        .toArray()
+        .find(query)    // this is for case insensitive search
+        .toArray()                            
         .then((item) => {
+          if(item.length <= 0){ console.log("not matched item"); resolve(); }
           let collectionItems = item;
           collectionItems.push({"collectionName":collection.namespace})
           resolve(collectionItems);
-        });
+        }).catch((err) => console.log("error occured while getting collection items",err))
     });
   }
 
@@ -180,21 +205,38 @@ getMenuItems = (req, res) => {
               var collectionPromise = collections.map(
                 async (col) =>
                   new Promise(async (resolve, reject) => {
-                    resolve(await getCollectionItems(col));
+                    let collectionItem = await getCollectionItems(col)
+                    .catch(() => console.log("Promise rejected on getting collection items"));
+                    resolve(collectionItem);
                   })
               );
               Promise.all(collectionPromise).then((collectionItems) => {
                 let collectionItemArray = collectionItems;
-                collectionItemArray.unshift(db)
-                resolve(collectionItemArray);
-              });
-            });
+                console.log("length",collectionItems.length)
+                // remove if collection has no data in it
+                for(let i = 0; i<collectionItems.length; i++){
+                  if(!collectionItems[i]){
+                    console.log("remove",i)
+                    collectionItemArray.splice(i,1)
+                  }
+                }          
+                if(collectionItems.length >0) collectionItemArray.unshift(db)           
+                resolve(collectionItemArray);             
+                   
+              }).catch((err) => console.log("Rejected on getting collection",err))
+            })
+            .catch((err) => console.log("Rejected on resolve menu promises",err))
         })
     );
 
     Promise.all(promises)
       .then((itemArr) => {
-        // console.log("itemArr", itemArr);
+        //remove any db with no data
+        for(let i = 0; i<itemArr.length; i++){
+          if(itemArr[i].length <1){
+            itemArr.splice(i,1)
+          }
+        } 
         sendServer(itemArr);
       })
       .catch((error) => {

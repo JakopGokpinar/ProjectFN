@@ -14,7 +14,7 @@ class Menu extends React.Component{
     }
 
      async getItems () {
-        await instanceAxs.get(`${fileApi}/getmenuitems`)
+        await instanceAxs.get(`${fileApi}/getmenuitems?category=cars`)
         .then(response => {
             console.log("Retrived items: ", response.data.items);
             var returnedItems = response.data.items;

@@ -295,7 +295,7 @@ class SearchResult extends React.Component {
       queryString = queryString.slice(0, queryString.length - 1);
 
     // let query = `/search?${queryString}`;
-    let query = `/file/getmenuitems?${queryString}&category=cars`
+    let query = `/file/getmenuitems?${queryString}`
     instanceAxs
       .get(`${query}`)
       .then((response) => {

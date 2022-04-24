@@ -156,23 +156,37 @@ getMenuItems = (req, res) => {
   let productDBs = ["cars","property"];
 
   var categoryFilter = queryParams.get('category');
-  let searchWord = queryParams.get('q')
   if(categoryFilter !== null && categoryFilter !== "all") {
-    // productDBs = [categoryFilter]
+    productDBs = [categoryFilter]
   }
 
 
   const query = getQuery();
-
+  console.log(query)
   //{price: {$lt: 100000, $gte: 30}, title: {$regex: `${searchWord}`, $options: 'i'}}
 
   function getQuery() {
     let query = {};
+
     let searchWord = queryParams.get('q');
     if(searchWord) {
       const title = {title: {$regex: `${searchWord}`, $options: 'i'}}
-      query = Object.assign(title);
+       Object.assign(query,title);
     } 
+
+    let minPrice = queryParams.get('price_min');
+    if(minPrice) {
+      minPrice = parseInt(minPrice)
+      minPrice = {price: {$gte: minPrice, $lte:4000}}
+      Object.assign(query, minPrice)
+    }
+
+    /* let maxPrice = queryParams.get('price_max');
+    if(maxPrice) {
+      maxPrice = parseInt(maxPrice)
+      maxPrice = {price: {$lte: maxPrice}}
+      Object.assign(query, maxPrice)
+    } */
 
     return query
   }
@@ -186,7 +200,7 @@ getMenuItems = (req, res) => {
         .find(query)    // this is for case insensitive search
         .toArray()                            
         .then((item) => {
-          if(item.length <= 0){ console.log("not matched item"); resolve(); }
+          if(item.length <= 0){ resolve(); }
           let collectionItems = item;
           collectionItems.push({"collectionName":collection.namespace})
           resolve(collectionItems);
@@ -211,18 +225,9 @@ getMenuItems = (req, res) => {
                   })
               );
               Promise.all(collectionPromise).then((collectionItems) => {
-                let collectionItemArray = collectionItems;
-                console.log("length",collectionItems.length)
-                // remove if collection has no data in it
-                for(let i = 0; i<collectionItems.length; i++){
-                  if(!collectionItems[i]){
-                    console.log("remove",i)
-                    collectionItemArray.splice(i,1)
-                  }
-                }          
-                if(collectionItems.length >0) collectionItemArray.unshift(db)           
+                let collectionItemArray = collectionItems.filter(item => item)             
+                if(collectionItemArray.length >0) collectionItemArray.unshift(db)           
                 resolve(collectionItemArray);             
-                   
               }).catch((err) => console.log("Rejected on getting collection",err))
             })
             .catch((err) => console.log("Rejected on resolve menu promises",err))

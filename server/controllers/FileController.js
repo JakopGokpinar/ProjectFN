@@ -177,16 +177,26 @@ getMenuItems = (req, res) => {
     let minPrice = queryParams.get('price_min');
     if(minPrice) {
       minPrice = parseInt(minPrice)
-      minPrice = {price: {$gte: minPrice, $lte:4000}}
+      minPrice = {price: {$gte: minPrice}}
       Object.assign(query, minPrice)
     }
 
-    /* let maxPrice = queryParams.get('price_max');
+    let maxPrice = queryParams.get('price_max');
     if(maxPrice) {
       maxPrice = parseInt(maxPrice)
-      maxPrice = {price: {$lte: maxPrice}}
-      Object.assign(query, maxPrice)
-    } */
+      if(query["price"]){
+        var newPriceObj = {price: {...query["price"], $lte: maxPrice}}
+        Object.assign(query, newPriceObj)
+      } else {
+        maxPrice = {price: {$lte: maxPrice}}
+        Object.assign(query, maxPrice)
+      }
+    } 
+
+    let mainCategory = queryParams.get('mainc');
+    if(mainCategory) {
+
+    }
 
     return query
   }
@@ -194,10 +204,9 @@ getMenuItems = (req, res) => {
 
     // get items within a collection  
   async function getCollectionItems(collection) {
-    console.log(collection.namespace)
     return new Promise((resolve, reject) => {
       collection
-        .find(query)    // this is for case insensitive search
+        .find({'name':"biler"})    // this is for case insensitive search
         .toArray()                            
         .then((item) => {
           if(item.length <= 0){ resolve(); }

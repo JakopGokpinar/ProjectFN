@@ -154,11 +154,12 @@ class SearchResult extends React.Component {
     
     if (queryString[queryString.length - 1] === "&")
       queryString = queryString.slice(0, queryString.length - 1);
-    let query = `/search?${queryString}`;
+    let query = `/file/getmenuitems?${queryString}`;
     instanceAxs
       .get(query)
       .then((response) => {
-        // console.log("Search response", response);
+        console.log(query)
+        console.log("Search response", response.data.items);
         if (response.data.status) {
           var returnedItems = response.data.items;
           this.setState({
@@ -169,7 +170,7 @@ class SearchResult extends React.Component {
           // this.getFiltersOnMount();
           // window.location.href =  query
         } else {
-          return console.log(response.data.message);
+          // return console.log(response.data.message);
         }
       })
       .catch((err) => {

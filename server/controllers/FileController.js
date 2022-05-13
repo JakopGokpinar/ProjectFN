@@ -162,7 +162,7 @@ getMenuItems = (req, res) => {
 
 
   const query = getQuery();
-  console.log(query)
+  console.log("query", query)
   //{price: {$lt: 100000, $gte: 30}, title: {$regex: `${searchWord}`, $options: 'i'}}
 
   function getQuery() {
@@ -176,6 +176,7 @@ getMenuItems = (req, res) => {
 
     let minPrice = queryParams.get('price_min');
     if(minPrice) {
+      console.log("sa")
       minPrice = parseInt(minPrice)
       minPrice = {price: {$gte: minPrice}}
       Object.assign(query, minPrice)
@@ -183,6 +184,7 @@ getMenuItems = (req, res) => {
 
     let maxPrice = queryParams.get('price_max');
     if(maxPrice) {
+      console.log("as")
       maxPrice = parseInt(maxPrice)
       if(query["price"]){
         var newPriceObj = {price: {...query["price"], $lte: maxPrice}}
@@ -193,11 +195,6 @@ getMenuItems = (req, res) => {
       }
     } 
 
-    let mainCategory = queryParams.get('mainc');
-    if(mainCategory) {
-
-    }
-
     return query
   }
 
@@ -206,7 +203,7 @@ getMenuItems = (req, res) => {
   async function getCollectionItems(collection) {
     return new Promise((resolve, reject) => {
       collection
-        .find({'name':"biler"})    // this is for case insensitive search
+        .find(query)    // this is for case insensitive search
         .toArray()                            
         .then((item) => {
           if(item.length <= 0){ resolve(); }
@@ -225,8 +222,19 @@ getMenuItems = (req, res) => {
             .useDb(db)
             .db.collections()
             .then(async (collections) => {
-              var collectionPromise = collections.map(
+              let collectionArray = collections;
+
+              /* let subCatName = queryParams.get('subc');
+              if(subCatName !== null) {
+                collectionArray = collections.filter(collec => {
+                  let colname = collec.namespace.split('.')[1]
+                  return colname === subCatName;
+                })
+              } */
+              
+              var collectionPromise = collectionArray.map(
                 async (col) =>
+
                   new Promise(async (resolve, reject) => {
                     let collectionItem = await getCollectionItems(col)
                     .catch(() => console.log("Promise rejected on getting collection items"));

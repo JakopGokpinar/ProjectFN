@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import Header from "./Header";
 import { Link } from "react-router-dom";
@@ -12,11 +13,14 @@ function CategorySelector(props) {
   function toggleVisibality() {
     var visible = isVisible;
     setVisible(!visible);
+    console.log("category array" , props.categoryState)
   }
 
-  function selectCategory() {
-      
-  }
+  React.useEffect(() => {
+    console.log(" array" , props.categoryState)
+    
+  }, [props.categoryState])
+
 
   return (
     <div className="category border rounded categorySelectorContainer filterContainer">

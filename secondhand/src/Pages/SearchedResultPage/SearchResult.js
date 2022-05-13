@@ -17,6 +17,7 @@ class SearchResult extends React.Component {
       filtersWithMultipleQueries: ["status", "location"],
       resultCount: 0,
       tagArray: [],
+      categoryArray: [],
       urlParams: new URLSearchParams(props.location.search),
       filters: [
         {
@@ -148,29 +149,26 @@ class SearchResult extends React.Component {
     for (const filter of filters) {
       queryString += `${filter.queryKey}=${filter.queryValue}&`;
     }
-    /* Object.entries(filters).forEach(
-      ([key, value]) => (queryString += `${key}=${value}&`)
-    ); */
-    
+
     if (queryString[queryString.length - 1] === "&")
       queryString = queryString.slice(0, queryString.length - 1);
     let query = `/file/getmenuitems?${queryString}`;
     instanceAxs
       .get(query)
       .then((response) => {
-        console.log(query)
-        console.log("Search response", response.data.items);
+        console.log("query make search",query)
+        console.log("Search response", response);
         if (response.data.status) {
           var returnedItems = response.data.items;
           this.setState({
             items: returnedItems,
             resultCount: returnedItems.length,
           });
-          window.history.pushState("page2", "seach made", query);
+          // window.history.pushState("page2", "seach made", query);
           // this.getFiltersOnMount();
           // window.location.href =  query
         } else {
-          // return console.log(response.data.message);
+          
         }
       })
       .catch((err) => {
@@ -295,25 +293,50 @@ class SearchResult extends React.Component {
     if (queryString[queryString.length - 1] === "&")
       queryString = queryString.slice(0, queryString.length - 1);
 
-    // let query = `/search?${queryString}`;
-    let query = `/file/getmenuitems?${queryString}`
+    let query = `/file/getmenuitems?${queryString}`;
+
     instanceAxs
-      .get(`${query}`)
+      .get(query)
       .then((response) => {
         console.log("Search response", response.data.items);
+
         var minPrice = 0 //response.data.additional.minPrice;
         var maxPrice = 10000 //response.data.additional.maxPrice;
+
         if (response.status === 200) {
-          var returnedItems = response.data.items;
-          var categoryArray = response.data.categories;
+          var responseDataItems = response.data.items;
+          var categoryArray = [];
+          var returnedItems = [];
+
+          for(let i = 0; i < responseDataItems.length; i++) {
+            var dataItem = responseDataItems[i];
+            var categoryObj = {main: '', sub: []};
+
+            for(let k = 0; k < dataItem.length; k++) {
+              categoryObj.main = dataItem[0];
+              if(k > 0){
+                let subItem = dataItem[k];
+
+                for(let j = 0; j < subItem.length; j++) {          
+                  if(j === subItem.length - 1) {
+                    let subCategory = subItem[subItem.length - 1].collectionName;
+                    categoryObj.sub.push(subCategory);
+                  } else {
+                    returnedItems.push(subItem[j]);
+                  }
+                }
+              }
+            }
+            categoryArray.push(categoryObj);
+          }
+
           this.setState({
             items: returnedItems,
             resultCount: 10, //returnedItems.length,
             minAndMaxPrice: { minPrice: minPrice, maxPrice: maxPrice },
-            categoryArray
+            categoryArray: categoryArray
           });
-
-          this.props.history.push(`/search?${queryString}`);
+          // this.props.history.push(`/search?${queryString}`);
         } else {
           return console.log(response.data.message);
         }
@@ -342,7 +365,7 @@ class SearchResult extends React.Component {
           <CategorySelector
             setfilter={this.setFilter}
             
-            categoryState={this.state.categoryArray !== null &&this.state.categoryArray}
+            categoryState={ this.state.categoryArray}
           ></CategorySelector>
           {this.state.minAndMaxPrice !== undefined && (
             <Price

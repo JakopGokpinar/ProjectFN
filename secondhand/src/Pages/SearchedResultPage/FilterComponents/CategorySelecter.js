@@ -9,7 +9,6 @@ function CategorySelector(props) {
   const [categoryArray, setCategoryArray] = useState([
     props.categoryState
   ]);
-
   function toggleVisibality() {
     var visible = isVisible;
     setVisible(!visible);

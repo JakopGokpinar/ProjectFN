@@ -49,8 +49,6 @@ class SearchResult extends React.Component {
       filters: queryFilters
     });
     this.makeSearch()
-    /* var sorting = e.target.value;
-    this.setFilter("order", sorting, sorting); */
   };
 
   getFiltersOnMount = () => {
@@ -144,36 +142,7 @@ class SearchResult extends React.Component {
   };
 
   makeSearch = () => {
-    let filters = this.state.filters;
-    var queryString = "";
-    for (const filter of filters) {
-      queryString += `${filter.queryKey}=${filter.queryValue}&`;
-    }
-
-    if (queryString[queryString.length - 1] === "&")
-      queryString = queryString.slice(0, queryString.length - 1);
-    let query = `/file/getmenuitems?${queryString}`;
-    instanceAxs
-      .get(query)
-      .then((response) => {
-        console.log("query make search",query)
-        console.log("Search response", response);
-        if (response.data.status) {
-          var returnedItems = response.data.items;
-          this.setState({
-            items: returnedItems,
-            resultCount: returnedItems.length,
-          });
-          // window.history.pushState("page2", "seach made", query);
-          // this.getFiltersOnMount();
-          // window.location.href =  query
-        } else {
-          
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      this.searchAlgorithm(this.state.filters) 
   };
 
   setFilter = (queryKey, queryValue, tagKey, tagValue) => {
@@ -204,7 +173,7 @@ class SearchResult extends React.Component {
       queryFilters.push(newFilter);
 
       this.setState({
-        filters: queryFilters,
+        filters: queryFilters
       });
       this.addFilterTag(tagKey,tagValue,queryKey, queryValue);
       return;
@@ -283,16 +252,20 @@ class SearchResult extends React.Component {
     });
   };
 
-  componentDidMount() {
-    let params = this.getFiltersOnMount();
-    this.getTags(params);
+  returnQueryString(filters) {
     var queryString = "";
-    for (const filter of params) {
+    for (const filter of filters) {
       queryString += `${filter.queryKey}=${filter.queryValue}&`;
     }
     if (queryString[queryString.length - 1] === "&")
       queryString = queryString.slice(0, queryString.length - 1);
 
+    return queryString;
+  }
+
+  searchAlgorithm = (filters) => {
+    
+    let queryString = this.returnQueryString(filters);
     let query = `/file/getmenuitems?${queryString}`;
 
     instanceAxs
@@ -332,11 +305,11 @@ class SearchResult extends React.Component {
 
           this.setState({
             items: returnedItems,
-            resultCount: 10, //returnedItems.length,
+            resultCount: returnedItems.length,
             minAndMaxPrice: { minPrice: minPrice, maxPrice: maxPrice },
             categoryArray: categoryArray
           });
-          // this.props.history.push(`/search?${queryString}`);
+          window.history.pushState("page2", "seach made", `/search?${queryString}`);
         } else {
           return console.log(response.data.message);
         }
@@ -344,6 +317,12 @@ class SearchResult extends React.Component {
       .catch((err) => {
         console.log(err);
       });
+  }
+
+  componentDidMount() {
+    let params = this.getFiltersOnMount();
+    this.getTags(params);
+    this.searchAlgorithm(params)
   }
 
    render() {
@@ -364,8 +343,9 @@ class SearchResult extends React.Component {
           </button>
           <CategorySelector
             setfilter={this.setFilter}
-            
+            makeSearch={this.makeSearch}
             categoryState={ this.state.categoryArray}
+            subCategoryState={this.state.filters.find(e => e.tagKey === "subCategory") === undefined &&  'no value'}
           ></CategorySelector>
           {this.state.minAndMaxPrice !== undefined && (
             <Price

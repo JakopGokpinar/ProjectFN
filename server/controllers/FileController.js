@@ -155,7 +155,7 @@ getMenuItems = (req, res) => {
   let queryParams = new URLSearchParams(req.query);
   let productDBs = ["cars","property"];
 
-  var categoryFilter = queryParams.get('category');
+  var categoryFilter = queryParams.get('mainc');
   if(categoryFilter !== null && categoryFilter !== "all") {
     productDBs = [categoryFilter]
   }
@@ -224,13 +224,13 @@ getMenuItems = (req, res) => {
             .then(async (collections) => {
               let collectionArray = collections;
 
-              /* let subCatName = queryParams.get('subc');
+              let subCatName = queryParams.get('subc');
               if(subCatName !== null) {
                 collectionArray = collections.filter(collec => {
                   let colname = collec.namespace.split('.')[1]
                   return colname === subCatName;
                 })
-              } */
+              } 
               
               var collectionPromise = collectionArray.map(
                 async (col) =>

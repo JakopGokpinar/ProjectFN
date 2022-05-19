@@ -45,6 +45,7 @@ function CategorySelector(props) {
   function backToMainCategories() {
     setIsCategorySelected(false);
     props.setfilter("mainc",'',"mainCategory",'');
+    props.setfilter("subc","","subCategory","");
     props.makeSearch();
   }
 

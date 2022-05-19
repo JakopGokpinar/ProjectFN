@@ -271,10 +271,10 @@ class SearchResult extends React.Component {
     instanceAxs
       .get(query)
       .then((response) => {
-        console.log("Search response", response.data.items);
+        console.log("Search response", response.data);
 
-        var minPrice = 0 //response.data.additional.minPrice;
-        var maxPrice = 10000 //response.data.additional.maxPrice;
+        var minPrice = response.data.minPrice;
+        var maxPrice = response.data.maxPrice;
 
         if (response.status === 200) {
           var responseDataItems = response.data.items;

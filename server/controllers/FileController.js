@@ -154,6 +154,8 @@ createAnnonce = async (req, res) => {
 getMenuItems = (req, res) => {
   let queryParams = new URLSearchParams(req.query);
   let productDBs = ["cars","property"];
+  var maxPrice = 0;
+  var minPrice = null;
 
   var categoryFilter = queryParams.get('mainc');
   if(categoryFilter !== null && categoryFilter !== "all") {
@@ -198,16 +200,20 @@ getMenuItems = (req, res) => {
     return query
   }
 
-
     // get items within a collection  
   async function getCollectionItems(collection) {
     return new Promise((resolve, reject) => {
       collection
-        .find(query)    // this is for case insensitive search
+        .find(query)  
         .toArray()                            
         .then((item) => {
           if(item.length <= 0){ resolve(); }
           let collectionItems = item;
+          if(minPrice === null) minPrice = collectionItems[0].price
+          collectionItems.map(it =>{
+            maxPrice = Math.max(maxPrice, it.price);
+            minPrice = Math.min(minPrice, it.price);
+          })
           collectionItems.push({"collectionName":collection.namespace})
           resolve(collectionItems);
         }).catch((err) => console.log("error occured while getting collection items",err))
@@ -267,7 +273,7 @@ getMenuItems = (req, res) => {
   }
 
   const sendServer = (items) => {
-    res.json({ items: items });
+    res.json({ items: items, maxPrice: maxPrice, minPrice: minPrice });
   };
 
   resolveMenuItems();

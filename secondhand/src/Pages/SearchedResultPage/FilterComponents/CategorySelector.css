@@ -1,10 +1,7 @@
 .categorySelector__ul {
     list-style-type: none;
+    padding: 0%;
 }
 .categorySelector__ul__li {
-    text-decoration: none;
-    color: black;
-}
-.categorySelector__ul__li:hover{
-    color:black
+    
 }

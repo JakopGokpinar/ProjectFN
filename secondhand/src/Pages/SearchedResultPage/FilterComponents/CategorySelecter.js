@@ -11,6 +11,8 @@ function CategorySelector(props) {
   ]);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [isCategorySelected, setIsCategorySelected] = useState(false);
+  const [selectedSubCategory, setSelectedSubCategory] = useState();
+  const [isSubCategorySelected, setIsSubCategorySelected] = useState(false);
 
   function toggleVisibality() {
     var visible = isVisible;
@@ -38,6 +40,9 @@ function CategorySelector(props) {
   }
 
   function selectSubCategory(sub) {
+    console.log(sub)
+    setSelectedSubCategory(sub)
+    setIsSubCategorySelected(true)
     props.setfilter("subc",sub, "subCategory",sub)
     props.makeSearch();
   }
@@ -53,32 +58,47 @@ function CategorySelector(props) {
     <div className="category border rounded categorySelectorContainer filterContainer">
       <Header title="Kategori" toggleVisible={toggleVisibality} />
       {isVisible && (
-        <div>
+        <div className="categoryFilterComponent filterBody">
           {!isCategorySelected ? 
           
-          <ul className="categorySelector__ul">
+          <div>
+            <ul className="categorySelector__ul">
             {categoryArray.map((category) => {
               return (
-                <li onClick={() => selectCategory(category)}>
-                  <Link className="categorySelector__ul__li" >
-                    {category.main} <i class="fa-solid fa-angle-right"></i>
-                  </Link>
+                <li className="" onClick={() => selectCategory(category)}>
+                  <Link>
+                    {category.main} (57)
+                    </Link>
                 </li>
               );
             })}
           </ul>
-          : 
-          <div>
+          </div>
+          : (!isSubCategorySelected ? 
+            <div>
             <p onClick={() => backToMainCategories()}>Any Category</p>
             <ul className="categorySelector__ul">
             {selectedCategory.sub.map((subCategory) => {
               let subc = subCategory.split('.')[1]
               return(
-                <li onClick={() => selectSubCategory(subc)}>{subc}</li>
+                <li onClick={() => selectSubCategory(subc)}>
+                  <Link>
+                   {subc} (13)
+                  </Link>
+                </li>
               ) 
             })}
           </ul>
           </div>
+          
+          : 
+          
+          <div>
+            <i className="fas fa-arrow-left" />{selectedSubCategory}
+            
+            
+          </div>)
+          
           }
         </div>
       )}

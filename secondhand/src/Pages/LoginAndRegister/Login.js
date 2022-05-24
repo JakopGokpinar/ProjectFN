@@ -64,7 +64,7 @@ class Login extends React.Component{
                     <input type="email" className="email form-control" name="email" required onChange={this.handleChange}></input>
                 </div>
                 <div className="mb-3">
-                    <label for="inputPassword5" className="form-label">Password</label>
+                    <label htmlFor="inputPassword5" className="form-label">Password</label>
                     <input type="text" className="pass form-control" name="pass" required onChange={this.handleChange}></input>
                 </div>             
                 <button type="submit" className="btn btn-primary d-block">Login</button>

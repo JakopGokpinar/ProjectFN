@@ -2,6 +2,6 @@
     list-style-type: none;
     padding: 0%;
 }
-.categorySelector__ul__li {
-    
+.categoryFilter_subCategory {
+    display: flex;
 }

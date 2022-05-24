@@ -9,8 +9,8 @@ function Price(props) {
   const [isVisible, setVisible] = useState(true);
   const [priceMinimum, setPriceMinimum] = useState('')
   const [priceMaximum, setPriceMaximum] = useState('')
-  const [priceMinDefault, setPriceMinDefault] = useState(props.priceObject.minPrice);
-  const [priceMaxDefault, setPriceMaxDefault] = useState(props.priceObject.maxPrice)
+  const [priceMinDefault] = useState(props.priceObject.minPrice);
+  const [priceMaxDefault] = useState(props.priceObject.maxPrice)
   const [sliderValue, setSliderValue] = useState([props.priceObject.minPrice,props.priceObject.maxPrice])
 
   function valuetext(value) {
@@ -18,7 +18,6 @@ function Price(props) {
   }
 
   function applyPrice() {
-  
       props.setfilter("price_min", priceMinimum, "minPrice", `fra ${priceMinimum}`);
 
       props.setfilter("price_max", priceMaximum, "maxPrice", `til ${priceMaximum}`);
@@ -84,7 +83,7 @@ function Price(props) {
     } else {
       setSliderValue([value["queryValue"], max["queryValue"]])
     }
-  }, [props.minPriceState, props.maxPriceState]);
+  }, [props.minPriceState, props.maxPriceState, priceMinDefault, priceMaxDefault]);
 
   return (
     <div className="category border rounded filterContainer">
@@ -129,7 +128,7 @@ function Price(props) {
             ></input>
           </div>
           <button className="btn btn-primary w-100 mt-3" onClick={applyPrice}>
-            Søk
+            Bruk
           </button>
         </div>
       )}

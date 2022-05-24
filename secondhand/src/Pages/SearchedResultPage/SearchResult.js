@@ -112,6 +112,8 @@ class SearchResult extends React.Component {
           
           params.push(filter);
           break;
+        default:
+          
       }
     }
     this.setState({
@@ -283,17 +285,21 @@ class SearchResult extends React.Component {
 
           for(let i = 0; i < responseDataItems.length; i++) {
             var dataItem = responseDataItems[i];
-            var categoryObj = {main: '', sub: []};
-
+            var categoryObj = {main: '', itemCount: 0, sub: []};
+            
             for(let k = 0; k < dataItem.length; k++) {
-              categoryObj.main = dataItem[0];
+              categoryObj.main = dataItem[0].dbName;
+              categoryObj.itemCount = dataItem[0].itemCount;
+
               if(k > 0){
                 let subItem = dataItem[k];
 
                 for(let j = 0; j < subItem.length; j++) {          
                   if(j === subItem.length - 1) {
-                    let subCategory = subItem[subItem.length - 1].collectionName;
-                    categoryObj.sub.push(subCategory);
+                    let subCatObj = {};
+                    subCatObj.name = subItem[subItem.length - 1].collectionName;
+                    subCatObj.count = subItem[subItem.length - 1].itemCount;
+                    categoryObj.sub.push(subCatObj);
                   } else {
                     returnedItems.push(subItem[j]);
                   }
@@ -341,12 +347,12 @@ class SearchResult extends React.Component {
           <button className="btn btn-danger" onClick={this.removeAllFilters}>
             Fjerne Filtre
           </button>
-          <CategorySelector
+         { <CategorySelector
             setfilter={this.setFilter}
             makeSearch={this.makeSearch}
             categoryState={ this.state.categoryArray}
             subCategoryState={this.state.filters.find(e => e.tagKey === "subCategory") === undefined &&  'no value'}
-          ></CategorySelector>
+          ></CategorySelector>}
           {this.state.minAndMaxPrice !== undefined && (
             <Price
               setfilter={this.setFilter}
@@ -379,7 +385,7 @@ class SearchResult extends React.Component {
 
             <div className="filterTagsContainer">
               {this.state.tagArray.map((tag) => {
-                return <Tags tag={tag} setfilter={this.setFilter} />;
+                return <Tags tag={tag} key={tag.value} setfilter={this.setFilter} />;
               })}
             </div>
           </div>
@@ -387,8 +393,8 @@ class SearchResult extends React.Component {
             {this.state.items.map((item, index) => {
               item.annonce = item
               return (
-                <>
-                  <div className="itemCol" key={item.annonce._id}>
+                <React.Fragment key={item.annonce._id}>
+                  <div className="itemCol" >
                     <ProductCard                
                       img={item.annonce.images}
                       price={item.annonce.price}
@@ -396,7 +402,7 @@ class SearchResult extends React.Component {
                       id={item.annonce._id}
                     />
                   </div>
-                </>
+                </React.Fragment>
               );
             })}
           </div>

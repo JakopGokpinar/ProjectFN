@@ -200,6 +200,16 @@ getMenuItems = (req, res) => {
     return query
   }
 
+  function getDbItemCount(collection) {
+    let itemCount = 0;
+    for(let i = 0; i < collection.length; i++) {
+      let itemCol = collection[i];
+      itemCount += itemCol.slice(0,-1).length
+      // itemCount += itemCol.length;
+    }
+    return itemCount;
+  }
+
     // get items within a collection  
   async function getCollectionItems(collection) {
     return new Promise((resolve, reject) => {
@@ -209,12 +219,14 @@ getMenuItems = (req, res) => {
         .then((item) => {
           if(item.length <= 0){ resolve(); }
           let collectionItems = item;
-          if(minPrice === null) minPrice = collectionItems[0].price
+          if(minPrice === null)  minPrice = collectionItems[0].price
           collectionItems.map(it =>{
             maxPrice = Math.max(maxPrice, it.price);
             minPrice = Math.min(minPrice, it.price);
           })
-          collectionItems.push({"collectionName":collection.namespace})
+          let collectionInfo= {collectionName: collection.namespace, itemCount: item.length}
+          // collectionItems.push({"collectionNameee": collection.namespace})
+          collectionItems.push(collectionInfo)
           resolve(collectionItems);
         }).catch((err) => console.log("error occured while getting collection items",err))
     });
@@ -242,14 +254,14 @@ getMenuItems = (req, res) => {
                 async (col) =>
 
                   new Promise(async (resolve, reject) => {
-                    let collectionItem = await getCollectionItems(col)
+                    let collectionItem = await getCollectionItems(col)       
                     .catch(() => console.log("Promise rejected on getting collection items"));
                     resolve(collectionItem);
                   })
               );
               Promise.all(collectionPromise).then((collectionItems) => {
                 let collectionItemArray = collectionItems.filter(item => item)             
-                if(collectionItemArray.length >0) collectionItemArray.unshift(db)           
+                if(collectionItemArray.length >0) collectionItemArray.unshift({dbName: db, itemCount: getDbItemCount(collectionItemArray)})           
                 resolve(collectionItemArray);             
               }).catch((err) => console.log("Rejected on getting collection",err))
             })

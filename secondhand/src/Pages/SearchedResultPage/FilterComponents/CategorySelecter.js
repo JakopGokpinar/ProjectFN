@@ -28,7 +28,6 @@ function CategorySelector(props) {
     if(subCatState === "no value") {
       setIsCategorySelected(false)
     }
-    console.log(props.subCategoryState)
   }, [props.subCategoryState])
 
 
@@ -49,25 +48,31 @@ function CategorySelector(props) {
 
   function backToMainCategories() {
     setIsCategorySelected(false);
-    props.setfilter("mainc",'',"mainCategory",'');
+    /* props.setfilter("mainc",'',"mainCategory",'');
     props.setfilter("subc","","subCategory","");
-    props.makeSearch();
+    props.makeSearch(); */
+  }
+
+  function backToSubCategories() {
+    setIsSubCategorySelected(false);
+  /*   props.setfilter("subc","","subCategory","");
+    props.makeSearch(); */
   }
 
   return (
-    <div className="category border rounded categorySelectorContainer filterContainer">
-      <Header title="Kategori" toggleVisible={toggleVisibality} />
+    <div className="category border rounded categorySelectorContainer filterContainer" key={"fslmöfspşömnv"}>
+      <Header title="Kategori" toggleVisible={toggleVisibality} key="feskmn"/>
       {isVisible && (
-        <div className="categoryFilterComponent filterBody">
+        <div className="categoryFilterComponent filterBody" key={"fesfse"}>
           {!isCategorySelected ? 
           
-          <div>
-            <ul className="categorySelector__ul">
-            {categoryArray.map((category) => {
+          <div key={"nqwerty"}>
+            <ul className="categorySelector__ul" key={"fe"} >
+            {categoryArray.map((category,index) => {
               return (
-                <li className="" onClick={() => selectCategory(category)}>
-                  <Link>
-                    {category.main} (57)
+                <li className="" onClick={() => selectCategory(category)} key={index}>
+                  <Link to="#" key={Math.random() * 900} >
+                    {`${category.main} (${category.itemCount})`} 
                     </Link>
                 </li>
               );
@@ -75,15 +80,17 @@ function CategorySelector(props) {
           </ul>
           </div>
           : (!isSubCategorySelected ? 
-            <div>
-            <p onClick={() => backToMainCategories()}>Any Category</p>
-            <ul className="categorySelector__ul">
-            {selectedCategory.sub.map((subCategory) => {
-              let subc = subCategory.split('.')[1]
+            <div className="categoryFilter_subCategory" key={"efow"}>
+              <i onClick={() => backToMainCategories()} key="pkppokpo" className="fas fa-arrow-left" style={{marginRight: 20}}/>
+
+              <ul className="categorySelector__ul" key={"feow"}>
+
+            {selectedCategory.sub.map((subCategory,index) => {
+              let subc = subCategory.name.split('.')[1]
               return(
-                <li onClick={() => selectSubCategory(subc)}>
-                  <Link>
-                   {subc} (13)
+                <li onClick={() => selectSubCategory(subc)} key={index + 100}>
+                  <Link to="#" key={(Math.random() * 900).toString()}>
+                   {`${subc} (${subCategory.count})`}
                   </Link>
                 </li>
               ) 
@@ -93,8 +100,9 @@ function CategorySelector(props) {
           
           : 
           
-          <div>
-            <i className="fas fa-arrow-left" />{selectedSubCategory}
+          <div key={"mnvmc"}>
+            <i onClick={() => backToSubCategories()} key="njjn" className="fas fa-arrow-left" style={{marginRight: 20}}/>
+            {selectedSubCategory}
             
             
           </div>)

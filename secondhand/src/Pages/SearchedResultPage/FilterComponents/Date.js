@@ -12,6 +12,10 @@ function Date(props) {
     setCheckedDate(e.target.id);
   }
 
+  function onRadioButtonChange() {  // this function is only for to silent the react error
+
+  }
+
   React.useEffect(() => {
     var state = props.state;
     if (state === undefined) {
@@ -38,8 +42,9 @@ function Date(props) {
               name="flexRadioDefault"
               id="radio-today"
               checked={checkedDate === "radio-today" && true}
+              onChange={() => onRadioButtonChange()}
             />
-            <label className="form-check-label" for="radio-today">
+            <label className="form-check-label" htmlFor="radio-today">
               I dag
             </label>
           </div>
@@ -51,8 +56,9 @@ function Date(props) {
               name="flexRadioDefault"
               id="radio-week"
               checked={checkedDate === "radio-week" && true}
+              onChange={() => onRadioButtonChange()}
             />
-            <label className="form-check-label" for="radio-week">
+            <label className="form-check-label" htmlFor="radio-week">
               I uka
             </label>
           </div>
@@ -64,8 +70,9 @@ function Date(props) {
               name="flexRadioDefault"
               id="radio-month"
               checked={checkedDate === "radio-month" && true}
+              onChange={() => onRadioButtonChange()}
             />
-            <label className="form-check-label" for="radio-month">
+            <label className="form-check-label" htmlFor="radio-month">
               I måned
             </label>
           </div>

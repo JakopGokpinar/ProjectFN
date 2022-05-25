@@ -126,9 +126,19 @@ createAnnonce = async (req, res) => {
   if (category === "Eindom") {
     mongoose.connection
       .useDb("property")
-      .collection("bolig-til-salgs")
+      .collection(newAnnonce.subCategory)
       .insertOne({
-        newAnnonce,
+        _id: newAnnonce._id,
+        title: newAnnonce.title,
+        price: newAnnonce.price,
+        category: newAnnonce.category,
+        location: newAnnonce.location,
+        status: newAnnonce.status,
+        date: newAnnonce.date,
+        description: newAnnonce.description,
+        uniqueProps: newAnnonce.uniqueProps,
+        images: newAnnonce.images,
+        seller: newAnnonce.seller
       })
       .catch((err) => {
         return res.json({

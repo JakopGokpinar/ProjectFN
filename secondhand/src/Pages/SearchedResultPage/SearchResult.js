@@ -30,25 +30,21 @@ class SearchResult extends React.Component {
   }
 
   setSortingCategory = (value) => {
-    var queryFilters = this.state.filters;
-    var hasOrderFilter = queryFilters.find(e => e.queryKey === "order");
-    var index = queryFilters.indexOf(hasOrderFilter);
+    var finalArray = this.state.items;
 
-    if(index !== -1) {
-      hasOrderFilter["queryValue"] = value;
-      queryFilters[index] = hasOrderFilter;
-    } else {
-      var orderFilter = {
-        queryKey: "order",
-        queryValue: value
-      }
-      queryFilters.push(orderFilter);
+    if(value === "price_desc") {
+      let priceDescArray = [].concat(finalArray)
+     .sort((a, b) => a.price > b.price ? 1 : -1)
+      finalArray = priceDescArray;
+    } else if(value === "price_asc") {
+      let priceAscArray = [].concat(finalArray)
+    .sort((a, b) => a.price < b.price ? 1 : -1)
+      finalArray = priceAscArray;
     }
 
     this.setState({
-      filters: queryFilters
-    });
-    this.makeSearch()
+      items: finalArray
+    })
   };
 
   getFiltersOnMount = () => {

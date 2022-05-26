@@ -64,13 +64,6 @@ class SearchResult extends React.Component {
           };
           params.push(filter)
           break;
-        case 'order':
-          filter = {
-            queryKey: key,
-            queryValue: value
-          }
-          params.push(filter);
-          break;
         case 'price_max':
           filter = {
             queryKey: key,
@@ -104,8 +97,16 @@ class SearchResult extends React.Component {
               tagKey: "statusUsed",
               tagValue: "Brukt",
             };
+          } 
+          params.push(filter);
+          break;
+        case 'published':
+          filter = {
+            queryKey : key,
+            queryValue: value,
+            tagKey: key,
+            tagValue: value
           }
-          
           params.push(filter);
           break;
         default:

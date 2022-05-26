@@ -43,3 +43,23 @@
     grid-row-gap: 15px;
     padding-left: 0%;
 }
+
+@media (max-width:1200px){
+    .searchResults_Items {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-column-gap: 15px;
+        grid-row-gap: 15px;
+        padding-left: 0%;
+    }
+}
+
+@media (max-width:900px){
+    .searchResults_Items {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        grid-column-gap: 15px;
+        grid-row-gap: 15px;
+        padding-left: 0%;
+    }
+}

@@ -207,6 +207,23 @@ getMenuItems = (req, res) => {
       }
     } 
 
+    let published = queryParams.get('published');
+    if(published) {
+      var currentDate = new Date();
+      let time = 0;
+      if (published === "today") {
+        time = 1
+      } else if(published === "week") {
+        time = 7;
+      } else if (published === "month") {
+        time = 30
+      }
+    currentDate.setDate(currentDate.getDate() - time)
+    console.log(currentDate)
+    var dateObj = {date: {$lte: currentDate}}
+    Object.assign(query,dateObj)
+    }
+
     return query
   }
 
@@ -229,7 +246,7 @@ getMenuItems = (req, res) => {
         .then((item) => {
           if(item.length <= 0){ resolve(); }
           let collectionItems = item;
-          if(minPrice === null)  minPrice = collectionItems[0].price
+          if(minPrice === null && collectionItems[0])  minPrice = collectionItems[0].price
           collectionItems.map(it =>{
             maxPrice = Math.max(maxPrice, it.price);
             minPrice = Math.min(minPrice, it.price);

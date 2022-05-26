@@ -20,6 +20,8 @@ function Date(props) {
     var state = props.state;
     if (state === undefined) {
       setCheckedDate('')
+    } else {
+      setCheckedDate(state.queryValue)
     }
   }, [props.state]);
 
@@ -40,8 +42,8 @@ function Date(props) {
               value="today"
               type="radio"
               name="flexRadioDefault"
-              id="radio-today"
-              checked={checkedDate === "radio-today" && true}
+              id="today"
+              checked={checkedDate === "today" && true}
               onChange={() => onRadioButtonChange()}
             />
             <label className="form-check-label" htmlFor="radio-today">
@@ -54,8 +56,8 @@ function Date(props) {
               value="week"
               type="radio"
               name="flexRadioDefault"
-              id="radio-week"
-              checked={checkedDate === "radio-week" && true}
+              id="week"
+              checked={checkedDate === "week" && true}
               onChange={() => onRadioButtonChange()}
             />
             <label className="form-check-label" htmlFor="radio-week">
@@ -68,8 +70,8 @@ function Date(props) {
               value="month"
               type="radio"
               name="flexRadioDefault"
-              id="radio-month"
-              checked={checkedDate === "radio-month" && true}
+              id="month"
+              checked={checkedDate === "month" && true}
               onChange={() => onRadioButtonChange()}
             />
             <label className="form-check-label" htmlFor="radio-month">

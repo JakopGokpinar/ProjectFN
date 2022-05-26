@@ -25,11 +25,9 @@ class Menu extends React.Component{
                 for(let k = 0; k<dbArray.length; k++){
                     dbArray[k].pop();
                     var collectionArray = dbArray[k];
-                console.log("col ar",collectionArray)
                     collectionArray.map(arr => itemArray.push(arr))
                 }
             }
-            console.log(itemArray)
             
             this.setState({
                 items: itemArray,

@@ -40,6 +40,10 @@ class SearchResult extends React.Component {
       let priceAscArray = [].concat(finalArray)
     .sort((a, b) => a.price < b.price ? 1 : -1)
       finalArray = priceAscArray;
+    } else if(value === "published") {
+      let publishArray = [].concat(finalArray)
+    .sort((a, b) => a.date < b.date ? 1 : -1)
+      finalArray = publishArray;
     }
 
     this.setState({

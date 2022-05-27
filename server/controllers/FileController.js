@@ -219,8 +219,7 @@ getMenuItems = (req, res) => {
         time = 30
       }
     currentDate.setDate(currentDate.getDate() - time)
-    console.log(currentDate)
-    var dateObj = {date: {$lte: currentDate}}
+    var dateObj = {date: {$gte: currentDate}}
     Object.assign(query,dateObj)
     }
 

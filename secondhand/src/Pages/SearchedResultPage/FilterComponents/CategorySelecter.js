@@ -1,18 +1,14 @@
 import React from "react";
 import { useState } from "react";
 import Header from "./Header";
-import { Link } from "react-router-dom";
 import "./CategorySelector.css";
 
 function CategorySelector(props) {
   const [isVisible, setVisible] = useState(true);
-  const [categoryArray, setCategoryArray] = useState([
-    props.categoryState
-  ]);
-  const [selectedCategory, setSelectedCategory] = useState({});
-  const [isCategorySelected, setIsCategorySelected] = useState(false);
-  const [selectedSubCategory, setSelectedSubCategory] = useState();
-  const [isSubCategorySelected, setIsSubCategorySelected] = useState(false);
+  const [categoryArray, setCategoryArray] = useState([props.categoryState]);
+  const [selectedMainCategory, setSelectedMainCategory] = useState({});
+  const [isMainCategorySelected, setIsMainCategorySelected] = useState(false);
+
 
   function toggleVisibality() {
     var visible = isVisible;
@@ -26,44 +22,81 @@ function CategorySelector(props) {
   React.useEffect(() => {
     let subCatState = props.subCategoryState;
     if(subCatState === "no value") {
-      setIsCategorySelected(false)
+      setIsMainCategorySelected(false)
     }
   }, [props.subCategoryState])
 
 
-  function selectCategory(category) {
-    setSelectedCategory(category);
-    setIsCategorySelected(true);
+  function selectMainCategory(e) {
+    e.preventDefault();
+
+      var category = JSON.parse(e.target.value)
+    console.log(category)
+    setSelectedMainCategory(category);
+    setIsMainCategorySelected(true);
     props.setfilter("mainc",category.main, "mainCategory",category.main)
     props.makeSearch();
   }
 
-  function selectSubCategory(sub) {
-    console.log(sub)
-    setSelectedSubCategory(sub)
-    setIsSubCategorySelected(true)
+  function selectSubCategory(e) {
+    e.preventDefault();
+    var sub = e.target.value;
     props.setfilter("subc",sub, "subCategory",sub)
     props.makeSearch();
   }
 
-  function backToMainCategories() {
-    setIsCategorySelected(false);
-    /* props.setfilter("mainc",'',"mainCategory",'');
-    props.setfilter("subc","","subCategory","");
-    props.makeSearch(); */
-  }
-
-  function backToSubCategories() {
-    setIsSubCategorySelected(false);
-  /*   props.setfilter("subc","","subCategory","");
-    props.makeSearch(); */
-  }
 
   return (
-    <div className="category border rounded categorySelectorContainer filterContainer" key={"fslmöfspşömnv"}>
-      <Header title="Kategori" toggleVisible={toggleVisibality} key="feskmn"/>
+    <div className="category border rounded categorySelectorContainer filterContainer">
+      <Header title="Kategori" toggleVisible={toggleVisibality}/>
       {isVisible && (
-        <div className="categoryFilterComponent filterBody" key={"fesfse"}>
+        <div className="categoryFilterComponent filterBody" >
+          <label htmlFor="mainCategorySelect" className="form-label">Main Category</label>
+          <select
+            className="form-select"
+            id="mainCategorySelect"
+            defaultValue=""
+            onChange={(e) => selectMainCategory(e)}>
+              <option value="" disabled>Select a main category</option>
+              {categoryArray.map((category,index) => {
+              return (
+                <option value={JSON.stringify(category)} key={index} >
+                    {`${category.main} (${category.itemCount})`} 
+                </option>
+              );
+            })}
+            </select>
+            {isMainCategorySelected && 
+            <div>
+              <label htmlFor="subCategorySelect" className="form-label">Sub Category</label>
+            <select
+              className="form-select"
+              id="subCategorySelect"
+              onChange={(e) => selectSubCategory(e)}
+              defaultValue="">
+              <option value="">Select a sub category</option>
+              {selectedMainCategory.sub.map((subCategory,index) => {
+              let subc = subCategory.name.split('.')[1]
+              return(
+                <option value={subc}  key={index + 100}>
+                   {`${subc} (${subCategory.count})`}
+                </option>
+              ) 
+            })}
+            </select>
+            </div>
+            }        
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default CategorySelector;
+
+
+
+/* 
           {!isCategorySelected ? 
           
           <div key={"nqwerty"}>
@@ -107,11 +140,4 @@ function CategorySelector(props) {
             
           </div>)
           
-          }
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default CategorySelector;
+          } */

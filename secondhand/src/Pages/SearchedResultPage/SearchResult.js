@@ -8,6 +8,9 @@ import Status from "./FilterComponents/Status";
 import Tags from "./FilterComponents/Tags.js";
 import PrimarySelect from "./ComponentSelect/PrimarySelect";
 import CategorySelector from "./FilterComponents/CategorySelecter";
+import UniqueCarComponents from "./UniqueComponents/Cars/UniqueCarComponents";
+import UniquePropertyComponents from "./UniqueComponents/Properties/UniquePropertyComponents";
+import UniqueCategoryComponents from "./UniqueComponents/UniqueCategoryComponents";
 
 class SearchResult extends React.Component {
   constructor(props) {
@@ -238,6 +241,7 @@ class SearchResult extends React.Component {
       tagArray.splice(index, 1);
       this.setState({ tagArray });
     } 
+    this.searchAlgorithm(this.state.filters)
   };
 
   removeAllFilters = () => {
@@ -371,6 +375,7 @@ class SearchResult extends React.Component {
             setfilter={this.setFilter}
             state={this.state.filters.find(e => e.queryKey === "published")}
           ></Date>
+          <UniqueCategoryComponents categoryState={this.state.filters.find(e => e.queryKey === "mainc")}></UniqueCategoryComponents>
         </div>
         <div className="searchResults">
           <div className="searchResults_Info">

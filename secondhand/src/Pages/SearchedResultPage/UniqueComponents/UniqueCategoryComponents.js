@@ -24,7 +24,7 @@ function UniqueCategoryComponents(props) {
     return(
         <div>
             {category !== undefined &&         
-                <CategoryComponent></CategoryComponent>
+                <CategoryComponent subcategory={props.subCategoryState}></CategoryComponent>
             }    
         </div>
     )

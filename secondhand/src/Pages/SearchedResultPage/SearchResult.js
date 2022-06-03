@@ -375,7 +375,10 @@ class SearchResult extends React.Component {
             setfilter={this.setFilter}
             state={this.state.filters.find(e => e.queryKey === "published")}
           ></Date>
-          <UniqueCategoryComponents categoryState={this.state.filters.find(e => e.queryKey === "mainc")}></UniqueCategoryComponents>
+          <UniqueCategoryComponents 
+            categoryState={this.state.filters.find(e => e.queryKey === "mainc")}
+            subCategoryState={this.state.filters.find(e => e.queryKey === "subc")}
+          ></UniqueCategoryComponents>
         </div>
         <div className="searchResults">
           <div className="searchResults_Info">

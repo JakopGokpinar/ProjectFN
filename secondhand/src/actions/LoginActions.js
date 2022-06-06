@@ -35,7 +35,7 @@ export const login = (user) => async (dispatch, getState) => {
                 dispatch(signIn());
                 dispatch(saveUser(user));
             } else {
-                alert("coul not login");
+                alert("could not login");
             }        
         })
         .catch(err => {

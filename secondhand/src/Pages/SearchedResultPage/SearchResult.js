@@ -8,8 +8,6 @@ import Status from "./FilterComponents/Status";
 import Tags from "./FilterComponents/Tags.js";
 import PrimarySelect from "./ComponentSelect/PrimarySelect";
 import CategorySelector from "./FilterComponents/CategorySelecter";
-import UniqueCarComponents from "./UniqueComponents/Cars/UniqueCarComponents";
-import UniquePropertyComponents from "./UniqueComponents/Properties/UniquePropertyComponents";
 import UniqueCategoryComponents from "./UniqueComponents/UniqueCategoryComponents";
 
 class SearchResult extends React.Component {

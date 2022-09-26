@@ -3,6 +3,7 @@ import { Link , withRouter} from "react-router-dom";
 import logo from "../../resources/logo.svg";
 import "./Navbar.css";
 import { connect } from "react-redux";
+import { instanceAxs } from "../../api/Api";
 
 class Navbar extends React.Component {
   constructor(props) {
@@ -11,6 +12,7 @@ class Navbar extends React.Component {
       currentY: 0,
       isRender: true,
       isLoggedIn: false,
+      showResults: false,
       username: "",
       searchInput: "",
     };
@@ -18,10 +20,57 @@ class Navbar extends React.Component {
   }
 
   handleSearchInputChange = (event) => {
-    this.setState({
-      searchInput: event.target.value,
-    });
+    let input = event.target.value;
+    let showResVal = false;
+
+    if(input === "") {
+      this.setState({
+        searchInput: ''
+      })
+      return;
+    }
+
+    instanceAxs
+      .get(`file/getmenuitems?q=${input}`)
+      .then(response => {
+        console.log("response",response.data);
+        var responseData = response.data.items;
+        var categoryArray = [];
+        var subCatArray = [];
+        var subItems = [];
+
+        for(let i = 0; i < responseData.length; i++) {
+          let dbItem = responseData[i];
+          for(let k = 0; k < dbItem.length; k++) {
+            let subCatItem = dbItem[i];
+            if(categoryName === 0) {
+              var categoryName = subCatItem.dbName;
+              categoryArray.push(categoryName);
+            } else {
+              for(let j = subCatItem.length - 1; j >= 0; j--) {
+                var lastItem = subCatItem[j];
+                if(j === subCatItem.length - 1) {
+                  var subcatName = lastItem.collectionName;
+                  subCatArray.push(subcatName);
+                } else {
+                  subItems.push(subcatName.title)
+                }
+              }
+            }
+          }
+        }
+      showResVal = true;
+        this.setState({
+          searchInput: event.target.value,
+          showResults: showResVal,
+          categoryArray,
+          subCatArray,
+          subItems
+        })
+      })
+
   };
+
   checkCharacters = async () => {
       let input = this.state.searchInput.trim();
       let searchInput = input.replace(/\s/g, "+");
@@ -63,8 +112,9 @@ class Navbar extends React.Component {
     window.addEventListener("scroll", this.scroll);
     return (
       <div>
-        {this.state.isRender && (
-          <nav className="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+        {this.state.isRender &&
+          <div>
+            <nav className="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
             <div className="container">
               <a className="navbar-brand" href="/">
                 Finn
@@ -95,8 +145,15 @@ class Navbar extends React.Component {
                     />
                     <button className="btn btn-outline-primary" type="button" onClick={this.makeSearch}>
                       Search
-                    </button>
+                    </button>                    
                   </form>
+                  {this.state.showResults && 
+                      <span className="border rounded searchResultBox">
+                        {this.state.categoryArray.map(category => {
+                          <h4>{category}</h4>
+                        })}
+                      </span>
+                    }
                 </div>
                 <div className="dropdown" id="profileToggleDiv">
                   <Link
@@ -151,8 +208,9 @@ class Navbar extends React.Component {
               </div>
             </div>
           </nav>
-        )}
-        {/*{this.state.isRender &&
+          </div>
+        }
+                {/*{this.state.isRender &&
                 <nav class="navbar navbar-expand-lg navbar-light second-nav fixed-top">
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav me-auto mb-lg-0 w-100 d-flex justify-content-evenly">

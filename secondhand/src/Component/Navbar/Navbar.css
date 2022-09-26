@@ -14,3 +14,9 @@
 #profileToggleButton {
     color: white;
 }
+
+.searchResultBox {
+    position: absolute;
+    width: 300px;
+    background-color: aqua;
+}

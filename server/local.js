@@ -5,7 +5,6 @@ const UserModel = require('./models/UserModel.js');
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
-
 passport.deserializeUser((id, done) => {
     UserModel.findById(id, (err, user) => {
         done(err, user);

@@ -1,89 +1,118 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import axios from 'axios';
-import './Login.css';
-import { instanceAxs } from "../../api/Api";
-import { userApi } from "../../config";
-import { login, logout } from '../../actions/LoginActions.js';
-import { connect } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, Form, Row, Col, Container, Spinner } from "react-bootstrap";
+import { GoogleLogin } from "@react-oauth/google";
+import "./Login.css";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  googleLoginRequest,
+  sendLoginRequest,
+} from "../../features/userSliceActions";
 
+const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const [isLoading, setIsloading] = useState(false);
 
-axios.defaults.withCredentials = true;
-
-class Login extends React.Component{ 
-    constructor(props){
-        super(props);
-        this.state = {
-            user: {
-                email: '',
-                password: ''
-            },
-            message: 'Login message here',
-            checklog: 'Check login message here',
-            logout: 'Logout message here'
-        }
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    } 
-
-    handleChange = (event) => {
-        let user = this.state.user
-        if (event.target.name === 'email') {
-            user.email = event.target.value;
-        } else if (event.target.name === 'pass') {
-            user.password = event.target.value;
-        } 
-        this.setState({ user });
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn]);
 
-    handleSubmit = async (event) => {
-        event.preventDefault();
-        this.props.login(this.state.user);
-    }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setIsloading(true);
+    const email = event.target[0].value;
+    const password = event.target[1].value;
+    setTimeout(() => {
+      dispatch(sendLoginRequest({ email, password }));
+    }, 1000);
+  };
 
-    checklogin = async () => {
-        const response = await instanceAxs.get(`${userApi}/checklogin`);
-        console.log(response)
-        if(response.data.message === "user logged in"){
-            this.setState({ checklog: 'user logged in'});
-            console.log(response.data.message)
-        } else {
-            this.setState({ checklog: 'user not logged in'});
-        }
-    }
+  const handleGoogleAuth = (credentialResponse) => {
+    dispatch(
+      googleLoginRequest({
+        credential: credentialResponse.credential,
+        email: "example@com",
+        password: "pass123",
+      })
+    );
+  };
 
-    logout = () => {
-        this.props.logout();
-    }
-    
-    render(){
-        return(
-            <form id="login-form" onSubmit={this.handleSubmit}>
-                <div className="mb-3">
-                    <label className="form-label">Email address</label>
-                    <input type="email" className="email form-control" name="email" required onChange={this.handleChange}></input>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="inputPassword5" className="form-label">Password</label>
-                    <input type="text" className="pass form-control" name="pass" required onChange={this.handleChange}></input>
-                </div>             
-                <button type="submit" className="btn btn-primary d-block">Login</button>
-                <p>{this.state.message}</p>
-                <hr/>              
-                <button type='button' className="btn btn-primary d-block" onClick={this.checklogin}>Check Login</button>
-                <p>{this.state.checklog}</p>
-                <hr/>
-                <button type='button' className="btn btn-primary d-block" onClick={this.logout}>Logout</button>
-                <p>{this.state.logout}</p>
-                <hr/>
-                <Link to="/register">Register</Link>
-            </form>
-        )
-    }
-}
+  return (
+    <Container className="login-container" fluid>
+      <Row className="login__row">
+        <Col
+          lg={5}
+          className="login__chat d-flex flex-direction-column align-items-center justify-content-center"
+        >
+          <div className="login-div">
+            <Form onSubmit={handleSubmit} className="login-form">
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Email address</Form.Label>
+                <Form.Control
+                  type="email"
+                  name="email"
+                  required
+                />
+              </Form.Group>
 
-const mapDispatchToProps = {
-    login, logout
-}
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  name="password"
+                  required
+                />
+              </Form.Group>
+              <Form.Group
+                className="mb-3"
+                controlId="formSubmitAndRemember"
+              >
+                {isLoading ? (
+                  <Button variant="primary" type="submit">
+                    <Spinner
+                      size="sm"
+                      className="me-2"
+                      animation="grow"
+                      as="div"
+                      aria-hidden="true"
 
-export default connect(null, mapDispatchToProps)(Login)
+                    ></Spinner>
+                    Logger Inn...
+                  </Button>
+                ) : (
+                  <Button variant="primary" type="submit" className="">
+                    Logg Inn
+                  </Button>
+                )}
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Text>
+                  Har ikke en konto?{" "}
+                  <a href="/register" className="signup-link">
+                    Opprett en her
+                  </a>
+                </Form.Text>
+              </Form.Group>
+
+              <hr />
+              <GoogleLogin
+                onSuccess={handleGoogleAuth}
+                onFailure={handleGoogleAuth}
+                text="signin_with"
+                theme="filled_blue"
+              ></GoogleLogin>
+            </Form>
+          </div>
+        </Col>
+        <Col lg={7} className="login__bg "></Col>
+      </Row>
+    </Container>
+  );
+};
+
+export default Login;

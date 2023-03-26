@@ -1,0 +1,50 @@
+.search-suggestions {
+    margin-top: 10px;
+    width: 330px;
+    max-height: 650px;
+    padding: 15px;
+    background-color: white;
+    border: 1px solid black;
+    overflow: hidden;
+    overflow-y: auto;
+    position: absolute;
+  }
+
+  .search-inputs__input:focus {
+    outline: none;
+  }
+
+.suggestion-div {
+  margin-bottom: 30px;
+}
+  .suggestion-title{
+    font-size: 14px;
+    color: gray;
+    margin: 0%;
+  }
+
+  .suggestion-div-produkt{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100px;
+    padding: 10px;
+    overflow: hidden;
+  }
+  .suggestion-div-produkt:hover{
+    border: 2px solid burlywood;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+  }
+
+  .suggestion-div-produkt-img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+  }
+
+
+
+
+

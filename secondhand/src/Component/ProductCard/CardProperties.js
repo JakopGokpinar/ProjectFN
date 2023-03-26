@@ -1,7 +1,17 @@
 import "./CardProperties.css";
+import { instanceAxs } from "../../config/api";
+
+function addToFavorites(e,id) {
+  e.preventDefault();
+  console.log('sa')
+  instanceAxs.post('/favorites/add', {id: id}).then(response => {
+    console.log(response)
+  })
+}
 
 function CardProperties(props) {
-  var [title, price, location] = props.properties;
+  var [id,title, price, location] = props.properties;
+
   return (
     <div className="cardProperties">
       <p className="__title">{title}</p>
@@ -22,7 +32,7 @@ function CardProperties(props) {
         className="btn btn-outline-danger _favoritesButton"
         data-toggle="tooltip"
         title="Add to Favorites"
-        onClick={(e) => e.preventDefault()}
+        onClick={(e) => addToFavorites(e,id)}
       >
         <i className="fas fa-heart"></i> Favoritt
       </button>

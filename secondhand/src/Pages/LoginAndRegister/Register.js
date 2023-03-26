@@ -1,46 +1,156 @@
 import './Register.css';
-import axios from 'axios'
 
-import { Link } from 'react-router-dom';
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import validator from 'validator';
 
-axios.defaults.withCredentials = true;
+import { useNavigate } from "react-router-dom";
+import { Button, Form, Row, Col, Container, Spinner } from "react-bootstrap";
+import { GoogleLogin } from "@react-oauth/google";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  googleLoginRequest,
+  sendSignUpRequest,
+} from "../../features/userSliceActions";
+
 
 function Register() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+    const [isLoading, setIsloading] = useState(false);
+    const [name, setName] = useState('')
+    const [lastname, setLastname] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
-    const[email, setEmail] = useState("");
-    const[password, setPassword] = useState("");
-    const[message, setMessage] = useState("");
+    useEffect(() => {
+        if (isLoggedIn) {
+          navigate("/");
+        }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [isLoggedIn]);
 
-    const insertUser = () =>  { 
-        var user = {
-            email: email,
-            password: password
+    const handleGoogleAuth = (credentialResponse) => {
+        dispatch(
+          googleLoginRequest({
+            credential: credentialResponse.credential,
+            email: "example@com",
+            password: "pass123",
+          })
+        );
+      };
+
+    //event handler olduğu için Register fonksiyonun içinde tanımlandı. 
+    //başka bir tür fonnksiyon olsaydı ana fonksiyonun dışında tanımlanırdı.
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        //on deployment
+        if(validator.isEmail(email) === false) {
+          console.log('email is invalid')
         }
 
-        axios.post('http://localhost:3080/user/register', user)
-            .then(res => {
-                console.log(res.data);
-                setMessage(res.data.message);
-            });
+        setIsloading(true)
+        let user = {name, lastname, email, password}
+        setTimeout(() => {
+            dispatch(sendSignUpRequest(user))        
+        }, 1000)
     }
 
+
     return(
-        <div>
-            <form className="registerForm" >
-                <div className="mb-3">
-                    <label className="form-label">Email address</label>
-                    <input type="email" className="form-control" required onChange={(event) => setEmail(event.target.value)}></input>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="inputPassword5" className="form-label">Password</label>
-                    <input type="password" className="form-control" required onChange={(event) => setPassword(event.target.value)}></input>
-                </div>
-                <button type="button" className="btn btn-primary mx-auto d-block" onClick={() => insertUser()}>Register</button>
-                <p>{message}</p>
-                <Link to="/login">Login</Link>
-            </form>
-        </div>
+        <Container className="signup-container" fluid>
+        <Row className="signup__row">
+          <Col
+            lg={5}
+            className="signup__chat d-flex flex-direction-column align-items-center justify-content-center"
+          >
+            <div className="signup-div">
+              <Form onSubmit={handleSubmit} className="signup-form">
+                <Form.Group className='mb-3'>
+                    <Row>
+                        <Col>
+                        <Form.Label>Navn</Form.Label>
+                    <Form.Control
+                        type='text'
+                        name="name"
+                        onChange={e => setName(e.target.value)}
+                        required/>
+                        </Col>
+                        <Col>
+                        <Form.Label>Etternavn</Form.Label>
+                    <Form.Control
+                        type='text'
+                        name="lastname"
+                        onChange={e => setLastname(e.target.value)}
+                        required/>
+                        </Col>
+                    </Row>
+                   
+
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control
+                    type="email"
+                    name="email"
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+  
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="password"
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group
+                  className="form-submit-remember mb-3"
+                  controlId="formSubmitAndRemember"
+                >
+                  {isLoading ? (
+                    <Button variant="primary">
+                      <Spinner
+                        size="sm"
+                        className="me-2"
+                        animation="grow"
+                        as="div"
+                        aria-hidden="true"
+                      ></Spinner>
+                      Oppretter...
+                    </Button>
+                  ) : (
+                    <Button variant="primary" type="submit" className="">
+                      Opprett Bruker
+                    </Button>
+                  )}
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                  <Form.Text>
+                    Har allerede en kont?{" "}
+                    <a href="/login" className="login-link">
+                      Logg inn
+                    </a>
+                  </Form.Text>
+                </Form.Group>
+  
+                <hr />
+                <GoogleLogin
+                  onSuccess={handleGoogleAuth}
+                  onFailure={handleGoogleAuth}
+                  text="signup_with"
+                  theme="filled_blue"
+                ></GoogleLogin>
+              </Form>
+            </div>
+          </Col>
+          <Col lg={7} className="signup__bg "></Col>
+
+        </Row>
+      </Container>
     )
 }
 

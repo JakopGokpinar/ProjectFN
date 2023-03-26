@@ -1,65 +1,34 @@
-.searchResultPageContainer{
+.searchresult-container{
     display: flex;
+}
+
+.result-row{
+    display: flex;
+    margin: 0%;
     width: 100%;
-    height: 100%;
-    justify-content:space-evenly;
+    justify-content: space-between;
 }
 
-.searchFilterComponents {
-    width: 300px;
-}
-
-.searchFilterComponents > button {
-    width: 300px;
-}
-.searchFilterComponents > * {
-    margin-bottom: 10px;
-}
-
-.searchResults {
-    width: 990px;
-}
-.searchResults_Info{
-    margin-bottom: 20px;
-}
-
-.searchResults_Order {
+.top-row{
     display: flex;
-    justify-content: space-between;    
-    margin-bottom: 20px;
-}
-
-.filterTagsContainer {
-    display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    min-height: 28px;
+    height: 60px;
+}
+.middle-row {
+    display: flex;
+    margin: 20px;
+}
+.bottom-row {
+    max-width: 60rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
-.searchResults_Items {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-column-gap: 15px;
-    grid-row-gap: 15px;
-    padding-left: 0%;
-}
-
-@media (max-width:1200px){
-    .searchResults_Items {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-column-gap: 15px;
-        grid-row-gap: 15px;
-        padding-left: 0%;
+/* center products in page on mobile */
+@media (max-width: 768px) { 
+    .bottom-row{
+      justify-content: center;
     }
-}
-
-@media (max-width:900px){
-    .searchResults_Items {
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        grid-column-gap: 15px;
-        grid-row-gap: 15px;
-        padding-left: 0%;
-    }
-}
+  }

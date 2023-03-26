@@ -1,425 +1,223 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./SearchResult.css";
 import ProductCard from "../../Component/ProductCard/ProductCard.js";
-import { instanceAxs } from "../../api/Api";
-import Date from "./FilterComponents/Date";
-import Price from "./FilterComponents/Price";
-import Status from "./FilterComponents/Status";
-import Tags from "./FilterComponents/Tags.js";
-import PrimarySelect from "./ComponentSelect/PrimarySelect";
-import CategorySelector from "./FilterComponents/CategorySelecter";
-import UniqueCategoryComponents from "./UniqueComponents/UniqueCategoryComponents";
+import { instanceAxs } from "../../config/api";
+import { useSearchParams } from "react-router-dom";
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Filters from "./Filters";
+import Form from 'react-bootstrap/Form';
+import Button from "react-bootstrap/Button";
+import FilterBadge from "./FilterBadge";
+import { useSelector } from "react-redux";
 
-class SearchResult extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      items: [],
-      filtersWithMultipleQueries: ["status", "location"],
-      resultCount: 0,
-      tagArray: [],
-      categoryArray: [],
-      urlParams: new URLSearchParams(props.location.search),
-      filters: [
-        {
-          queryKey: "q",
-          queryValue: new URLSearchParams(props.location.search).get("q"),
-        }
-      ],
-      minAndMaxPrice: undefined,
-    };
+const SearchResult = () => {
+
+  const user = useSelector(state => state.user.user);
+  const [counties, setCounties] = useState([])
+  const [searchParams, setSearchParams] = useSearchParams();  
+  const [productArray, setProductArray] = useState([])
+  const [resultNumber, setResultNumber] = useState(0);
+  const [categories, setCategories] = useState('')
+
+  const handleFilterChange = (key, value) => {
+    const params = searchParams;
+    if(key!== 'kommune') {
+      params.delete(key);
+    }
+    params.append(key, value);
+    setSearchParams(params)
   }
 
-  setSortingCategory = (value) => {
-    var finalArray = this.state.items;
+  const removeSelectedFilter = (key, value) => {
+    const params = searchParams;
+    if(key === 'fylke'){
+      params.delete(key);
+      params.delete('kommune')
+    } else if(key === 'kommune') {
+      let kommuneArr = [];
+      for(const [queryKey, queryValue] of params.entries()){
+        if(queryKey === 'kommune' && queryValue !== value) {
+          kommuneArr.push(queryValue);
+        }
+      }
+      params.delete('kommune');
+      kommuneArr.map(item => params.append('kommune', item))
+    }else {
+      params.delete(key)
+    }
+    setSearchParams(params)
+  }
 
-    if(value === "price_desc") {
-      let priceDescArray = [].concat(finalArray)
-     .sort((a, b) => a.price > b.price ? 1 : -1)
-      finalArray = priceDescArray;
+  const resetFilters = (e) => {
+    e.preventDefault();
+    var params = searchParams;
+    for (const [key] of Array.from(searchParams.entries())) {
+      if(key !== 'q') params.delete(key)
+    }
+    setSearchParams(params)
+  }
+
+/*   const handleSortingChange = (e) => {
+    let value = e.target.value;
+    var products = productArray;
+
+    switch(value){
+      case "price_desc":
+        console.log(products)
+      products[0].sort((a,b) => a.price - b.price);
+      setProductArray(products);
+      break;
+      case "price_asc":
+        console.log(value)
+
+        let priceAscArray = [].concat(products)
+        .sort((a, b) => a.price < b.price ? 1 : -1)
+          setProductArray(priceAscArray)
+        break;
+    }
+   if(value === "price_desc") {
+      finalArray[0].sort((a, b) => a.price - b.price);
+
     } else if(value === "price_asc") {
-      let priceAscArray = [].concat(finalArray)
-    .sort((a, b) => a.price < b.price ? 1 : -1)
-      finalArray = priceAscArray;
-    } else if(value === "published") {
+      
+    } else if(value === "published-last") {
       let publishArray = [].concat(finalArray)
     .sort((a, b) => a.date < b.date ? 1 : -1)
       finalArray = publishArray;
-    }
-
-    this.setState({
-      items: finalArray
-    })
-  };
-
-  getFiltersOnMount = () => {
-    let urlParams = new URLSearchParams(window.location.search)
-
-    var params = [];
-    for (const [key, value] of urlParams) {
-      var filter = {};
-
-      switch(key){
-        case 'q':
-          filter = {
-            queryKey: key,
-            queryValue: value,
-            tagKey: undefined,
-            tagValue: undefined,
-          };
-          params.push(filter)
-          break;
-        case 'price_max':
-          filter = {
-            queryKey: key,
-            queryValue: value,
-            tagKey: "maxPrice",
-            tagValue: `til ${value}`,
-          };
-          params.push(filter);
-          break;
-        case 'price_min':
-          filter = {
-            queryKey: key,
-            queryValue: value,
-            tagKey: "minPrice",
-            tagValue: `fra ${value}`,
-          };
-          params.push(filter);
-          break;
-        case 'status':
-          if(value === "new") {
-            filter = {
-              queryKey: key,
-              queryValue: value,
-              tagKey: "statusNew",
-              tagValue: "Nytt",
-            };
-          } else if(value === "used") {
-            filter = {
-              queryKey: key,
-              queryValue: value,
-              tagKey: "statusUsed",
-              tagValue: "Brukt",
-            };
-          } 
-          params.push(filter);
-          break;
-        case 'published':
-          filter = {
-            queryKey : key,
-            queryValue: value,
-            tagKey: key,
-            tagValue: value
-          }
-          params.push(filter);
-          break;
-        default:
-          
-      }
-    }
-    this.setState({
-      filters: params
-    });
-    return params;
-  };
-
-  getTags = (queryFilters) => {
-    var filters = queryFilters === undefined ? this.state.filters : queryFilters;
-    var tags = [];
-
-    for (const filter of filters) {
-      if (filter.tagKey !== undefined) {
-        var tag = {
-          key: filter.tagKey,
-          value: filter.tagValue,
-          queryKey: filter.queryKey,
-          queryValue: filter.queryValue,
-        };
-        tags.push(tag);
-      }
-    }
-    this.setState({
-      tagArray: tags,
-    });
-    return tags;
-  };
-
-  makeSearch = () => {
-      this.searchAlgorithm(this.state.filters) 
-  };
-
-  setFilter = (queryKey, queryValue, tagKey, tagValue) => {
-    var queryFilters = this.state.filters;
-    var multipleQueryFilters = this.state.filtersWithMultipleQueries;
-    var filter = queryFilters.find((element) => element.tagKey === tagKey);
-    var index = queryFilters.indexOf(filter);
-
-    if (queryValue === '') {
-      if(index !== -1){
-        queryFilters.splice(index,1)
-        this.setState({
-          filters: queryFilters
-        });
-        this.removeTag(tagKey, queryKey)
-      }
-      return;
-    }
-
-    if (index === -1) {
-      var newFilter = {
-        queryKey: queryKey,
-        queryValue: queryValue,
-        tagKey: tagKey,
-        tagValue: tagValue,
-      };
-
-      queryFilters.push(newFilter);
-
-      this.setState({
-        filters: queryFilters
-      });
-      this.addFilterTag(tagKey,tagValue,queryKey, queryValue);
-      return;
-    }
-
-    if (multipleQueryFilters.includes(queryKey, 0)) {
-      var qValue = filter.queryValue;
-      if (qValue === undefined || qValue === null) qValue = "";
-
-      if (!qValue.includes(queryValue)) qValue += " " + queryValue;
-      qValue = qValue.trim();
-
-      filter.queryValue = qValue;
-      queryFilters[index] = filter;
-      this.addFilterTag(tagKey, tagValue, filter, qValue)
-    } else {
-      filter.queryValue = queryValue;
-      filter.tagValue = tagValue;
-      queryFilters[index] = filter;
-      this.addFilterTag(tagKey, tagValue, filter, queryValue)
-    }
-    this.setState({
-      filters: queryFilters,
-    });
-  };
-
-  addFilterTag = (key, value, queryKey, queryValue) => {
-    let tagArr = this.state.tagArray;
-    var tagObj = {};
-    var object = tagArr.find((obj) => obj.key === key);
-    var objIndex = tagArr.indexOf(object);
-
-    if (objIndex !== -1) {
-      tagObj = {
-        key,
-        value: value,
-        queryKey,
-        queryValue: queryValue,
-      };
-      tagArr[objIndex] = tagObj;
-    } else {
-      tagArr.push({
-        key: key,
-        value: value,
-        queryKey: queryKey,
-        queryValue: queryValue,
-      });
-    }
-    this.setState({
-      tagArr: tagArr,
-    });
-  };
-
-  removeTag = (key, queryKey) => {
-    var tagArray = this.state.tagArray;
-    let obj = tagArray.find((x) => x.key === key);
-    if(obj !== undefined){
-      let index = tagArray.indexOf(obj);
-      tagArray.splice(index, 1);
-      this.setState({ tagArray });
+    } else if(value === "published-first") {
+      let publishArray = [].concat(finalArray)
+    .sort((a, b) => a.date > b.date ? 1 : -1)
+      finalArray = publishArray;
     } 
-    this.searchAlgorithm(this.state.filters)
-  };
 
-  removeAllFilters = () => {
-    var filterObj = this.state.filters;
-    var filterArr = [];
+    setProductArray(finalArray)
+  }; */
 
-    for(const filter of filterObj) {    // remove all filters except for 'q'
-      if(filter.queryKey !== 'q') break;
-      filterArr.push(filter)
+  const handleSorting = (e) => {
+    e.preventDefault();
+    let value = e.target.value;
+    var products = productArray;
+
+    switch(value){
+      case "price_asc":
+        products.sort((a,b) => a.price - b.price);
+        break;
+      case "price_desc":  
+        products.sort((a,b) => b.price - a.price);
+        break;
+      case "published-first":
+        products.sort((a, b) => a.date - b.date);
+        break;
+      case "published-last":
+        products.sort((a, b) => b.date - a.date);
+        break;
+      default:
+        break;
     }
-
-    this.setState({
-      tagArray: [],
-      filters: filterArr,
-    });
-  };
-
-  returnQueryString(filters) {
-    var queryString = "";
-    for (const filter of filters) {
-      queryString += `${filter.queryKey}=${filter.queryValue}&`;
-    }
-    if (queryString[queryString.length - 1] === "&")
-      queryString = queryString.slice(0, queryString.length - 1);
-
-    return queryString;
+    setProductArray(products)
   }
 
-  searchAlgorithm = (filters) => {
-    
-    let queryString = this.returnQueryString(filters);
-    let query = `/file/getmenuitems?${queryString}`;
+  const createQueryObject = () => {
+    var queryObject = {};
+    let kommuneArr = [];
 
-    instanceAxs
-      .get(query)
-      .then((response) => {
-        console.log("Search response", response.data);
+    for(const [key, value] of searchParams.entries()) {
+      if(key === 'kommune') {
+        kommuneArr.push(value)
+        queryObject["kommune"] = kommuneArr;
+      } else {
+        queryObject[key] = value
+      }
+    }
+    return queryObject;
+  }
 
-        var minPrice = response.data.minPrice;
-        var maxPrice = response.data.maxPrice;
-
-        if (response.status === 200) {
-          var responseDataItems = response.data.items;
-          var categoryArray = [];
-          var returnedItems = [];
-
-          for(let i = 0; i < responseDataItems.length; i++) {
-            var dataItem = responseDataItems[i];
-            var categoryObj = {main: '', itemCount: 0, sub: []};
-            
-            for(let k = 0; k < dataItem.length; k++) {
-              categoryObj.main = dataItem[0].dbName;
-              categoryObj.itemCount = dataItem[0].itemCount;
-
-              if(k > 0){
-                let subItem = dataItem[k];
-
-                for(let j = 0; j < subItem.length; j++) {          
-                  if(j === subItem.length - 1) {
-                    let subCatObj = {};
-                    subCatObj.name = subItem[subItem.length - 1].collectionName;
-                    subCatObj.count = subItem[subItem.length - 1].itemCount;
-                    categoryObj.sub.push(subCatObj);
-                  } else {
-                    returnedItems.push(subItem[j]);
-                  }
-                }
-              }
-            }
-            categoryArray.push(categoryObj);
-          }
-
-          this.setState({
-            items: returnedItems,
-            resultCount: returnedItems.length,
-            minAndMaxPrice: { minPrice: minPrice, maxPrice: maxPrice },
-            categoryArray: categoryArray
-          });
-          window.history.pushState("page2", "seach made", `/search?${queryString}`);
-        } else {
-          return console.log(response.data.message);
-        }
+  const searchAlgorithm = () => {
+    let queryObject = createQueryObject(); 
+    instanceAxs.post('/searchproduct', queryObject).then((response) => {
+        if (response.error !== null) {
+          const products = response.data.productArray;
+          setProductArray(products);
+          setCategories({categories: response.data.categories, subCategories: response.data.subCategories})
+          setResultNumber(products.length)
+          return;
+        } 
+        console.log(response.data.message)       
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err); 
       });
   }
 
-  componentDidMount() {
-    let params = this.getFiltersOnMount();
-    this.getTags(params);
-    this.searchAlgorithm(params)
-  }
+  useEffect(() => {
+    searchAlgorithm();  
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, user])
 
-   render() {
+  useEffect(() => {
+    fetch('https://ws.geonorge.no/kommuneinfo/v1/fylkerkommuner', {
+        method: 'GET'
+      }).then((response) => response.json())
+      .then((data) => {
+        setCounties(data) 
+      });       
+},[])
+
     return (
-      <div className="container-fluid searchResultPageContainer">
-        <div className="searchFilterComponents">
-          <button className="btn btn-primary" onClick={this.makeSearch}>
-            Bruk Endringer
-          </button>
-          <button
-            className="btn btn-primary "
-            onClick={() => console.log(this.state.filters)}
-          >
-            Lagre Søk
-          </button>
-          <button className="btn btn-danger" onClick={this.removeAllFilters}>
-            Fjerne Filtre
-          </button>
-         { <CategorySelector
-            setfilter={this.setFilter}
-            makeSearch={this.makeSearch}
-            categoryState={ this.state.categoryArray}
-            subCategoryState={this.state.filters.find(e => e.tagKey === "subCategory") === undefined &&  'no value'}
-          ></CategorySelector>}
-          {this.state.minAndMaxPrice !== undefined && (
-            <Price
-              setfilter={this.setFilter}
-              priceObject={this.state.minAndMaxPrice}
-              minPriceState={this.state.tagArray.find(e => e.key === "minPrice")}
-              maxPriceState={this.state.tagArray.find(e => e.key === "maxPrice")}
-            />
-          )}
-          <Status
-            setfilter={this.setFilter}
-            statusNewState={this.state.filters.find(e => e.tagKey === "statusNew")}
-            statusUsedState={this.state.filters.find(e => e.tagKey === "statusUsed")}
-          ></Status>
-          <Date
-            setfilter={this.setFilter}
-            state={this.state.filters.find(e => e.queryKey === "published")}
-          ></Date>
-          <UniqueCategoryComponents 
-            categoryState={this.state.filters.find(e => e.queryKey === "mainc")}
-            subCategoryState={this.state.filters.find(e => e.queryKey === "subc")}
-          ></UniqueCategoryComponents>
-        </div>
-        <div className="searchResults">
-          <div className="searchResults_Info">
-            <div className="searchResults_Order ">
-              <p style={{ margin: 0 }}>{this.state.resultCount} treff</p>
+          <Container fluid className="searchresult-container">
+            <Row  className="result-row">
+                  <Col lg={3}  className="filters-column">
+                        <Button variant="outline-danger" className="w-100 mb-4" onClick={resetFilters}>Reset Filters</Button>
+                        <Filters 
+                          handleFilterChange={handleFilterChange} 
+                          removeSelectedFilter={removeSelectedFilter} 
+                          searchParams={searchParams} 
+                          counties={counties.length > 0 && counties}
+                          categories={categories !== '' && categories}>
+                          </Filters>
+                  </Col>
 
-              <PrimarySelect 
-                setSortingCategory={this.setSortingCategory}
-                  selectedOption={this.state.filters.find(e => e.queryKey === "order")}>
-              </PrimarySelect>
+                <Col className="products-column" lg={8}>
 
-            </div>
+                    <div className="top-row">
+                      <p>{resultNumber} treff</p>
+                      <Form.Select style={{maxWidth: 200}} onChange={handleSorting}>
+                        <option value="mest-relevant">Mest Relevant</option>
+                        <option value="puslished-first">Eldste først</option>
+                        <option value="published-last">Nyeste først</option>
+                        <option value="price_asc">Pris lav til høy</option>
+                        <option value="price_desc">Pris høy til lav</option>
+                      </Form.Select>
+                    </div>
 
-            <div className="filterTagsContainer">
-              {this.state.tagArray.map((tag) => {
-                return <Tags tag={tag} key={tag.value} setfilter={this.setFilter} />;
-              })}
-            </div>
-          </div>
-          <div className="searchResults_Items">
-            {this.state.items.map((item, index) => {
-              item.annonce = item
-              return (
-                <React.Fragment key={item.annonce._id}>
-                  <div className="itemCol" >
-                    <ProductCard                
-                      img={item.annonce.images}
-                      price={item.annonce.price}
-                      name={item.annonce.title}
-                      id={item.annonce._id}
-                    />
-                  </div>
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+                    <div className="middle-row">
+                        <FilterBadge searchParams={searchParams} removeSelectedFilter={removeSelectedFilter} counties={counties.length > 0 && counties}></FilterBadge>
+                    </div>
+
+                      <div className="bottom-row">
+                        {productArray.length > 0 && productArray.map((product, index) => {
+                          return(
+                            <div key={index} style={{marginBottom: 20}}>
+                                 <ProductCard                                        
+                                        key={product.title}
+                                        images={product.annonceImages}
+                                        title={product.title}
+                                        price={product.price}
+                                        id={product._id}
+                                        location={product.location}
+                                        isFavorite={product.isFavorite}
+                                        ></ProductCard>
+                              </div>
+                          )
+                        })}
+                      </div>
+                  </Col>
+            </Row>
+          </Container>
     );
-  }
+  
 }
 
-Price.defaultProps = {
-  priceObject: { minPrice: 0, maxPrice: 50 },
-};
 export default SearchResult;

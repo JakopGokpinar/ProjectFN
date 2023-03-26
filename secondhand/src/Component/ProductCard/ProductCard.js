@@ -1,147 +1,104 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "./ProductCard.css";
 import "./NewProductCard.css"
-import CardProperties from "./CardProperties";
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Carousel from 'react-bootstrap/Carousel';
+import { useDispatch } from "react-redux";
+import Spinner from "react-bootstrap/Spinner";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { addToFavorites } from "../../features/userSliceActions";
+import { removeFromFavorites } from "../../features/userSliceActions";
 
 function ProductCard(props) {
-/*   if (props.annonce) {
-    props = props.annonce;
-  } */
 
-  const [images, title, location, price, id] = [
-    props.img,
-    props.name || "no name",
+  const [images, title, location, price, id, isFavorite] = [
+    props.images || [ 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80'],
+    props.title || "no name",
     props.location || "no place",
     props.price || "0",
     props.id || null,
+    props.isFavorite || false
   ];
 
+  const dispatch = useDispatch();
   const [isHovered, setHovered] = useState(false);
-  const [imgIndex, setImgIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleAddToFavorites = () => {
+    setIsLoading(true)
+    setTimeout(() => {
+      dispatch(addToFavorites(id))
+      setIsLoading(false)
+    }, 1000)
+  }
+
+  const handleRemoveFromFavorites = () => {
+    setIsLoading(true)
+    setTimeout(() => {
+      dispatch(removeFromFavorites(id))
+      setIsLoading(false)
+    }, 1000)
+  }
+
+  const setHoveredToTrue = () => {
+    setHovered(true)
+  }
+  const setHoveredToFalse = () => {
+    setHovered(false)
+  }
+
 
   return(
-    <div className="productCard border rounded">
-      <Link to={`/produkt/${id}`}>
-        <div className="productCard_image" onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}>
-          <div className="image_elements">
-          {isHovered && (
-            <button
-              className="btn btn-outline-light rounded-circle prev-button"
-              onClick={(e) => {
-                e.preventDefault();
-                imgIndex !== 0 && setImgIndex(imgIndex - 1);
-              }}
-            >
-              <i className="fas fa-arrow-left" />
-            </button>
-          )}
-        <img src={
-           ( (images !== undefined) && (images !== null) && (images.length !== 0))
-                ? images[imgIndex].location
-                : "https://static.toiimg.com/photo/msid-58515713,width-96,height-65.cms"
-            } alt="Denim Jeans" style={{width: '100%'}} />
-            {isHovered && (
-            <button
-              className="btn btn-outline-light rounded-circle next-button"
-              onClick={(e) => {
-                e.preventDefault();
-                imgIndex < images.length - 1 && setImgIndex(imgIndex + 1);
-              }}
-            >
-              <i className="fas fa-arrow-right" />
-            </button>
-          )}
+    <Card style={{width: '18rem'}} className="card">
+      <Card.Body style={{padding: 0, margin: 0}}>
+
+          <Carousel indicators={false} controls={isHovered ? true : false} interval={null} onMouseEnter={setHoveredToTrue} onMouseLeave={setHoveredToFalse}>
+                {images.map(img => {
+                  return(
+                    <Carousel.Item className="carousel-item" key={img}>
+                      <Link to={`/produkt/${id}`}>
+                    <img
+                      className="carousel-img"
+                      src={img}
+                      alt="carousel"
+                    />
+                    </Link>
+                  </Carousel.Item>
+                  )
+                })}
+            </Carousel>
+<div className="card-properties">
+          <Card.Title className="card-properties__item item-title">{title}</Card.Title>
+          <Card.Subtitle className="card-properties__item item-location ">{location}</Card.Subtitle>
+          <Card.Text className="card-properties__item item-price">{price} nok</Card.Text>
+          <Card.Text className="card-properties__item item-description">
+                Some text about the nature right here.
+          </Card.Text>
           </div>
-        </div>  
-    </Link>
-        <CardProperties properties={[title,price,location]}></CardProperties>
-</div>
+       <div className="card-buttons">
+        {isFavorite ? 
+          <OverlayTrigger placement="bottom" overlay={<Tooltip>Remove from Favorites</Tooltip>}>
+            <Button variant="danger" onClick={handleRemoveFromFavorites}>
+              {isLoading ? <Spinner size='sm'/> : <i className="fa-solid fa-heart"/>}
+            </Button>
+          </OverlayTrigger>
+          :
+          <OverlayTrigger placement="bottom" overlay={<Tooltip>Add to Favorites</Tooltip>}>
+            <Button variant="outline-danger" onClick={handleAddToFavorites}>
+              {isLoading ? <Spinner size='sm'/> : <i className="fa-solid fa-heart"/>}
+            </Button>
+        </OverlayTrigger>
+      }
+
+
+      <Button variant="outline-primary"> Send Melding <i className="fa-regular fa-message"></i></Button>
+        <Button variant="outline-secondary">Del <i className="fa-solid fa-arrow-up-from-bracket"></i></Button>
+        </div>
+      </Card.Body>
+    </Card>
   )
 }
 
 export default ProductCard;
-
-
-/* return (
-  <div className={"card-container card  border rounded " + (isHovered && " shadow")}>
-    <Link to={`/produkt/${id}`}>
-      <div
-        className="card-img"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <div className="photo-div">
-          {isHovered && (
-            <button
-              className="btn btn-light rounded-circle prev-button"
-              onClick={(e) => {
-                e.preventDefault();
-                imgIndex !== 0 && setImgIndex(imgIndex - 1);
-              }}
-            >
-              <i className="fas fa-arrow-left" />
-            </button>
-          )}
-          <img
-            src={
-              (images.length > 0) && (images !== undefined) && (images !== null)
-                ? images[imgIndex].location
-                : "https://static.toiimg.com/photo/msid-58515713,width-96,height-65.cms"
-            }
-            className="img-responsive w-100"
-            alt=""
-            id="product-photo"
-          ></img>
-          {isHovered && (
-            <button
-              className="btn btn-light rounded-circle next-button"
-              onClick={(e) => {
-                e.preventDefault();
-                imgIndex < images.length - 1 && setImgIndex(imgIndex + 1);
-              }}
-            >
-              <i className="fas fa-arrow-right" />
-            </button>
-          )}
-        </div>
-      </div>{" "}
-    </Link>
-    <div className="card-body d-flex flex-column">
-      <div className="d-flex mb-2">
-        <h5 className="card-title" id="pris">
-          {price + " kr"}
-        </h5>
-        <p className="card-text" id="pris">
-          &middot;
-        </p>
-        <p className="card-text" id="pris">
-          {location}
-        </p>
-        <div className="ms-auto">
-          <button
-            className="btn btn-primary me-2"
-            data-toggle="tooltip"
-            title="Send Message"
-            onClick={(e) => e.preventDefault()}
-          >
-            <i className="fas fa-envelope"></i>
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline-danger"
-            data-toggle="tooltip"
-            title="Add to Favorites"
-            onClick={(e) => e.preventDefault()}
-          >
-            <i className="fas fa-heart"></i>
-          </button>
-        </div>
-      </div>
-      <p className="card-text me-2" style={{ pointerEvents: "none" }}>
-        {title}
-      </p>
-    </div>
-  </div>
-); */

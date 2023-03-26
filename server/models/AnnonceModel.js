@@ -1,61 +1,35 @@
 const mongoose = require("mongoose");
+const ObjectId = require('mongoose').Types.ObjectId;
 
 const AnnonceSchema = mongoose.Schema({
+  _id: {
+    type: ObjectId
+  },
   title: {
-    type: String,
-    // required: true,
-    default: '',
-  },
-  category: {
-    type: String,
-    //required: true,
-    default: "",
-  },
-  subCategory: {
-    type: String,
-    //required: true,
-    default: "",
+    type: String
   },
   price: {
-    type: Number,
-   // required: true,
-    default: -1,
+    type: Number
   },
-  location: {
-    type: String,
-    default: 'Kristiansand'
-  },
-  status: {
-    type: String,
-    default: ""
-  },
-  images: {
-    type: Array,
+  annonceImages: {
+    type: Array
   },
   date: {
     type: Date,
     default: Date.now,
   },
-  description: {type: String, default: ''},
-  uniqueProps: {
-    type: Object,
-   // required: true,
-    default: {},
+  category: {
+    type: String
   },
-  
-  seller: {
-    type: Object,
-    //required: true,
-    default: {
-      Name: "Tobias",
-      Lastname: "Land",
-      Address: "32 Fjordvegen 4560 Kristiansand",
-      Point: 3.0,
-      Verified: false
-    },
+  subCategory: {
+    type: String
   },
+  isFavorite : {
+    type: Boolean
+  }
 });
 
-const AnnonceModel = mongoose.model("Annonce", AnnonceSchema);
+const myDB = mongoose.connection.useDb('announcements');
+const AnnonceModel = myDB.model("Annonce", AnnonceSchema);
 
-module.exports = {AnnonceModel};
+module.exports = AnnonceModel;

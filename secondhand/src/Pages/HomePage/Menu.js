@@ -1,71 +1,83 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Container } from 'react-bootstrap';
 import ProductCard from '../../Component/ProductCard/ProductCard.js';
-import { instanceAxs } from '../../api/Api.js';
-import { fileApi } from '../../config/index.js';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col'
+import { instanceAxs } from '../../config/api.js';
 import "./Menu.css";
+import { useSelector } from 'react-redux';
 
-class Menu extends React.Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            items: [],
-            isLoading: true
-        }
-    }
+const Menu = () => {
 
-     async getItems () {
-        await instanceAxs.get(`${fileApi}/getmenuitems?category=cars`)
-        .then(response => {
-            console.log("Retrived items: ", response.data.items);
-            var returnedItems = response.data.items;
-            var itemArray = [];
-            for(let i = 0; i<returnedItems.length; i++){
-                returnedItems[i].shift();
-                var dbArray = returnedItems[i]
-                for(let k = 0; k<dbArray.length; k++){
-                    dbArray[k].pop();
-                    var collectionArray = dbArray[k];
-                    collectionArray.map(arr => itemArray.push(arr))
-                }
-            }
-            
-            this.setState({
-                items: itemArray,
-                isLoading: false
-            })
+    const user = useSelector(state => state.user.user);
+    const [productArray, setProductArray] = useState([])
+
+    const receiveProducts = () => {
+        instanceAxs.get('/search').then(response => {
+            const products = response.data.productArray;
+            const rows = [...Array( Math.ceil(products.length / 4) )];
+            const productRows = rows.map( (row, idx) => products.slice(idx * 4, idx * 4 + 4) ); 
+            setProductArray(productRows)
         })
     }
     
-    componentDidMount(){
-        this.getItems();
-    }
+    useEffect(() => {
+        receiveProducts()
+    }, [user])
     
-    render(){
         return(
+            <Container fluid className='mainmenu-container'>
+                {productArray.length > 0 && productArray.map((row, index) => {
+                    return(             
+                        <Row key={index} className="product-row">
+                        {row.map((product, index) => {
+                            return(
+                                    <Col key={index} className="product-column">
+                                        <ProductCard
+                                        key={product.title}
+                                        images={product.annonceImages}
+                                        title={product.title}
+                                        price={product.price}
+                                        id={product._id}
+                                        location={product.location}
+                                        isFavorite={product.isFavorite}
+                                        ></ProductCard>
+                                </Col>
+                            )
+                        })}
+                    </Row>                 
+                    )
+                })               
+                }
+            </Container>
+        )
+    }   
+
+
+export default Menu;
+
+
+/*
             <div className="container HomePageContainer">
                 <div className="homePageItems">  
-                    { (this.state.items.length > 0 && this.state.isLoading === false) ? 
+                    { (isLoading === false) ? 
                     
-                    (this.state.items.map(item => {
+                    (productArray.map(item => {
                         var annonce = item;
                         return(
                                 <div key={annonce._id}>
                                     <ProductCard 
-                                    img={annonce.images} 
-                                    price={annonce.price} 
-                                    name={annonce.title} 
-                                    id={annonce._id}
-                                    location={annonce.location}/> 
-                                    </div>                          
+                                        images={annonce.annonceImages} 
+                                        price={annonce.price} 
+                                        title={annonce.title} 
+                                        id={annonce._id}
+                                        location={annonce.location}/> 
+                                </div>                          
                         ) 
                     }))
                     : 
                     <p>loading</p>
                 }                                                      
                 </div>
-            </div>       
-        )
-    }   
-}
-
-export default Menu;
+            </div>    
+*/

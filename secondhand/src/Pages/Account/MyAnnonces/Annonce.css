@@ -1,9 +1,0 @@
-.annonceMainDiv {
-    width: 300px;
-    height: 50px;
-    border: 2px solid green;
-}
-
-.annonceMainDiv > p{
-    margin: 0
-}

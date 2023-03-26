@@ -1,26 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import { createStore, applyMiddleware } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import { persistStore } from 'redux-persist';
-
 import reportWebVitals from './reportWebVitals';
-import { persistedReducer, persistedState, saveState} from './config/store-config.js';
 import App from './App.js';
+import store from './config/store-config.js';
 
-const composedEnhancer = composeWithDevTools(
-  applyMiddleware(thunk)
-);
-let store = createStore(persistedReducer, persistedState, composedEnhancer);
-persistStore(store);
 
-store.subscribe(() => {
-  saveState(
-    store.getState()
-  );
-});
 
 ReactDOM.render(
   <Provider store={store}>

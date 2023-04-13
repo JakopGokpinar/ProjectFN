@@ -8,7 +8,8 @@ const socketio = require('socket.io');
 const config = require('./config/config');
 const connectDB = require('./config/db.js');
 
-var authRouter = require('./auth')
+var authRouter = require('./auth');
+var userRouter = require('./fetchUser.js');
 var annonceRouter = require('./createAnnonce.js');
 var searchRouter = require('./search.js')
 var findProductRouter = require('./findProduct.js');
@@ -54,6 +55,7 @@ app.use(passport.session());
 
 app.get("/", (req, res) => res.send("Server Side Works!"));
 app.use('/', authRouter)
+app.use('/fetchuser', userRouter)
 app.use('/newannonce', annonceRouter)
 app.use('/search', searchRouter)
 app.use('/product', findProductRouter)
@@ -62,7 +64,8 @@ app.use('/favorites', addFavoritesRouter);
 app.use('/userannonces', userAnnoncesRouter)
 app.use('/profile', profileSettingsRouter)
 
-const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+//const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const server = app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
 
 const io = socketio(server, {
     pingTimeout: 60000,

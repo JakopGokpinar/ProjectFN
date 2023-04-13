@@ -11,18 +11,45 @@ const AnnonceSchema = mongoose.Schema({
   price: {
     type: Number
   },
-  annonceImages: {
-    type: Array
-  },
-  date: {
-    type: Date,
-    default: Date.now,
+  pricePeriod: {
+    type: String,
   },
   category: {
     type: String
   },
   subCategory: {
     type: String
+  },
+  annonceImages: {
+    type: Array
+  },
+  description: {
+    type: String
+  },
+  status: {
+    type: String
+  },
+  specialProperties: {
+    type: Array
+  },
+  fylke: {
+    type: String
+  },
+  kommune: {
+    type: String
+  },
+  location: {
+    type: String
+  },
+  postnumber: {
+    type: String
+  },
+  sellerId: {
+    type: ObjectId
+  },
+  date: {
+    type: Date,
+    default: Date.now,
   },
   isFavorite : {
     type: Boolean

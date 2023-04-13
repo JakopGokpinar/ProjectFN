@@ -161,7 +161,6 @@ signup = (req, res, next) => {
 
 // çıkış yapan kullanıcılar için logout metodu
 logout = (req, res, next) => {
-    // if(!req.isAuthenticated()) console.log('user not logged in')
     // req.logout();   //passport.js logout metodunu kullanarak çıkış yap
     req.session.destroy();  //destroy yapmak db'deki cookie'leri de imha eder. O yüzden daha mantıklı.
     res.json('user logged out')

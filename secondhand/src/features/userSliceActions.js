@@ -2,6 +2,17 @@ import { instanceAxs } from "../config/api";
 import { userActions } from "./userSlice";
 import { uiSliceActions } from "./uiSlice";
 
+export const fetchUser = () => {
+    return async (dispatch) => {
+        const handleRequest = async () => {
+            instanceAxs.get('/fetchuser').then(response => {
+                dispatch(userActions.setUser(response.data.user))
+            }).catch(error => console.log(error))
+        }
+        await handleRequest();
+    }
+}
+
 export const sendSignUpRequest = (user) => {
     return async (dispatch) => {
         const handleRequest = async () => {
@@ -131,7 +142,7 @@ export const addToFavorites = (annonceId) => {
                     dispatch(uiSliceActions.setFeedbackBanner({severity: 'success', msg: msg}))
                     return;
                 }
-                dispatch(uiSliceActions.setFeedbackBanner({severity: 'danger', msg: msg}))
+                dispatch(uiSliceActions.setFeedbackBanner({severity: 'error', msg: msg}))
             })
         }
         await handleRequest();

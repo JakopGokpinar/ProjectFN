@@ -49,28 +49,28 @@ const App = () => {
   }, [])
   
     return (
-      <GoogleOAuthProvider clientId='1011630835579-mkolirmm2rm5gqmk8bvvnv1r4449qdav.apps.googleusercontent.com'>
+      <GoogleOAuthProvider clientId='1011630835579-od6btk63gd1bio6bk413r76mh6q0s9s8.apps.googleusercontent.com'>
      <Router>
-      <div style={{marginBottom : 100}}>
-        <Navbar ></Navbar>
-      </div>
-      <div>
-       <Routes>
-            <Route path='/login' element={<Login/>}/>
-              <Route path="/register" element={<Register/>}></Route>
-              <Route path='/' element={<Menu/>}/>
-              <Route path='/profil' element={<Account/>}/>
-              <Route path='/meldinger' element={<Chat/>}/>
-              <Route path='/favoritter' element={<Favorites/>}/>
-              <Route path='/mine-annonser' element={<MyAnnonces/>}/>
-              <Route path='/nyannonse' element={<NewAnnonce/>}/>
-              <Route path='/profile' element={<Profile/>}/>
-              <Route  path='/search' element={<SearchResult/>}/>
-              <Route path={'/produkt/:annonceId'} element={<ProductPage/>}/>
-              <Route path="*" element={<NotFound/>}/>
-       </Routes>
-       <Footer></Footer>
-       </div>
+        <div style={{marginBottom : 100}}>
+          <Navbar ></Navbar>
+        </div>
+        <div>
+        <Routes>
+              <Route path='/login' element={<Login/>}/>
+                <Route path="/register" element={<Register/>}></Route>
+                <Route path='/' element={<Menu/>}/>
+                <Route path='/min-konto' element={<Account/>}/>
+                <Route path='/meldinger' element={<Chat/>}/>
+                <Route path='/favoritter' element={<Favorites/>}/>
+                <Route path='/mine-annonser' element={<MyAnnonces/>}/>
+                <Route path='/nyannonse' element={<NewAnnonce/>}/>
+                <Route path='/profil' element={<Profile/>}/>
+                <Route  path='/search' element={<SearchResult/>}/>
+                <Route path={'/produkt/:annonceId'} element={<ProductPage/>}/>
+                <Route path="*" element={<NotFound/>}/>
+        </Routes>
+        <Footer></Footer>
+        </div>
      </Router>
         <FeedbackBanner></FeedbackBanner>
      </GoogleOAuthProvider>

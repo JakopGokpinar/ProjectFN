@@ -133,7 +133,7 @@ const Filters = ({handleFilterChange, removeSelectedFilter, searchParams, counti
             if(maincat) {
               setMainCategory(maincat)
               const cat = categoryData.find(item => item.category === maincat);
-              setSubCatArray(cat !== null && cat.subcategory)
+              setSubCatArray(cat && cat.subcategory)
             } else {
               setMainCategory('')
               setSubCatArray([])
@@ -227,7 +227,7 @@ const Filters = ({handleFilterChange, removeSelectedFilter, searchParams, counti
             {mainCategory !== '' &&  
             <Form.Select aria-label="subcategory-selection" onChange={handleSubCategoryChange} value={subCategory}>
               <option value=''>Select a sub category</option>
-              {subCatArray.map(item => {
+              {subCatArray !== "" && subCatArray.map(item => {
                 return(
                   <option value={item} key={item}>
                     {item}

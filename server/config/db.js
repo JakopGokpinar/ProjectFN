@@ -8,7 +8,7 @@ const connectDB = async () => {
         mongoURI,
         {
           useNewUrlParser: true,
-          useUnifiedTopology: true,
+          useUnifiedTopology: true
         }
       );
       console.log('MongoDB is Connected...');

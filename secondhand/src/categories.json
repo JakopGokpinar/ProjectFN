@@ -1,0 +1,12 @@
+{
+    "categories": [
+        {
+            "maincategory": "Bil",
+            "subcategories": ["Bobil", "Elbil"]
+        },
+        {
+            "maincategory": "Enebolig",
+            "subcategories": ["Rekkehus", "Leilighet"]           
+        }
+    ]
+}

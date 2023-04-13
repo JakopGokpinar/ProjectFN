@@ -46,7 +46,7 @@ const FilterBadge = ({ searchParams, removeSelectedFilter, counties }) => {
             <Chip
               key={index}
               label={msg}
-              style={{ margin: 5 }}
+              style={{ margin: 5}}
               onDelete={(e) => handleOnClick(e, item)}
             />
           );

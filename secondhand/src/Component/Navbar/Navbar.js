@@ -3,6 +3,8 @@ import "./Navbar.css";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -69,14 +71,18 @@ const Navigation = () => {
                     {isLoggedIn ? 
                         <Nav className="d-flex align-items-center flex-grow-1 justify-content-end navbar-username">
                             <Avatar className="navbar-avatar" alt='pp' src={user.profilePicture} sx={{width: 32, height: 32, marginRight: 1}}></Avatar>
-                            <NavDropdown title={user.email} menuVariant='success' onClick={navigateToProfile} show={show} onMouseEnter={showDropdown} onMouseLeave={hideDropdown}>
-                                <NavDropdown.Item href='/profile'>Profil</NavDropdown.Item>
-                                <NavDropdown.Item href='/nyannonse'>Ny Annonse</NavDropdown.Item>
-                                <NavDropdown.Item href='/meldinger'>Meldinger</NavDropdown.Item>
-                                <NavDropdown.Divider/>
-                                <NavDropdown.Item onClick={logout}>Log Out</NavDropdown.Item>
-                            </NavDropdown>
-                          </Nav>
+                            <DropdownButton id="dropdown-basic-button" title={user.username || user.email} variant="light">
+                                <Dropdown.Item href="min-konto">Min Konto</Dropdown.Item>
+                                <Dropdown.Divider/>
+                                <Dropdown.Item href="/nyannonse">Ny Annonse</Dropdown.Item>
+                                <Dropdown.Item href="/profil">Min Profil</Dropdown.Item>
+                                <Dropdown.Item href="#">Meldinger</Dropdown.Item>
+                                <Dropdown.Item href="/mine-annonser">Mine Annonser</Dropdown.Item>
+                                <Dropdown.Item href="/favoritter">Favoritter</Dropdown.Item>
+                                <Dropdown.Divider/>
+                                <Dropdown.Item onClick={logout}>Logg Ut</Dropdown.Item>
+                            </DropdownButton>
+                        </Nav>
                           :
                           <Nav className="flex-grow-1 justify-content-end">
                               <Nav.Link href='/login'>Logg Inn</Nav.Link>

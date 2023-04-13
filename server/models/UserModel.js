@@ -23,16 +23,7 @@ const UserSchema = new Schema({
     profilePicture: {
         type: String,
     },
-    address: {
-        type: String
-    },
     postnumber: {
-        type: String
-    },
-    fylke: {
-        type: String
-    },
-    kommune: {
         type: String
     },
     annonces: {
@@ -40,7 +31,11 @@ const UserSchema = new Schema({
     },
     favorites: {
         type: Array
-    }
+    },
+    userCreatedAt: {
+        type: Date,
+        default: Date.now,
+      },
 },{ strict: false}
 );
 
@@ -48,6 +43,7 @@ UserSchema.methods.toJSON = function() {    //remove the user's password before 
     const user = this;
     const userObject = user.toObject();
     delete userObject.password;
+    delete userObject.postnumber;
     return userObject;
 }
 

@@ -22,8 +22,7 @@ getItems = (req,res) => {
 
         let productArray = result.map((item) => {
             favoritesArray.map(fav => {
-                if(item._id.toString() === fav.toString()) {
-                    // console.log('matched');
+                if(item !== null && fav !== null && item._id.toString() === fav.toString()) {
                     item["isFavorite"] = true;
                     return item;
                 }

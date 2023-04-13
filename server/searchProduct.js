@@ -62,7 +62,7 @@ function getStatus(value) {
 findProducts = async (req, res) => {
   const queryObject = {};
   let queryParams = req.body;
-  const userId = req.user.id || "";
+  const userId = req.user ? req.user.id : ''
 
   for (const param in queryParams) {
     if (param === "q") Object.assign(queryObject, getTitle(queryParams[param]));

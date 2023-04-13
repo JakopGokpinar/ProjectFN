@@ -57,7 +57,7 @@ uploadImagesToAws = (req, res, info) => {
             res.json({message: 'files could not uploaded', error: err})
             return;
         }
-        res.json({ files: req.files, message: 'images uploaded', annonceId})
+        res.status(200).json({ files: req.files, message: 'images uploaded', annonceId})
     })
 }
 

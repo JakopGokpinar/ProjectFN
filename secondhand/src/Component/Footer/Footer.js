@@ -28,16 +28,16 @@ const Footer = () => {
                       <div className='footer-content'>
                       <a href='#'>Privacy Policy</a>
                       <a href='#'>About Us</a>
-                      <a href='#'>Carrier</a>
                       </div>
                   </Col>
                   <Col className='footer-col footer-useractions'lg={4} md={4} sm={12}>
                       <p className='footer-heading'>User Actions</p>
                       <div className='footer-content'>
-                          <a href='#'>Ny Annonse</a>
+                        <a href='/profil'>Min Profil</a>
+                          <a href='/nyannonse'>Ny Annonse</a>
                           <a href='#'>Meldinger</a>
-                          <a href='#'>Annonser</a>
-                          <a href='#'>Favoritter</a>
+                          <a href='/mine-annonser'>Mine Annonser</a>
+                          <a href='/favoritter'>Favoritter</a>
                       </div>
                   </Col>
               </Row>

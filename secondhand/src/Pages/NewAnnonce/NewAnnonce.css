@@ -1,18 +1,17 @@
 .input-col {
   padding: 20px;
-  max-height: 640px;
-  overflow: auto;
 }
+
 .input-col * p {
   margin: 0%;
 }
 
 .newannonce-form-group {
-  margin-bottom: 20px;
+  margin-bottom: 60px;
 }
 
 .review-product-images-small-div {
-  margin: 50px 20px 60px 10px;
+  margin: 0px 20px 60px 10px;
 }
 .images-li-div-small {
   display: flex;
@@ -25,9 +24,7 @@
   align-items: center;
   padding: 15px;
 }
-
 .image-span-img {
-  border: 1px solid;
   border-radius: 10px;
   width: 100px;
   height: 100px;
@@ -42,32 +39,109 @@
   color: gray;
 }
 
+.backdrop-model-div{
+  border-radius: 10px;
+  height: 350px;
+  width: 500px;
+  background-color:ghostwhite;
+  padding: 30px;
+}
+
 /* ########## PREVIEW COLUMN ######### */
 .preview-column {
   display: flex;
   justify-content: center;
+  margin-bottom: 40px;
+}
+.preview-column * p {
+  margin: 0%;
 }
 .preview-column-content {
   width: 80%;
 }
+
 .preview-carousel {
-  background-color: #212529;
+  background-color: #fdfafa;
   width: 100%;
   height: 400px;
 }
-
 .preview-carousel-image {
   width: 100%; 
-  height: 400px;
+  height:395px;
   object-fit: contain;
 }
+.preview-carousel-caption{
+  display: flex;
+  justify-content: center;
+}
+.carousel-image-text{
+  background-color: black;
+  color: white;
+  width: fit-content;
+}
+
+.preview-content-box {
+  margin-bottom: 50px;
+}
 .preview-content-heading {
-  font-size: 26px;
+  font-size: 18px;
   font-weight: 450;
 }
 .preview-product-title {
-  font-size: 28px;
-  font-weight: 450;
+  font-size: 30px;
+}
+
+.preview-product-desc {
+  width: 100%;
+  border-style: none; 
+  background-color: transparent;
+  overflow: hidden;
+  resize: none;
+  color: black;
+}
+
+.special-properties-container{
+  display: flex;
+  flex-wrap: wrap;
+}
+.spec-prop-item{
+  height: 120px;
+  width: 120px;
+  margin: 0px 10px 5px 0px;
+  position: relative;
+}
+.spec-prop-box{
+  height: 100%;
+  height: 100%;
+  padding: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.special-props-title{
+  font-size: 18px;
+  font-weight: 440;
+}
+.special-prop-remove-btn{
+  display: none;
+  position: absolute;
+  top: 40px;
+  left: 15px;
+}
+.spec-prop-box:hover{
+  filter: blur(2px);
+}
+.spec-prop-item:hover > .special-prop-remove-btn{
+  display: block;
+}
+
+/* continue filtering background of the .spec-prop-box when 'fjern' button hovered */
+.spec-prop-box:has(+ .special-prop-remove-btn:hover) {
+  filter: blur(2px);
 }
 
 

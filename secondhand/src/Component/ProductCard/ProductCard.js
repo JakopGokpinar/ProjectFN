@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "./NewProductCard.css"
+import { useDispatch } from "react-redux";
+import "./NewProductCard.css";
+
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
 import Card from 'react-bootstrap/Card';
 import Carousel from 'react-bootstrap/Carousel';
-import { useDispatch } from "react-redux";
 import Spinner from "react-bootstrap/Spinner";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+
 import { addToFavorites } from "../../features/userSliceActions";
 import { removeFromFavorites } from "../../features/userSliceActions";
+import { uiSliceActions } from "../../features/uiSlice";
 
 function ProductCard(props) {
 
@@ -24,7 +29,8 @@ function ProductCard(props) {
 
   const dispatch = useDispatch();
   const [isHovered, setHovered] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleAddToFavorites = () => {
     setIsLoading(true)
@@ -49,54 +55,94 @@ function ProductCard(props) {
     setHovered(false)
   }
 
+  const showShareModal = () => {
+    setShowModal(true)
+  }
+  const closeShareModal = () => {
+    setShowModal(false)
+  }
+
+  const copyAnnonceLink = (event) => {
+    event.preventDefault();
+    let text = `http://localhost:3000/produkt/${id}`;
+    navigator.clipboard.writeText(text)
+    dispatch(uiSliceActions.setFeedbackBanner({severity: 'success', msg: 'Annons lenken ble kopiert'}));
+    setShowModal(false)
+  }
+
+  const sendMessageAlert = event => {
+    event.preventDefault()
+    dispatch(uiSliceActions.setFeedbackBanner({severity: 'info', msg: 'Å sende melding til selleren kommer snart.'}));
+  }
+
 
   return(
     <Card style={{width: '18rem'}} className="card">
-      <Card.Body style={{padding: 0, margin: 0}}>
+        <Card.Body style={{padding: 0, margin: 0}}>
 
-          <Carousel indicators={false} controls={isHovered ? true : false} interval={null} onMouseEnter={setHoveredToTrue} onMouseLeave={setHoveredToFalse}>
-                {images.map(img => {
-                  return(
-                    <Carousel.Item className="carousel-item" key={img}>
-                      <Link to={`/produkt/${id}`}>
-                    <img
-                      className="carousel-img"
-                      src={img}
-                      alt="carousel"
-                    />
-                    </Link>
-                  </Carousel.Item>
-                  )
-                })}
-            </Carousel>
-<div className="card-properties">
-          <Card.Title className="card-properties__item item-title">{title}</Card.Title>
-          <Card.Subtitle className="card-properties__item item-location ">{location}</Card.Subtitle>
-          <Card.Text className="card-properties__item item-price">{price} nok</Card.Text>
-          <Card.Text className="card-properties__item item-description">
-                Some text about the nature right here.
-          </Card.Text>
-          </div>
-       <div className="card-buttons">
-        {isFavorite ? 
-          <OverlayTrigger placement="bottom" overlay={<Tooltip>Remove from Favorites</Tooltip>}>
-            <Button variant="danger" onClick={handleRemoveFromFavorites}>
-              {isLoading ? <Spinner size='sm'/> : <i className="fa-solid fa-heart"/>}
-            </Button>
-          </OverlayTrigger>
-          :
-          <OverlayTrigger placement="bottom" overlay={<Tooltip>Add to Favorites</Tooltip>}>
-            <Button variant="outline-danger" onClick={handleAddToFavorites}>
-              {isLoading ? <Spinner size='sm'/> : <i className="fa-solid fa-heart"/>}
-            </Button>
-        </OverlayTrigger>
-      }
+            <Carousel indicators={false} controls={isHovered ? true : false} 
+              interval={null} onMouseEnter={setHoveredToTrue} onMouseLeave={setHoveredToFalse}
+              >
+                  {images.map((img, index) => {
+                      return(
+                          <Carousel.Item className="carousel-item" key={index}>
+                              <Link to={`/produkt/${id}`}>
+                                <img
+                                  className="carousel-img"
+                                  src={img.location}
+                                  alt="carousel"
+                                />
+                            </Link>
+                        </Carousel.Item>
+                      )
+                  })}
+              </Carousel>
 
-
-      <Button variant="outline-primary"> Send Melding <i className="fa-regular fa-message"></i></Button>
-        <Button variant="outline-secondary">Del <i className="fa-solid fa-arrow-up-from-bracket"></i></Button>
-        </div>
-      </Card.Body>
+              <div className="card-properties">
+                    <Card.Title className="card-properties__item item-title">{title}</Card.Title>
+                    <Card.Subtitle className="card-properties__item item-location ">{location}</Card.Subtitle>
+                    <Card.Text className="card-properties__item item-price">{price} nok</Card.Text>
+                    <Card.Text className="card-properties__item item-description">
+                          Some text about the nature right here.
+                    </Card.Text>
+              </div>
+              
+              <div className="card-buttons">
+                    {isFavorite ? 
+                        <OverlayTrigger placement="bottom" overlay={<Tooltip>Remove from Favorites</Tooltip>}>
+                            <Button variant="danger" onClick={handleRemoveFromFavorites}>
+                              {isLoading ? <Spinner size='sm'/> : <i className="fa-solid fa-heart"/>}
+                            </Button>
+                        </OverlayTrigger>
+                      :
+                        <OverlayTrigger placement="bottom" overlay={<Tooltip>Add to Favorites</Tooltip>}>
+                            <Button variant="outline-danger" onClick={handleAddToFavorites}>
+                              {isLoading ? <Spinner size='sm'/> : <i className="fa-solid fa-heart"/>}
+                            </Button>
+                      </OverlayTrigger>
+                  }
+                  <OverlayTrigger placement="bottom" overlay={<Tooltip>Coming soon</Tooltip>}>
+                      <Button variant="outline-primary" type="button" onClick={sendMessageAlert}> 
+                          Send Melding <i className="fa-regular fa-message"/>
+                      </Button>
+                  </OverlayTrigger>
+                  <Button variant="outline-secondary" onClick={showShareModal}>
+                      Del <i className="fa-solid fa-arrow-up-from-bracket"/>
+                    </Button>
+                    <Modal show={showModal} onHide={closeShareModal}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Del annonsen</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <p>Vil du dele denne annonsen?</p>
+                            <Form.Control type="text" className="mb-3" value={`http://localhost:3000/produkt/${id}`} disabled/>
+                            <Button type='button' variant="outline-primary" className="mb-2" onClick={copyAnnonceLink}>
+                                Kopier Lenken
+                            </Button>
+                        </Modal.Body>
+                    </Modal>
+                </div>
+        </Card.Body>
     </Card>
   )
 }

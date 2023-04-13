@@ -1,6 +1,4 @@
-.nav-item.dropdown:hover .dropdown-menu {
-    display: block;
-}
+
 @media (max-width: 1200px) {
     .navbar-avatar {
         margin-top: 10px;

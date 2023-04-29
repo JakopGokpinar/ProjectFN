@@ -9,14 +9,11 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Avatar from "@mui/material/Avatar";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  updateUser,
-  removeProfilePicture,
-} from "../../../features/userSliceActions";
+import { updateUser,removeProfilePicture } from "../../../features/userSliceActions";
 import Spinner from "react-bootstrap/Spinner";
 
 const Profile = () => {
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector(state => state.user.user);
   const hiddenFileInput = React.useRef(null);
   const dispatch = useDispatch();
 
@@ -24,11 +21,8 @@ const Profile = () => {
   const [imageFile, setImageFile] = useState(null);
   const [formData, setFormData] = useState(null);
   const [readerResult, setReaderResult] = useState(null);
-  const [counties, setCounties] = useState("");
   const [name, setName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [address, setAddress] = useState("");
-  const [postnumber, setPostnumber] = useState("");
   const [profilePicture, setProfilePicture] = useState("");
 
   const convertImagesToFormData = async (data) => {
@@ -64,18 +58,11 @@ const Profile = () => {
     hiddenFileInput.current.click();
   };
 
-  const handlePostnumber = (e) => {
-    let value = e.target.value;
-    setPostnumber(value);
-  };
-
   const updateUserInfo = () => {
     const data = {
       userdata: {
         name: name,
-        lastname: lastName,
-        address: address,
-        postnumber: postnumber,
+        lastname: lastName
       },
       formData: formData,
     };
@@ -89,8 +76,6 @@ const Profile = () => {
   const handleCancel = () => {
     setName(user.name);
     setLastName(user.lastname);
-    setAddress(user.address);
-    setPostnumber(user.postnumber);
     setReaderResult(null);
   };
 
@@ -115,32 +100,7 @@ const Profile = () => {
   useEffect(() => {
     setName(user.name);
     setLastName(user.lastname);
-    setAddress(user.address);
-    setPostnumber(user.postnumber);
     setProfilePicture(user.profilePicture);
-  }, [user]);
-
-  useEffect(() => {
-    const fetchCommuneData = async () => {
-      await fetch("https://ws.geonorge.no/kommuneinfo/v1/fylkerkommuner", {
-        method: "GET",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          let kommuneArray = [];
-          for (const item of data) {
-            for (const kommune of item.kommuner) {
-              kommuneArray.push({
-                fylke: kommune.fylkesnavn,
-                kommuneNavn: kommune.kommunenavn,
-                kommuneNummer: kommune.kommunenummer,
-              });
-            }
-          }
-          setCounties(kommuneArray);
-        });
-    };
-    fetchCommuneData();
   }, [user]);
 
   return (
@@ -193,13 +153,13 @@ const Profile = () => {
             </div>
           </Col>
 
-          <Col lg={4} className="profile-content-col">
+          <Col lg={4} className="profile-content-col user-actions">
             <Form>
               <Form.Group className="profile-form-element">
                 <Form.Label>Email</Form.Label>
                 <Form.Control
                   type="Email"
-                  value="gokpinarahmet20@gmail.com"
+                  defaultValue={user.email}
                   disabled
                 />
               </Form.Group>
@@ -225,39 +185,6 @@ const Profile = () => {
                   </Form.Group>
                 </Col>
               </Row>
-              <Form.Group className="profile-form-element">
-                <Form.Label>Addresse</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={address || ""}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-              </Form.Group>
-              <Row className="profile-form-element">
-                <Col>
-                  <Form.Group>
-                    <Form.Label>Postnummer</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={postnumber || ""}
-                      onChange={handlePostnumber}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col className="d-flex align-items-end justify-content-center">
-                  <p style={{ margin: 0 }}>
-                    {" "}
-                    {postnumber &&
-                      counties !== "" &&
-                      counties.find(
-                        (item) => item.kommuneNummer === postnumber
-                      ) &&
-                      counties.find((item) => item.kommuneNummer === postnumber)
-                        .kommuneNavn}{" "}
-                    Kommune
-                  </p>
-                </Col>
-              </Row>
             </Form>
             <div className="profile-control-buttons">
               <Button
@@ -265,12 +192,12 @@ const Profile = () => {
                 variant="outline-primary"
                 onClick={handleCancel}
               >
-                Cancel
+                Avbryt
               </Button>
               {isLoading ? (
                 <Button className="control-button">
                   <Spinner animation="border" size="sm" className="me-3" />
-                  Saving...
+                  Lagrer...
                 </Button>
               ) : (
                 <Button
@@ -278,7 +205,7 @@ const Profile = () => {
                   variant="primary"
                   onClick={updateUserInfo}
                 >
-                  Save
+                  Lagre
                 </Button>
               )}
             </div>

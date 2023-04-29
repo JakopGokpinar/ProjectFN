@@ -1,35 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { InputGroup } from 'react-bootstrap';
+import './Filters.css'
+
 import Accordion from 'react-bootstrap/Accordion';
 import Form from 'react-bootstrap/Form';
-import './Filters.css'
 import Button from 'react-bootstrap/Button';
 import Tooltip from '@mui/material/Tooltip';
 
+import categoryObject from '../../categories.json';
 
 //location, main cat, sub cat, date, old-new, price
 const Filters = ({handleFilterChange, removeSelectedFilter, searchParams, counties, categories}) => {
 
-  const categoryData = [
-    {
-      "category": "Bil",   
-        "subcategory": ['Elbil', 'Varebil']      
-    },
-    {
-      "category": "Bolig",
-      "subcategory": ['Enebolig', 'Leiglihet']
-    },
-    {
-      "category": "Motorsykkel",
-      "subcategory": ['Bmw']
-    }
-  ]
-
     const [communes, setCommunes] = useState([]);
     const [state, setState] = useState('');
     const [city, setCity] = useState(['']);
-    const [matchedCategories, setMatchedCategories] = useState([])
-    const [subCatArray, setSubCatArray] = useState([])
     const [mainCategory, setMainCategory] = useState('');
     const [subCategory, setSubCategory] = useState('');
     const [minPrice, setMinPrice] = useState('');
@@ -43,20 +28,6 @@ const Filters = ({handleFilterChange, removeSelectedFilter, searchParams, counti
       }
       const county = counties.find(item => item.fylkesnummer === value);
       return county;
-  }
-
-  const findMatchedCategories =() => {
-    if(!categories) return;
-
-    var matchedArr = [];
-    for(const item of categoryData) {
-
-      const isExist = categories.categories.find(cat => cat === item.category);
-      if(isExist) {
-        matchedArr.push(item)
-      }
-    }
-    setMatchedCategories(matchedArr);
   }
 
     const handleChanges = (key, value) => {
@@ -81,16 +52,12 @@ const Filters = ({handleFilterChange, removeSelectedFilter, searchParams, counti
         }
     }
     const handleCategoryChange = (e) => {
-      let value = e.target.value;
-      const category = matchedCategories.find(item => value === item.category);
-
+      let value = JSON.parse(e.target.value);
       setMainCategory(value)
-      setSubCatArray(category.subcategory);
-      handleChanges("category", value)
+      handleChanges("category", value.maincategory)
     }
     const handleSubCategoryChange = (e) => {
       let value = e.target.value;
-
       handleChanges("subcategory", value);
       setSubCategory(value)
     }
@@ -131,17 +98,24 @@ const Filters = ({handleFilterChange, removeSelectedFilter, searchParams, counti
 
             let maincat = searchParams.get('category');
             if(maincat) {
-              setMainCategory(maincat)
-              const cat = categoryData.find(item => item.category === maincat);
-              setSubCatArray(cat && cat.subcategory)
+              maincat = categoryObject.categories.find(item => item.maincategory === maincat);
+              setMainCategory(maincat ? maincat : '');
             } else {
               setMainCategory('')
-              setSubCatArray([])
             }
 
             let subcat = searchParams.get('subcategory');
-            setSubCategory(subcat === null ? '' : subcat)
-    
+            if(subcat) {
+              let cat = categoryObject.categories.find(item => {
+                if(item.subcategories.includes(subcat)){
+                  return true;
+                }
+                return ''
+              })
+              setMainCategory(cat ? cat : '')
+              setSubCategory(subcat)
+            }
+
             let min_price = searchParams.get('min_price');
             setMinPrice(min_price || '')
 
@@ -153,13 +127,9 @@ const Filters = ({handleFilterChange, removeSelectedFilter, searchParams, counti
 
             let status = searchParams.get('status');
             setProductStatus(status || '')
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams, counties])
 
-    useEffect(() => {
-      findMatchedCategories();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [categories])
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams, counties])
 
   return (
     <div>
@@ -214,20 +184,20 @@ const Filters = ({handleFilterChange, removeSelectedFilter, searchParams, counti
         <Accordion.Item>
           <Accordion.Header>Category</Accordion.Header>
           <Accordion.Body>
-            <Form.Select aria-label="maincategory-selection" className="mb-2" onChange={handleCategoryChange} value={mainCategory}>
-            <option value=''>Select a category</option>
-            {categoryData.map(item => {
+            <Form.Select aria-label="maincategory-selection" className="mb-2" onChange={handleCategoryChange} value={mainCategory !== '' && JSON.stringify(mainCategory)}>
+            <option value={JSON.stringify('')}>Velg en hovedkategori</option>
+            {categoryObject.categories.map((item, index) => {
               return(
-                <option value={item.category} key={item.category} disabled={matchedCategories.find(cat => cat.category === item.category) ? false : true}>
-                  {item.category}
+                <option value={JSON.stringify(item)} key={index}>
+                  {item.maincategory}
                 </option>
-              )
+              ) 
             })}
             </Form.Select>
             {mainCategory !== '' &&  
             <Form.Select aria-label="subcategory-selection" onChange={handleSubCategoryChange} value={subCategory}>
-              <option value=''>Select a sub category</option>
-              {subCatArray !== "" && subCatArray.map(item => {
+              <option value={JSON.stringify('')}>Velg en under kategori</option>
+              {mainCategory.subcategories.map(item => {
                 return(
                   <option value={item} key={item}>
                     {item}

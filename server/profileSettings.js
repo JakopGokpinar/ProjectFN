@@ -84,7 +84,7 @@ removeProfileImage = (req, res) => {
 updateUserInfo = (req, res) => {
   if(!req.isAuthenticated()) return res.json({message: 'Please login to save your updates'});
 
-  const {name, lastname, address, postnumber} = req.body;
+  const {name, lastname } = req.body;
   const userId = req.user._id;
   const username = name + " " + lastname;
   
@@ -92,9 +92,7 @@ updateUserInfo = (req, res) => {
     $set: {
       name: name,
       lastname: lastname,
-      username: username,
-      address: address,
-      postnumber: postnumber
+      username: username
     }
   }, {useFindAndModify: false, returnDocument: 'after'}).then(result => {
     return res.json({user: result, message: 'User updated'})

@@ -12,7 +12,6 @@ import Register from './Pages/LoginAndRegister/Register';
 import ProductPage from './Pages/ProductPage/ProductPage';
 import SearchResult from './Pages/SearchedResultPage/SearchResult';
 import Account from './Pages/Profile/Profile';
-import Chat from './Pages/Profile/Chat/Chat';
 import NotFound from './Pages/NotFound';
 import NewAnnonce from './Pages/NewAnnonce/NewAnnonce';
 import Favorites from './Pages/Profile/Favorites/Favorites';
@@ -46,6 +45,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(fetchNorwayDistricts());
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   
     return (
@@ -60,7 +60,6 @@ const App = () => {
                 <Route path="/register" element={<Register/>}></Route>
                 <Route path='/' element={<Menu/>}/>
                 <Route path='/min-konto' element={<Account/>}/>
-                <Route path='/meldinger' element={<Chat/>}/>
                 <Route path='/favoritter' element={<Favorites/>}/>
                 <Route path='/mine-annonser' element={<MyAnnonces/>}/>
                 <Route path='/nyannonse' element={<NewAnnonce/>}/>

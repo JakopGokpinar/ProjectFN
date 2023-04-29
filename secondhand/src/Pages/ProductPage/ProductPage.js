@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
 
@@ -35,9 +35,11 @@ function ProductPage() {
     const [showSpinner, setShowSpinner] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
 
-    const findProduct = async () => {
+    const findProduct = useCallback( async () => {
+        console.log(annonceId)
         await instanceAxs.get(`/product?id=${annonceId}`)
             .then(respond => {
+                console.log(respond)
                 if (respond.status !== 200) {
                     setLoading(false)
                     return;
@@ -52,7 +54,8 @@ function ProductPage() {
             .catch(err => {
                 console.log(err);
             })   
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user])
 
     const handleAddToFavorites = () => {
         setShowSpinner(true)
@@ -92,7 +95,7 @@ function ProductPage() {
 
     useEffect(() => {
         findProduct();
-    }, [user])
+    }, [findProduct])
 
     return(
         <div style={{minHeight: '100vh', display: 'flex', flexDirection: 'column', flexGrow: 1}}>

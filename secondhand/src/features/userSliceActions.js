@@ -6,7 +6,10 @@ export const fetchUser = () => {
     return async (dispatch) => {
         const handleRequest = async () => {
             instanceAxs.get('/fetchuser').then(response => {
-                dispatch(userActions.setUser(response.data.user))
+                console.log(response)
+                if(response.status === 200) {
+                    dispatch(userActions.setUser(response.data.user))
+                }
             }).catch(error => console.log(error))
         }
         await handleRequest();
@@ -89,26 +92,26 @@ export const updateUser = (data) => {
     return async (dispatch) => {
         const handleRequest = async () => {
             if(data.formData !== null) {
-            instanceAxs.post('/profile/upload/picture', data.formData).then(response => {
-                const msg = response.data.message;
-                if(msg === 'profile picture uploaded') {
-                    dispatch(userActions.setUser(response.data.user));
-                    dispatch(uiSliceActions.setFeedbackBanner({severity: 'success', msg: msg}))
-                } else {
-                    dispatch(uiSliceActions.setFeedbackBanner({severity: 'danger', msg: msg}))
-                }
-            })
+                 
+            const response = await instanceAxs.post('/profile/upload/picture', data.formData)
+            const msg = response.data.message;
+            if(msg === 'profile picture uploaded') {
+                dispatch(userActions.setUser({}))
+                dispatch(userActions.setUser(response.data.user));
+                dispatch(uiSliceActions.setFeedbackBanner({severity: 'success', msg: msg}))
+            } else {
+                dispatch(uiSliceActions.setFeedbackBanner({severity: 'danger', msg: msg}))
+            }        
         }
-            instanceAxs.post('/profile/update/userinfo', data.userdata).then(response => {
-                const msg = response.data.message;
-                if(msg === 'User updated') {
-                    const user = response.data.user;
-                    dispatch(userActions.setUser(user));
-                    dispatch(uiSliceActions.setFeedbackBanner({severity: 'success', msg: msg}))
-                }
-            }).catch(error => {
-                console.log(error)
-            })
+        setTimeout(async () => {
+            const res = await instanceAxs.post('/profile/update/userinfo', data.userdata)
+            const msg = res.data.message;
+            if(msg === 'User updated') {
+                const user = res.data.user;
+                dispatch(userActions.setUser(user));
+                dispatch(uiSliceActions.setFeedbackBanner({severity: 'success', msg: msg}))
+            }
+        }, 1000)
         }
         await handleRequest();
     }
@@ -178,6 +181,21 @@ export const fetchFavorites = () => {
                     return;
                 }
                 dispatch(uiSliceActions.setFeedbackBanner({severity: 'danger', msg: msg}))
+            })
+        }
+        await handleRequest();
+    }
+}
+
+export const removeAnnonce = (annonceId) => {
+    return async (dispatch) => {
+        const handleRequest = async () => {
+            instanceAxs.post('/newannonce/delete', {annonceid: annonceId}).then(response => {
+                if(response.status === 200) {
+                    dispatch(uiSliceActions.setFeedbackBanner({severity: 'success', msg: response.data.message}))
+                } else {
+                    dispatch(uiSliceActions.setFeedbackBanner({severity: 'danger', msg: 'Error occured while deleting object'}))
+                }
             })
         }
         await handleRequest();

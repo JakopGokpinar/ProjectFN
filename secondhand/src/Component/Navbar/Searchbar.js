@@ -112,7 +112,7 @@ export default function Searchbar() {
                                 return(
                                     <div className='suggestion-component' key={item} onClick={handleLinkClick}>
                                         <p className='suggestion-component__title'>Kategori</p>
-                                        <Link to={`search?category=${item}`}>
+                                        <Link to={`search?subcategory=${item}`}>
                                                 <div className='category-suggestion-component__content'>
                                                     {item}
                                                 </div>

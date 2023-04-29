@@ -26,8 +26,8 @@ const Favorites = () => {
         return(
             <div className="favorites-container">
                 <Breadcrumb>
-                    <Breadcrumb.Item href='/profil'>My profile</Breadcrumb.Item>
-                    <Breadcrumb.Item href='/profile' active>Profile</Breadcrumb.Item>
+                    <Breadcrumb.Item href='/min-konto'>Min konto</Breadcrumb.Item>
+                    <Breadcrumb.Item href='/profil' active>Profile</Breadcrumb.Item>
                 </Breadcrumb>
                 <div className="favorites-content">
                 {(favoritesArray && favoritesArray.length > 0) ? favoritesArray.map(product => {

@@ -23,10 +23,8 @@
 .profile-content-col {
     display: flex;
     flex-direction: column;
-    /* border: 2px solid blue; */
     padding: 0%;
     margin-top: 10px;
-
 }
 
 .content-profileImage {
@@ -49,7 +47,6 @@
         #000000 10px,
         #e0e0e0 10px,
         #e0e0e0 20px
-
     );
 }
 
@@ -66,8 +63,11 @@
     margin-bottom: 20px;
 }
 
+.user-actions{
+    justify-content: space-between;
+}
 .profile-control-buttons {
-    margin-top: 40px;
+    margin-top: 20px;
     display: flex;
     justify-content: flex-end;
 }

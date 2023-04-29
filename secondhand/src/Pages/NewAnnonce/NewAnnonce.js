@@ -22,7 +22,7 @@ import { useFindCommuneByPostnumber } from "../../features/appDataSliceActions";
 import data from  '../../categories.json';
 import { fetchUser } from "../../features/userSliceActions";
 import { uiSliceActions } from "../../features/uiSlice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const NewAnnonce = () => {
   const loggedIn = useSelector(state => state.user.isLoggedIn);
@@ -32,9 +32,11 @@ const NewAnnonce = () => {
   const dragOverItem = useRef();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const routerLocation = useLocation();
 
   const [rerender, setRerender] = useState(false) //dummy state to use force update on imageArray when image description added
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isModifyAnnonce, setIsModifyAnnonce] = useState(false);
   const [imageArray, setImageArray] = useState([]);
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [specPropTitle, setSpecPropTitle] = useState('');
@@ -43,7 +45,9 @@ const NewAnnonce = () => {
   const [postAddress, setPostAddress] = useState('Ugyldig postnummer');
   const [postNumber, setPostNumber] = useState('')
   const [selectedMainCat, setSelectedMainCat] = useState('')
-  const [annoncePropertyObject, setAnnoncePropertyObject] = useState({})
+  const [annoncePropertyObject, setAnnoncePropertyObject] = useState({
+    title: '', price: '', pricePeriod: '', category: '', subCategory: '', description: '', status: '', postnumber: '', location: ''
+  })
 
   const dragStart = (e, position) => {
     dragItem.current = position;
@@ -75,6 +79,8 @@ const handlePropertyChange = (e) => {
     matchedObj= {title: "Status", value}
     specArray.splice(index, 1, matchedObj);
     setSpecPropArray(specArray)
+  } else if(itemKey === 'postnumber'){
+    setPostNumber(value)
   }
   setAnnoncePropertyObject(prevState => ({
     ...prevState, [itemKey]: value
@@ -115,6 +121,7 @@ const insertSpecialProp = () => {
       specArray[index] = {title, value};
       return true;
     }
+    return null;
   });
 
   if(matchedObj) {
@@ -133,21 +140,35 @@ const removeSpecialProp = (title) => {
 
 const submitAnnonce = async (event) => {
   event.preventDefault();
+
   setIsPublishing(true)
   const specialProps = [];
   var annonceProperties = annoncePropertyObject;
-
-  specPropArray.map(item => {
+  specPropArray.forEach(item => {
     if(item.title !== 'Status'){
       specialProps.push(item)
     }
   })
-  annonceProperties["specialProperties"] = specialProps
+  annonceProperties["specialProperties"] = specialProps;
 
-  setTimeout(async () => {
-    const formData = await convertImagesToFormData();
-    await uploadImagesToServer(formData, annonceProperties, uploadAnnonceToServer);
-  }, 2000);
+  if(isModifyAnnonce) {
+    try {
+      const formData = await convertImagesToFormData();
+      const annonceId = annoncePropertyObject["_id"];
+      const annonceproperties = annonceProperties;
+
+      const res = await instanceAxs.post('/newannonce/update', {formData, annonceId, annonceproperties})
+      console.log(res);
+
+    } catch (error) {
+        console.log(error)
+    }
+  } else {
+    setTimeout(async () => {
+      const formData = await convertImagesToFormData();
+      await uploadImagesToServer(formData, annonceProperties, uploadAnnonceToServer);
+    }, 2000);
+  }
 }
 
  const onImageChange = async (event) => {
@@ -169,6 +190,7 @@ const submitAnnonce = async (event) => {
  const convertImagesToFormData =  async () => {
   var formData = new FormData();
   const imgArr = imageArray
+  console.log(imgArr)
   for (const image of imgArr) {   //await kullanımı için for...of döngüsü
     const canvas = await getCroppedImage(image.data);
     const canvasDataUrl = canvas.toDataURL("image/jpeg");
@@ -189,11 +211,9 @@ const submitAnnonce = async (event) => {
 
         for(let i = 0; i<copyImages.length; i++) {
           let item = copyImages[i];
-          returnedImages.map(el => {
+          returnedImages.forEach(el => {
             if(el.originalname === item.name) {
               item.location = el.location;
-              delete item.data;
-              delete item.name;
               finalAnnonceImages.push(item)
             }
           })
@@ -210,7 +230,7 @@ const submitAnnonce = async (event) => {
     imagelocations: imageLoc,
     annonceid: anId
   } 
-
+  console.log('annonce obj', annonce)
   await instanceAxs.post('/newannonce/create', annonce).then(result => {
     console.log(result)
     if(result.status === 200) {
@@ -228,7 +248,7 @@ const submitAnnonce = async (event) => {
   .catch( err => console.log(err) );
  }
 
- useEffect(async () => { 
+ useEffect(() => { 
   var postnum = annoncePropertyObject["postnumber"];
   postnum = (postnum !== '' && postnum !== undefined) ? postnum : 0;  
 
@@ -246,13 +266,26 @@ const submitAnnonce = async (event) => {
         annonceObj["kommune"] = placeProperties.kommuneNavn;
         annonceObj["location"] = placeName.placeName;
         setAnnoncePropertyObject(annonceObj)
-        setPostNumber(postnum)
       }
       setPostAddress(placeName ? placeName.placeName : 'Ugyldig postnummer');
   })
-}, [annoncePropertyObject["postnumber"]])
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [postNumber])
 
-
+  useEffect(() => {
+    const routerState = routerLocation.state;
+    console.log(routerState)
+    if(routerState) {
+      let stateAnnonce = routerState.annonce;
+      let foundCategory = data.categories.find(item => item.maincategory === stateAnnonce.category)
+      setIsModifyAnnonce(true);
+      setAnnoncePropertyObject(routerLocation.state.annonce)
+      setSpecPropArray(routerLocation.state.annonce.specialProperties);
+      setImageArray(routerLocation.state.annonce.annonceImages);
+      setSelectedMainCat(foundCategory)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
     return (
       <div className="newannonce-container">
@@ -275,7 +308,7 @@ const submitAnnonce = async (event) => {
 
                           <Form.Group className="newannonce-form-group">
                               <Form.Label>Tittel</Form.Label>
-                              <Form.Control type="text" id='title' name="title" required 
+                              <Form.Control type="text" id='title' name="title" value={annoncePropertyObject["title"]} required 
                                   onChange={handlePropertyChange}  disabled={isPublishing}>
                               </Form.Control>
                           </Form.Group>
@@ -283,11 +316,11 @@ const submitAnnonce = async (event) => {
                           <Form.Group className="newannonce-form-group">
                               <Form.Label>Pris</Form.Label>
                               <div className="d-flex align-items-center">
-                                  <Form.Control type="number" id="price" className="me-3" required 
+                                  <Form.Control type="number" id="price" className="me-3" value={annoncePropertyObject["price"]} required 
                                       onChange={handlePropertyChange}  disabled={isPublishing}
                                   />
                                   <p className="me-3">kr</p>
-                                  <Form.Select className="w-50" id="pricePeriod" onChange={handlePropertyChange}required>
+                                  <Form.Select className="w-50" id="pricePeriod" value={annoncePropertyObject["pricePeriod"]} onChange={handlePropertyChange}required>
                                       <option value="">Pris period</option>
                                       <option value="totalt">Totalt</option>
                                       <option value="per dag">Per dag</option>
@@ -299,7 +332,7 @@ const submitAnnonce = async (event) => {
 
                           <Form.Group className="newannonce-form-group" onChange={handlePropertyChange}>
                               <Form.Label>Hoved Kategori</Form.Label>
-                              <Form.Select id="category" required 
+                              <Form.Select id="category" required value={JSON.stringify(selectedMainCat)}
                                   onChange={handlePropertyChange} disabled={isPublishing}>
                                     <option value={JSON.stringify('')}>Velg en hovedkategori</option>
                                       {
@@ -315,7 +348,7 @@ const submitAnnonce = async (event) => {
                           {selectedMainCat !== '' && 
                               <Form.Group className="newannonce-form-group">
                                   <Form.Label>Under Kategori</Form.Label>
-                                  <Form.Select id="subCategory" required 
+                                  <Form.Select id="subCategory" required value={annoncePropertyObject["subCategory"]}
                                       onChange={handlePropertyChange} disabled={isPublishing}>
                                         <option value={JSON.stringify('')}>Velg en under kategori</option>
                                         {selectedMainCat.subcategories.map(item => {
@@ -330,7 +363,7 @@ const submitAnnonce = async (event) => {
 
                           <Form.Group className="newannonce-form-group">
                               <Form.Label>Bilder</Form.Label>
-                              <Form.Control type="file" accept="image/*" multiple required 
+                              <Form.Control type="file" accept="image/*" multiple 
                                   onChange={onImageChange}disabled={isPublishing}
                               />
                           </Form.Group>
@@ -367,19 +400,20 @@ const submitAnnonce = async (event) => {
 
                           <Form.Group className="newannonce-form-group">
                               <Form.Label>Produkt Beskrivelse</Form.Label>
-                              <Form.Control as="textarea" name="productDescription" id='description'required
-                                  rows={6} onChange={handlePropertyChange} disabled={isPublishing}
+                              <Form.Control as="textarea" name="productDescription" 
+                                    id='description' value={annoncePropertyObject["description"]} rows={6}
+                                    onChange={handlePropertyChange} disabled={isPublishing} required
                               />
                           </Form.Group>
 
                           <Form.Group className="newannonce-form-group">
                               <Form.Label>Status</Form.Label>
                               <Form.Check 
-                                  type="radio" value="nytt" name="status" 
+                                  type="radio" value="nytt" name="status" checked={annoncePropertyObject["status"] === 'nytt'}
                                   id="status" label="Nytt" onChange={handlePropertyChange} disabled={isPublishing}
                                 />
                                 <Form.Check 
-                                  type="radio" value="brukt" name="status" 
+                                  type="radio" value="brukt" name="status" checked={annoncePropertyObject["status"] === 'brukt'}
                                   id="status" label="Brukt" onChange={handlePropertyChange} disabled={isPublishing}
                                 />
                           </Form.Group>
@@ -415,23 +449,52 @@ const submitAnnonce = async (event) => {
                             <Row className="d-flex align-items-end">
                                 <Col>
                                     <Form.Label>Addresse</Form.Label>
-                                    <Form.Control type="text" id="postnumber" placeholder="Postnummer" 
+                                    <Form.Control type="text" id="postnumber" placeholder="Postnummer" value={annoncePropertyObject["postnumber"]}
                                       required onChange={handlePropertyChange} disabled={isPublishing}
                                     />
                                 </Col>
                                 <Col className="d-flex justify-content-center">
-                                  <p>{postAddress}</p>
+                                  <p>{annoncePropertyObject["location"] === '' ? postAddress : annoncePropertyObject["location"]}</p>
                                 </Col>
                             </Row>
                           </Form.Group>
 
                           {
-                            !isPublishing ? 
-                              <Button type="submit" className="mb-3" style={{width: '100px'}}>Publiser</Button>
-                              :
-                              <Button type="button" className="mb-3" disabled>
-                                <Spinner size="sm" className="me-2"/> Publiserer...
-                              </Button>
+                            isModifyAnnonce ? 
+                              <>
+                                {!isPublishing ?
+                                    <>
+                                        <Button variant="primary" type="submit" className="me-3 create-annonce-control-button">
+                                            Lagre
+                                        </Button>
+                                        <Button variant="outline-primary" type="button" className="create-annonce-control-button">
+                                            Avbryt
+                                          </Button>   
+                                    </>                          
+                                  :
+                                  <>
+                                      <Button variant="primary" type="button" className="me-3 create-annonce-control-button" disabled>
+                                          <Spinner size="sm" className="me-2"/> Lagrer...
+                                      </Button>
+                                      <Button variant="outline-primary" type="button" className="create-annonce-control-button">
+                                            Avbryt
+                                      </Button>   
+                                  </>
+                              }
+
+                              </>
+                            :
+                              <>
+                                  {!isPublishing ? 
+                                    <Button type="submit" className="mb-3" style={{width: '100px'}}>
+                                        Publiser
+                                    </Button>
+                                    : 
+                                    <Button type="button" className="mb-3" disabled>
+                                       <Spinner size="sm" className="me-2"/> Publiserer...
+                                    </Button>
+                                  }
+                              </>
                           }
 
                       </Form>
@@ -452,7 +515,7 @@ const submitAnnonce = async (event) => {
                                   {imageArray.map((item, index) => {
                                       return(
                                           <Carousel.Item key={index}>
-                                                <img src={item.data} alt="product-image" className="preview-carousel-image"/>
+                                                <img src={item.data || item.location} alt="pro-make" className="preview-carousel-image"/>
                                                 <Carousel.Caption className="preview-carousel-caption">
                                                     <p className="carousel-image-text mb-4">{item.description}</p>
                                                 </Carousel.Caption>

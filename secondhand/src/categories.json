@@ -2,11 +2,23 @@
     "categories": [
         {
             "maincategory": "Bil",
-            "subcategories": ["Bobil", "Elbil"]
+            "subcategories": ["Bobil", "Elbil", "Vanlig bil", "Campingvogner", "Varebil"]
         },
         {
-            "maincategory": "Enebolig",
+            "maincategory": "Eindom",
             "subcategories": ["Rekkehus", "Leilighet"]           
+        },
+        {
+            "maincategory": "Båt",
+            "subcategories": []     
+        },
+        {
+            "maincategory": "Motorsykkel",
+            "subcategories": []     
+        },
+        {
+            "maincategory": "Varer",
+            "subcategories": []     
         }
     ]
 }

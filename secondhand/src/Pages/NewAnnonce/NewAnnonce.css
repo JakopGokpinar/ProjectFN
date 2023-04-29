@@ -47,6 +47,11 @@
   padding: 30px;
 }
 
+.create-annonce-control-button {
+  width: 100px;
+  margin-bottom: 50px;
+}
+
 /* ########## PREVIEW COLUMN ######### */
 .preview-column {
   display: flex;

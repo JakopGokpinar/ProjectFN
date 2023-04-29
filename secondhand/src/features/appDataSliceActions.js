@@ -1,8 +1,5 @@
 import { appDataSliceActions } from "./appDataSlice";
-import appDataSlice from "./appDataSlice";
 import { useSelector } from "react-redux";
-//https://ws.geonorge.no/kommuneinfo/v1/fylkerkommuner
-//https://ws.geonorge.no/addresser/v1/sok?sok=munkegata&kommunenummer=5001
 
 export const fetchNorwayDistricts = () => {
     return async (dispatch) => {

@@ -9,7 +9,6 @@ fetchUser = (req, res) => {
 
     UserModel.findOne({_id: ObjectId(userId)})
     .then(response => {
-        console.log(response)
         return res.status(200).json({user: response})
     })
     .catch(error => {

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import "./SearchResult.css";
-import ProductCard from "../../Component/ProductCard/ProductCard.js";
-import { instanceAxs } from "../../config/api";
+import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import "./SearchResult.css";
+
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -10,11 +10,15 @@ import Filters from "./Filters";
 import Form from 'react-bootstrap/Form';
 import Button from "react-bootstrap/Button";
 import FilterBadge from "./FilterBadge";
-import { useSelector } from "react-redux";
+
+import ProductCard from "../../Component/ProductCard/ProductCard.js";
+import { instanceAxs } from "../../config/api";
 
 const SearchResult = () => {
 
   const user = useSelector(state => state.user.user);
+
+  const [dummy, setDummy] = useState(false)
   const [counties, setCounties] = useState([])
   const [searchParams, setSearchParams] = useSearchParams();  
   const [productArray, setProductArray] = useState([])
@@ -59,47 +63,10 @@ const SearchResult = () => {
     setSearchParams(params)
   }
 
-/*   const handleSortingChange = (e) => {
-    let value = e.target.value;
-    var products = productArray;
-
-    switch(value){
-      case "price_desc":
-        console.log(products)
-      products[0].sort((a,b) => a.price - b.price);
-      setProductArray(products);
-      break;
-      case "price_asc":
-        console.log(value)
-
-        let priceAscArray = [].concat(products)
-        .sort((a, b) => a.price < b.price ? 1 : -1)
-          setProductArray(priceAscArray)
-        break;
-    }
-   if(value === "price_desc") {
-      finalArray[0].sort((a, b) => a.price - b.price);
-
-    } else if(value === "price_asc") {
-      
-    } else if(value === "published-last") {
-      let publishArray = [].concat(finalArray)
-    .sort((a, b) => a.date < b.date ? 1 : -1)
-      finalArray = publishArray;
-    } else if(value === "published-first") {
-      let publishArray = [].concat(finalArray)
-    .sort((a, b) => a.date > b.date ? 1 : -1)
-      finalArray = publishArray;
-    } 
-
-    setProductArray(finalArray)
-  }; */
-
   const handleSorting = (e) => {
     e.preventDefault();
     let value = e.target.value;
-    var products = productArray;
-
+    var products = productArray;    
     switch(value){
       case "price_asc":
         products.sort((a,b) => a.price - b.price);
@@ -108,15 +75,20 @@ const SearchResult = () => {
         products.sort((a,b) => b.price - a.price);
         break;
       case "published-first":
-        products.sort((a, b) => a.date - b.date);
-        break;
-      case "published-last":
-        products.sort((a, b) => b.date - a.date);
-        break;
+        setProductArray([...productArray].sort((a, b) => new Date(b.date) - new Date(a.date)));
+          break;
+        case "published-last":
+          setProductArray([...productArray].sort((a, b) => new Date(a.date) - new Date(b.date)));
+          break;
       default:
         break;
     }
-    setProductArray(products)
+    console.log(products)
+    setProductArray(!dummy);
+    setDummy(!dummy)
+    setTimeout(() => {
+      setProductArray(products)
+    }, 1000)
   }
 
   const createQueryObject = () => {
@@ -165,6 +137,10 @@ const SearchResult = () => {
       });       
 },[])
 
+useEffect(() => {
+  console.log(productArray)
+}, [productArray])
+
     return (
           <Container fluid className="searchresult-container">
             <Row  className="result-row">
@@ -197,7 +173,7 @@ const SearchResult = () => {
                     </div>
 
                       <div className="bottom-row">
-                        {productArray.length > 0 && productArray.map((product, index) => {
+                        {(productArray.length > 0 && productArray) && productArray.map((product, index) => {
                           return(
                             <div key={index} style={{marginBottom: 20}}>
                                  <ProductCard                                        

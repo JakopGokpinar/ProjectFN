@@ -7,17 +7,19 @@ const AnnonceModel = require('./models/AnnonceModel.js');
 findProduct = async (req, res) => {
 
     let productId = req.query.id;
+
     let favoritesArray = [];
     if(req.isAuthenticated()) {
         const user = req.user._id;
         UserModel.findOne({_id: ObjectId(user)}).then(result => {
             favoritesArray = result.favorites
-
         }).catch(error => {
             console.log(error);
             return res.json({message: 'Error occured while fetching annonces'})
         })
     }
+    console.log(productId)
+
     try {
         var result = await AnnonceModel.findOne({ _id: ObjectId(productId)});
         var seller = await UserModel.findOne({_id: ObjectId(result.sellerId)});

@@ -15,7 +15,6 @@ var searchRouter = require('./search.js')
 var findProductRouter = require('./findProduct.js');
 var searchProductRouter = require('./searchProduct.js');
 var addFavoritesRouter = require('./addfavorites.js');
-var userAnnoncesRouter = require('./userAnnonces.js');
 var profileSettingsRouter = require('./profileSettings.js');
 
 const app = express();
@@ -26,9 +25,10 @@ const MONGO_URI = config.db.mongoURI;
 // Connecting to database
 connectDB();
 
-app.use(express.json());
+app.use(express.json({limit: '50mb'}))  // setting limit to 50mb in order to save image encoded data to server when uploading a new annonce
+// app.use(express.json());
 
-app.use(express.urlencoded({ extended: false}));
+app.use(express.urlencoded({ extended: false, limit: '50mb'})); //setting limit for the same reason
 
 app.use(cors({origin:'http://localhost:3000', credentials: true}));
 
@@ -61,7 +61,6 @@ app.use('/search', searchRouter)
 app.use('/product', findProductRouter)
 app.use('/searchproduct', searchProductRouter)
 app.use('/favorites', addFavoritesRouter);
-app.use('/userannonces', userAnnoncesRouter)
 app.use('/profile', profileSettingsRouter)
 
 //const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
